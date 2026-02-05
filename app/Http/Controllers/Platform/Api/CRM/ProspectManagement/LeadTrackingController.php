@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Platform\Api\CRM\ProspectManagement;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Platform\CRM\ProspectManagement\LeadTrackingRequest;
-use App\Models\Lead;
+use App\Services\CRM\LeadService;
 
 
 class LeadTrackingController extends Controller
 {
-    public function store(LeadTrackingRequest $request)
+    public function store(LeadTrackingRequest $request, LeadService $service)
     {
-        $lead = Lead::create($request->validated());
+        $lead = $service->create($request->validated());
+
 
         return response()->json([
             'message' => 'Lead berhasil disimpan',

@@ -5,10 +5,8 @@ use App\Http\Controllers\Platform\Api\CRM\Dashboard\CrmDashboardController;
 use App\Http\Controllers\Platform\Api\CRM\MasterData\CustomerDatabaseManagementController;
 use App\Http\Controllers\Platform\Api\CRM\ProspectManagement\LeadTrackingController;
 use App\Http\Controllers\Platform\Api\CRM\ProspectManagement\ProspectController;
-use App\Http\Controllers\Platform\Api\CRM\ProspectManagement\ProspectStatusController;
 use App\Http\Controllers\Platform\Api\CRM\ProspectManagement\SalesPipeLineController;
 use App\Http\Controllers\Platform\Api\Dashboard\PlatformDashboardController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Platform\Api\Auth\{
@@ -16,7 +14,6 @@ use App\Http\Controllers\Platform\Api\Auth\{
     PlatformRegisterController,
     PlatformLogoutController
 };
-use App\Http\Controllers\Platform\Api\Dashboard\PlatformDashboard;
 
 Route::prefix('platform')->group(function () {
 
@@ -45,7 +42,7 @@ Route::prefix('platform/crm')
         // Prospect Management
         Route::post('/leads', [LeadTrackingController::class, 'store']);
         Route::post('/prospects', [ProspectController::class, 'store']);
-        Route::put('/prospects/{id}/status', [ProspectStatusController::class, 'update']);
+        Route::put('/prospects/{id}/status', [ProspectController::class, 'updateStatus']);
 
         Route::get('/sales-pipeline', [SalesPipeLineController::class, 'index']);
         Route::post('/sales-pipeline', [SalesPipeLineController::class, 'store']);
