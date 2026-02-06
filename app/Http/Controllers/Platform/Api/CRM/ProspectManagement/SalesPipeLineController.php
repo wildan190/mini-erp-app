@@ -10,13 +10,15 @@ use App\Services\CRM\SalesPipelineService;
 
 class SalesPipeLineController extends Controller
 {
-    public function index()
+    public function index(SalesPipelineService $service)
     {
+        $pipelines = $service->index();
+
         return response()->json([
-            'message' => 'Data sales pipeline'
+            'message' => 'List sales pipeline',
+            'data' => $pipelines
         ]);
     }
-
 
     public function store(SalesPipeLineRequest $request, SalesPipelineService $service)
     {
