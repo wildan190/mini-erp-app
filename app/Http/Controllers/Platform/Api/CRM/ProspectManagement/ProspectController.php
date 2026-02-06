@@ -12,6 +12,17 @@ use Illuminate\Http\Request;
 
 class ProspectController extends Controller
 {
+
+    public function index(ProspectService $service)
+    {
+        $prospects = $service->index();
+
+        return response()->json([
+            'message' => 'List prospect',
+            'data' => $prospects
+        ]);
+    }
+
     public function store(Request $request, ProspectService $service)
     {
         $data = $request->validate([

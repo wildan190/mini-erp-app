@@ -10,10 +10,13 @@ use App\Services\CRM\CustomerService;
 
 class CustomerDatabaseManagementController extends Controller
 {
-    public function index()
+    public function index(CustomerService $service)
     {
+        $customers = $service->index();
+
         return response()->json([
-            'message' => 'List customer database'
+            'message' => 'List customer database',
+            'data' => $customers
         ]);
     }
 

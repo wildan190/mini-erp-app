@@ -33,6 +33,7 @@ Route::prefix('platform/crm')
         Route::get('/dashboard', [CrmDashboardController::class, 'index']);
 
         // Automation Sales Force
+        Route::get('/quotation', [QuotationController::class, 'index']);
         Route::post('/quotation', [QuotationController::class, 'store']);
 
         // Master Data
@@ -40,7 +41,10 @@ Route::prefix('platform/crm')
         Route::post('/customers', [CustomerDatabaseManagementController::class, 'store']);
 
         // Prospect Management
+        Route::get('/leads', [LeadTrackingController::class, 'index']);
         Route::post('/leads', [LeadTrackingController::class, 'store']);
+
+        Route::get('/prospects', [ProspectController::class, 'index']);
         Route::post('/prospects', [ProspectController::class, 'store']);
         Route::put('/prospects/{id}/status', [ProspectController::class, 'updateStatus']);
 

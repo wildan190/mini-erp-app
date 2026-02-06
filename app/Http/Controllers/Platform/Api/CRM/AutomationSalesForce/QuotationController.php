@@ -10,6 +10,16 @@ use App\Services\CRM\QuotationService;
 
 class QuotationController extends Controller
 {
+    public function index(QuotationService $service)
+    {
+        $quotations = $service->index();
+
+        return response()->json([
+            'message' => 'List quotation',
+            'data' => $quotations
+        ]);
+    }
+
     public function store(QuotationRequest $request, QuotationService $service)
     {
         $quotation = $service->create($request->validated());

@@ -8,6 +8,12 @@ use App\Models\Prospect;
 
 class ProspectService
 {
+
+    public function index()
+    {
+        return Prospect::paginate(10);
+    }
+
     public function create(array $data): Prospect
     {
         return Prospect::create($data);

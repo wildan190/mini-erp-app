@@ -10,6 +10,17 @@ use App\Services\CRM\LeadService;
 
 class LeadTrackingController extends Controller
 {
+
+    public function index(LeadService $service)
+    {
+        $leads = $service->index();
+
+        return response()->json([
+            'message' => 'List lead',
+            'data' => $leads
+        ]);
+    }
+
     public function store(LeadTrackingRequest $request, LeadService $service)
     {
         $lead = $service->create($request->validated());
