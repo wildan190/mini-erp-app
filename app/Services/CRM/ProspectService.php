@@ -2,27 +2,78 @@
 
 namespace App\Services\CRM;
 
-
 use App\Models\Prospect;
-
+use App\Models\Customer;
+use Illuminate\Support\Facades\DB;
 
 class ProspectService
 {
-
     public function index()
     {
-        return Prospect::paginate(10);
+        return Prospect::with('customer')->latest()->paginate(10);
+    }
+
+    public function show($id): Prospect
+    {
+        return Prospect::with(['customer', 'pipelines'])->where('uuid', $id)->firstOrFail();
     }
 
     public function create(array $data): Prospect
     {
-        return Prospect::create($data);
+        return DB::transaction(function () use ($data) {
+            if (isset($data['customer_id'])) {
+                $data['customer_id'] = Customer::where('uuid', $data['customer_id'])->value('id');
+            }
+
+            $prospect = Prospect::create($data);
+
+            // Log to pipeline
+            $prospect->pipelines()->create([
+                'stage' => $data['status'] ?? 'new'
+            ]);
+
+            return $prospect;
+        });
     }
 
+    public function update($id, array $data): Prospect
+    {
+        return DB::transaction(function () use ($id, $data) {
+            $prospect = Prospect::where('uuid', $id)->firstOrFail();
+            $oldStatus = $prospect->status;
+
+            if (isset($data['customer_id'])) {
+                $data['customer_id'] = Customer::where('uuid', $data['customer_id'])->value('id');
+            }
+
+            $prospect->update($data);
+
+            if (isset($data['status']) && $data['status'] !== $oldStatus) {
+                $prospect->pipelines()->create([
+                    'stage' => $data['status']
+                ]);
+            }
+
+            return $prospect;
+        });
+    }
+
+    public function delete($id): bool
+    {
+        return Prospect::where('uuid', $id)->firstOrFail()->delete();
+    }
 
     public function updateStatus(Prospect $prospect, string $status): Prospect
     {
-        $prospect->update(['status' => $status]);
-        return $prospect;
+        return DB::transaction(function () use ($prospect, $status) {
+            $prospect->update(['status' => $status]);
+
+            // Log transition to pipeline
+            $prospect->pipelines()->create([
+                'stage' => $status
+            ]);
+
+            return $prospect;
+        });
     }
 }

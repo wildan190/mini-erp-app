@@ -18,7 +18,7 @@ class CrmDashboardController extends Controller
                 'total_prospects' => Prospect::count(),
                 'active_pipelines' => SalesPipeline::count(),
                 'total_quotation' => Quotation::count(),
-                'quotation_value' => Quotation::sum('amount'),
+                'quotation_value' => Quotation::sum('total_amount'),
                 'prospect_by_status' => Prospect::selectRaw('status, COUNT(*) as total')
                     ->groupBy('status')
                     ->get(),
