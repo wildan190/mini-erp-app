@@ -62,8 +62,8 @@ Route::prefix('platform/crm')
         Route::put('/prospects/{uuid}/status', [ProspectController::class, 'updateStatus']);
 
         Route::get('/sales-pipeline', [SalesPipeLineController::class, 'index']);
-        Route::get('/sales-pipeline/{id}', [SalesPipeLineController::class, 'show']);
+        Route::get('/sales-pipeline/{uuid}', [SalesPipeLineController::class, 'show']);
         Route::post('/sales-pipeline', [SalesPipeLineController::class, 'store']);
-        Route::delete('/sales-pipeline/{id}', [SalesPipeLineController::class, 'destroy']);
+        Route::delete('/sales-pipeline/{uuid}', [SalesPipeLineController::class, 'destroy']);
     });
 

@@ -13,16 +13,22 @@ class SalesPipelineService
 
     public function show($id): SalesPipeline
     {
-        return SalesPipeline::with('prospect.customer')->findOrFail($id);
+        return SalesPipeline::with('prospect.customer')->where('uuid', $id)->firstOrFail();
     }
 
     public function create(array $data): SalesPipeline
     {
+        if (isset($data['prospect_id'])) {
+            $data['prospect_id'] = \App\Models\Prospect::where('uuid', $data['prospect_id'])->value('id');
+        }
+
+        $data['user_id'] = auth()->id();
+
         return SalesPipeline::create($data);
     }
 
     public function delete($id): bool
     {
-        return SalesPipeline::findOrFail($id)->delete();
+        return SalesPipeline::where('uuid', $id)->firstOrFail()->delete();
     }
 }

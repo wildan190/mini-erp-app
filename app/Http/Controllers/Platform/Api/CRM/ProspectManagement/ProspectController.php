@@ -63,7 +63,12 @@ class ProspectController extends Controller
                     properties: [
                         new OA\Property(property: "customer_id", type: "string", description: "UUID or ID of customer"),
                         new OA\Property(property: "title", type: "string", example: "New Project"),
-                        new OA\Property(property: "status", type: "string", example: "negotiation"),
+                        new OA\Property(
+                            property: "status",
+                            type: "string",
+                            enum: ["new", "qualified", "proposal", "negotiation", "closed_won", "closed_lost"],
+                            example: "negotiation"
+                        ),
                         new OA\Property(property: "expected_value", type: "number"),
                         new OA\Property(property: "expected_closing_date", type: "string", format: "date"),
                         new OA\Property(property: "probability", type: "integer"),
@@ -101,7 +106,11 @@ class ProspectController extends Controller
                 schema: new OA\Schema(
                     properties: [
                         new OA\Property(property: "title", type: "string"),
-                        new OA\Property(property: "status", type: "string")
+                        new OA\Property(
+                            property: "status",
+                            type: "string",
+                            enum: ["new", "qualified", "proposal", "negotiation", "closed_won", "closed_lost"]
+                        )
                     ]
                 )
             )
@@ -156,7 +165,12 @@ class ProspectController extends Controller
                 schema: new OA\Schema(
                     required: ["status"],
                     properties: [
-                        new OA\Property(property: "status", type: "string", example: "closed")
+                        new OA\Property(
+                            property: "status",
+                            type: "string",
+                            enum: ["new", "qualified", "proposal", "negotiation", "closed_won", "closed_lost"],
+                            example: "closed_won"
+                        )
                     ]
                 )
             )
