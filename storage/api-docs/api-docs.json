@@ -1,0 +1,895 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Mini ERP CRM API",
+        "description": "API Documentation for CRM Module in Mini ERP App",
+        "contact": {
+            "email": "admin@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8001",
+            "description": "Primary API Server"
+        }
+    ],
+    "paths": {
+        "/api/platform/crm/quotation": {
+            "get": {
+                "tags": [
+                    "Quotations"
+                ],
+                "summary": "List all quotations",
+                "operationId": "bf6fa8f24b57ac392506a1ae47970949",
+                "responses": {
+                    "200": {
+                        "description": "List of quotations"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Quotations"
+                ],
+                "summary": "Create new quotation with items",
+                "operationId": "00da0856fab399ef811bedc838466f4b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "customer_id"
+                                ],
+                                "properties": {
+                                    "customer_id": {
+                                        "description": "UUID or ID of customer",
+                                        "type": "string"
+                                    },
+                                    "valid_until": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-12-31"
+                                    },
+                                    "discount_amount": {
+                                        "type": "number"
+                                    },
+                                    "terms": {
+                                        "type": "string"
+                                    },
+                                    "items[0][description]": {
+                                        "type": "string",
+                                        "example": "Consultation"
+                                    },
+                                    "items[0][quantity]": {
+                                        "type": "number",
+                                        "example": 1
+                                    },
+                                    "items[0][unit_price]": {
+                                        "type": "number",
+                                        "example": 1000000
+                                    },
+                                    "items[0][tax_rate]": {
+                                        "type": "number",
+                                        "example": 11
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Quotation created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/crm/quotation/{uuid}": {
+            "get": {
+                "tags": [
+                    "Quotations"
+                ],
+                "summary": "Get quotation detail",
+                "operationId": "0c72a6b3e62e369a9960912066dcc55b",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Quotation detail"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Quotations"
+                ],
+                "summary": "Update quotation",
+                "operationId": "e944654425d9878587b964ed0cd73a3a",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "draft",
+                                            "sent",
+                                            "accepted",
+                                            "declined",
+                                            "expired"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Quotation updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Quotations"
+                ],
+                "summary": "Delete quotation",
+                "operationId": "1192f9f329020e25d719d23c8190e282",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Quotation deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/crm/customers": {
+            "get": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "List all customers",
+                "operationId": "ab93c436a3c47b271d51dabc2f73c914",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Create new customer",
+                "operationId": "74dd2629057b00cbe797b26f1accff5f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "customer_type",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Acme Corp"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "contact@acme.com"
+                                    },
+                                    "company_name": {
+                                        "type": "string",
+                                        "example": "Acme Corporation Ltd."
+                                    },
+                                    "customer_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "corporate",
+                                            "individual"
+                                        ]
+                                    },
+                                    "tax_id": {
+                                        "type": "string",
+                                        "example": "12.345.678.9-012.000"
+                                    },
+                                    "industry": {
+                                        "type": "string"
+                                    },
+                                    "website": {
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive",
+                                            "blocked"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Customer created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/crm/customers/{uuid}": {
+            "get": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Get customer detail",
+                "operationId": "92ffe217439df41ff2b86de13b2663a6",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Customer not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Update existing customer",
+                "operationId": "cff19d2c26c520217c4f5f2e074d234e",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive",
+                                            "blocked"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Customer updated"
+                    },
+                    "404": {
+                        "description": "Customer not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Delete customer",
+                "operationId": "6d4fd47c85fa517f777ad7386c8a4dbd",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Customer deleted"
+                    },
+                    "404": {
+                        "description": "Customer not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/crm/leads": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "List all leads",
+                "operationId": "e9e204f909f7e7fa3606d8225ce7d4de",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Create new lead",
+                "operationId": "4192419d3d897d7f4e966df42706964b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "lead_name",
+                                    "source"
+                                ],
+                                "properties": {
+                                    "lead_name": {
+                                        "type": "string",
+                                        "example": "Alice Smith"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "alice@example.com"
+                                    },
+                                    "phone": {
+                                        "type": "string"
+                                    },
+                                    "company": {
+                                        "type": "string"
+                                    },
+                                    "source": {
+                                        "type": "string",
+                                        "example": "Website"
+                                    },
+                                    "notes": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Lead created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/crm/leads/{uuid}": {
+            "get": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Get lead detail",
+                "operationId": "83b26e6cd9cb502d0bfd831b08be5066",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lead detail"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Update existing lead",
+                "operationId": "45c80ad45e67fc5e9ea1de1e605e5ea6",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "lead_name": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lead updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Delete lead",
+                "operationId": "b2d2b044d889f6ae13fb3a98764983b9",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lead deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/crm/leads/{uuid}/convert": {
+            "post": {
+                "tags": [
+                    "Leads"
+                ],
+                "summary": "Convert lead to prospect",
+                "operationId": "5e3079a69365c77278c47fca1ac81e1a",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lead converted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/crm/prospects": {
+            "get": {
+                "tags": [
+                    "Prospects"
+                ],
+                "summary": "List all prospects",
+                "operationId": "e06d246d936b03ff30e214a6ebf905fb",
+                "responses": {
+                    "200": {
+                        "description": "List of prospects"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Prospects"
+                ],
+                "summary": "Create new prospect",
+                "operationId": "07004a201f8df21b652e71c75c09af95",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "customer_id",
+                                    "title",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "customer_id": {
+                                        "description": "UUID or ID of customer",
+                                        "type": "string"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "New Project"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "negotiation"
+                                    },
+                                    "expected_value": {
+                                        "type": "number"
+                                    },
+                                    "expected_closing_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "probability": {
+                                        "type": "integer"
+                                    },
+                                    "notes": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Prospect created"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/crm/prospects/{uuid}": {
+            "get": {
+                "tags": [
+                    "Prospects"
+                ],
+                "summary": "Get prospect detail",
+                "operationId": "49f35bb4193acbf8c4fca7d53884d5cd",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Prospect detail"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Prospects"
+                ],
+                "summary": "Update prospect",
+                "operationId": "d948d6159e5606835dc8da371f97082c",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Prospect updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Prospects"
+                ],
+                "summary": "Delete prospect",
+                "operationId": "c54d728f04988b08735425cc471f6533",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Prospect deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/crm/prospects/{uuid}/status": {
+            "put": {
+                "tags": [
+                    "Prospects"
+                ],
+                "summary": "Update prospect status and log to pipeline",
+                "operationId": "d55d47acf0f334b71d96105f567f968a",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "closed"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Use a token from Sanctum auth",
+                "name": "Token Based",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Quotations",
+            "description": "API Endpoints for Quotation Management"
+        },
+        {
+            "name": "Customers",
+            "description": "API Endpoints for Customer Management"
+        },
+        {
+            "name": "Leads",
+            "description": "API Endpoints for Lead Management"
+        },
+        {
+            "name": "Prospects",
+            "description": "API Endpoints for Prospect Management"
+        }
+    ]
+}

@@ -3,10 +3,30 @@
 namespace App\Models;
 
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-
 
 class Lead extends Model
 {
-    protected $fillable = ['lead_name', 'source'];
+    use HasUuids;
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    public function uniqueIds(): array
+    {
+        return ['uuid'];
+    }
+    protected $fillable = [
+        'uuid',
+        'lead_name',
+        'email',
+        'phone',
+        'company',
+        'source',
+        'status',
+        'notes'
+    ];
 }

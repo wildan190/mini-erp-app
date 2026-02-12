@@ -2,32 +2,49 @@
 
 namespace App\Http\Controllers\Platform\Api\CRM\ProspectManagement;
 
-
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\CRM\ProspectManagement\SalesPipeLineRequest;
 use App\Services\CRM\SalesPipelineService;
-
+use Illuminate\Http\Request;
 
 class SalesPipeLineController extends Controller
 {
     public function index(SalesPipelineService $service)
     {
-        $pipelines = $service->index();
-
         return response()->json([
             'message' => 'List sales pipeline',
-            'data' => $pipelines
+            'data' => $service->index()
         ]);
     }
 
-    public function store(SalesPipeLineRequest $request, SalesPipelineService $service)
+    public function show($id, SalesPipelineService $service)
     {
-        $pipeline = $service->create($request->validated());
+        return response()->json([
+            'message' => 'Detail sales pipeline',
+            'data' => $service->show($id)
+        ]);
+    }
 
+    public function store(Request $request, SalesPipelineService $service)
+    {
+        $data = $request->validate([
+            'prospect_id' => 'required|exists:prospects,id',
+            'stage' => 'required|string'
+        ]);
+
+        $pipeline = $service->create($data);
 
         return response()->json([
-            'message' => 'Sales pipeline berhasil dibuat',
+            'message' => 'Sales pipeline berhasil disimpan',
             'data' => $pipeline
         ], 201);
+    }
+
+    public function destroy($id, SalesPipelineService $service)
+    {
+        $service->delete($id);
+
+        return response()->json([
+            'message' => 'Sales pipeline berhasil dihapus'
+        ]);
     }
 }
