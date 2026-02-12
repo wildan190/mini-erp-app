@@ -675,6 +675,14 @@
                                     },
                                     "status": {
                                         "type": "string",
+                                        "enum": [
+                                            "new",
+                                            "qualified",
+                                            "proposal",
+                                            "negotiation",
+                                            "closed_won",
+                                            "closed_lost"
+                                        ],
                                         "example": "negotiation"
                                     },
                                     "expected_value": {
@@ -764,7 +772,15 @@
                                         "type": "string"
                                     },
                                     "status": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "enum": [
+                                            "new",
+                                            "qualified",
+                                            "proposal",
+                                            "negotiation",
+                                            "closed_won",
+                                            "closed_lost"
+                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -841,7 +857,15 @@
                                 "properties": {
                                     "status": {
                                         "type": "string",
-                                        "example": "closed"
+                                        "enum": [
+                                            "new",
+                                            "qualified",
+                                            "proposal",
+                                            "negotiation",
+                                            "closed_won",
+                                            "closed_lost"
+                                        ],
+                                        "example": "closed_won"
                                     }
                                 },
                                 "type": "object"
@@ -852,6 +876,136 @@
                 "responses": {
                     "200": {
                         "description": "Status updated"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/crm/sales-pipeline": {
+            "get": {
+                "tags": [
+                    "Sales Pipeline"
+                ],
+                "summary": "List all pipeline transitions",
+                "operationId": "5194651a2949e72822852585f4172539",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Sales Pipeline"
+                ],
+                "summary": "Log new pipeline transition",
+                "operationId": "cd8df1b1bd69e7532844d305ce960994",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "prospect_id",
+                                    "stage"
+                                ],
+                                "properties": {
+                                    "prospect_id": {
+                                        "description": "UUID of the Prospect",
+                                        "type": "string",
+                                        "example": "0194f4a9-8f0a-7b3b-967a-0a1b2c3d4e5f"
+                                    },
+                                    "stage": {
+                                        "type": "string",
+                                        "enum": [
+                                            "new",
+                                            "qualified",
+                                            "proposal",
+                                            "negotiation",
+                                            "closed_won",
+                                            "closed_lost"
+                                        ],
+                                        "example": "qualified"
+                                    },
+                                    "notes": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pipeline transition logged"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/crm/sales-pipeline/{uuid}": {
+            "get": {
+                "tags": [
+                    "Sales Pipeline"
+                ],
+                "summary": "Get pipeline transition detail",
+                "operationId": "f587dcdb616aff65e5a1d45861da8ad5",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pipeline detail"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Sales Pipeline"
+                ],
+                "summary": "Delete pipeline log entry",
+                "operationId": "7bdab09758997269cf6492f372d62842",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Entry deleted"
                     }
                 },
                 "security": [
@@ -890,6 +1044,10 @@
         {
             "name": "Prospects",
             "description": "API Endpoints for Prospect Management"
+        },
+        {
+            "name": "Sales Pipeline",
+            "description": "API Endpoints for Sales Pipeline tracking"
         }
     ]
 }
