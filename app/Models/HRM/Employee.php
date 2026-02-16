@@ -59,4 +59,14 @@ class Employee extends Model
     {
         return $this->hasMany(EmploymentHistory::class);
     }
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

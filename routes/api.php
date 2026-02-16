@@ -95,5 +95,26 @@ Route::prefix('platform/hrm')
         Route::get('/employees/{employeeId}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'index']);
         Route::post('/employees/{employeeId}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'store']);
         Route::delete('/documents/{id}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'destroy']);
+
+        // Shifts
+        Route::get('/shifts', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'index']);
+        Route::post('/shifts', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'store']);
+        Route::get('/shifts/{id}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'show']);
+        Route::put('/shifts/{id}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'update']);
+        Route::delete('/shifts/{id}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'destroy']);
+
+        // Attendance
+        Route::get('/attendances', [\App\Http\Controllers\Platform\Api\HRM\AttendanceController::class, 'index']);
+        Route::post('/attendances/clock-in', [\App\Http\Controllers\Platform\Api\HRM\AttendanceController::class, 'clockIn']);
+        Route::post('/attendances/clock-out', [\App\Http\Controllers\Platform\Api\HRM\AttendanceController::class, 'clockOut']);
+
+        // Leave Management
+        Route::get('/leave-types', [\App\Http\Controllers\Platform\Api\HRM\LeaveTypeController::class, 'index']);
+        Route::post('/leave-types', [\App\Http\Controllers\Platform\Api\HRM\LeaveTypeController::class, 'store']); // Admin only ideally
+    
+        Route::get('/leave-requests', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'index']);
+        Route::post('/leave-requests', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'store']);
+        Route::put('/leave-requests/{id}/status', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'updateStatus']); // Manager only ideally
+        Route::get('/leave-balances/my-balance', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'myBalance']);
     });
 
