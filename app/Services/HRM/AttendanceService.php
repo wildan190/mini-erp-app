@@ -4,13 +4,22 @@ namespace App\Services\HRM;
 
 use App\Models\HRM\Attendance;
 use App\Models\HRM\Employee;
+use App\Models\HRM\OfficeLocation;
 use App\Models\HRM\Shift;
+use App\Jobs\HRM\ProcessAttendanceVerification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class AttendanceService
 {
+    protected FaceRecognitionService $faceRecognitionService;
+
+    public function __construct(FaceRecognitionService $faceRecognitionService)
+    {
+        $this->faceRecognitionService = $faceRecognitionService;
+    }
     /**
      * Get attendances with filtering and pagination.
      *
@@ -37,7 +46,7 @@ class AttendanceService
     }
 
     /**
-     * Clock in for an employee.
+     * Clock in for an employee - Creates attendance immediately and verifies asynchronously.
      *
      * @param Employee $employee
      * @param array $data
@@ -57,10 +66,23 @@ class AttendanceService
             throw new \Exception('Employee already clocked in for today.');
         }
 
+        // Store temporary face image for async verification
+        $tempFaceImagePath = null;
+        if (isset($data['face_image']) && $data['face_image'] instanceof UploadedFile) {
+            $tempFaceImagePath = $data['face_image']->store('faces/temp', 'public');
+        }
+
+        // Get location data
+        $officeLocationId = $data['office_location_id'] ?? null;
+        $latitude = $data['latitude'] ?? null;
+        $longitude = $data['longitude'] ?? null;
+
+        // Determine initial status
         $shift = $employee->shift;
         $status = $this->determineStatus($shift, Carbon::now());
 
-        return Attendance::create([
+        // Create attendance record immediately with pending verification status
+        $attendance = Attendance::create([
             'employee_id' => $employee->id,
             'shift_id' => $shift?->id,
             'date' => $today,
@@ -69,11 +91,31 @@ class AttendanceService
             'location_lat' => $data['location_lat'] ?? null,
             'location_long' => $data['location_long'] ?? null,
             'notes' => $data['notes'] ?? null,
+            // Set as pending - will be updated by job
+            'face_verification_status' => $tempFaceImagePath ? 'pending' : 'skipped',
+            'location_verification_status' => ($officeLocationId && $latitude && $longitude) ? 'pending' : 'skipped',
+            'office_location_id' => $officeLocationId,
+            'check_in_latitude' => $latitude,
+            'check_in_longitude' => $longitude,
         ]);
+
+        // Dispatch async verification job if needed
+        if ($tempFaceImagePath || ($officeLocationId && $latitude && $longitude)) {
+            ProcessAttendanceVerification::dispatch(
+                $attendance,
+                $tempFaceImagePath,
+                $officeLocationId,
+                $latitude,
+                $longitude,
+                'clock_in'
+            );
+        }
+
+        return $attendance;
     }
 
     /**
-     * Clock out for an employee.
+     * Clock out for an employee - Updates attendance and verifies asynchronously.
      *
      * @param Employee $employee
      * @param array $data
@@ -96,10 +138,35 @@ class AttendanceService
             throw new \Exception('Employee already clocked out for today.');
         }
 
+        // Store temporary face image for async verification (optional for clock-out)
+        $tempFaceImagePath = null;
+        if (isset($data['face_image']) && $data['face_image'] instanceof UploadedFile) {
+            $tempFaceImagePath = $data['face_image']->store('faces/temp', 'public');
+        }
+
+        // Get location data
+        $latitude = $data['latitude'] ?? null;
+        $longitude = $data['longitude'] ?? null;
+
+        // Update attendance record immediately
         $attendance->update([
             'clock_out' => Carbon::now(),
+            'check_out_latitude' => $latitude,
+            'check_out_longitude' => $longitude,
             'notes' => $attendance->notes . ($data['notes'] ? "\nClock Out Note: " . $data['notes'] : ''),
         ]);
+
+        // Dispatch async verification job for clock-out if needed
+        if ($tempFaceImagePath || ($attendance->office_location_id && $latitude && $longitude)) {
+            ProcessAttendanceVerification::dispatch(
+                $attendance,
+                $tempFaceImagePath,
+                $attendance->office_location_id,
+                $latitude,
+                $longitude,
+                'clock_out'
+            );
+        }
 
         return $attendance;
     }

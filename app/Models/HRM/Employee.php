@@ -15,19 +15,32 @@ class Employee extends Model
         'user_id',
         'department_id',
         'designation_id',
+        'shift_id',
         'emp_code',
+        'first_name',
+        'last_name',
+        'phone',
+        'gender',
+        'marital_status',
         'joining_date',
         'status',
+        'photo',
+        // Extended fields
         'nik',
         'place_of_birth',
         'date_of_birth',
-        'gender',
-        'marital_status',
         'religion',
         'address',
-        'phone',
         'emergency_contact_name',
         'emergency_contact_phone',
+        // Payroll
+        'basic_salary',
+        'bank_name',
+        'bank_account_number',
+        // Face Recognition
+        'face_encoding',
+        'face_image_path',
+        'requires_face_verification',
     ];
 
     protected $casts = [
@@ -68,5 +81,10 @@ class Employee extends Model
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    public function payrolls()
+    {
+        return $this->hasMany(Payroll::class);
     }
 }

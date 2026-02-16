@@ -14,7 +14,11 @@ class ClockOutRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'notes' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+            // Face & Location Verification
+            'face_image' => 'nullable|image|max:5120', // 5MB max
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ];
     }
 }

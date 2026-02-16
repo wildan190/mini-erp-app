@@ -20,6 +20,15 @@ class Attendance extends Model
         'location_lat',
         'location_long',
         'notes',
+        // Face & Location Verification
+        'face_image_path',
+        'face_verification_status',
+        'office_location_id',
+        'check_in_latitude',
+        'check_in_longitude',
+        'check_out_latitude',
+        'check_out_longitude',
+        'location_verification_status',
     ];
 
     protected $casts = [
@@ -36,5 +45,10 @@ class Attendance extends Model
     public function shift()
     {
         return $this->belongsTo(Shift::class);
+    }
+
+    public function officeLocation()
+    {
+        return $this->belongsTo(OfficeLocation::class);
     }
 }

@@ -116,5 +116,30 @@ Route::prefix('platform/hrm')
         Route::post('/leave-requests', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'store']);
         Route::put('/leave-requests/{id}/status', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'updateStatus']); // Manager only ideally
         Route::get('/leave-balances/my-balance', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'myBalance']);
-    });
 
+        // Payroll
+        Route::get('/salary-components', [\App\Http\Controllers\Platform\Api\HRM\SalaryComponentController::class, 'index']);
+        Route::post('/salary-components', [\App\Http\Controllers\Platform\Api\HRM\SalaryComponentController::class, 'store']);
+
+        Route::get('/payroll-periods', [\App\Http\Controllers\Platform\Api\HRM\PayrollPeriodController::class, 'index']);
+        Route::post('/payroll-periods', [\App\Http\Controllers\Platform\Api\HRM\PayrollPeriodController::class, 'store']);
+        Route::post('/payroll-periods/generate', [\App\Http\Controllers\Platform\Api\HRM\PayrollPeriodController::class, 'generate']);
+
+        // Reimbursement
+        Route::get('/reimbursements/my-claims', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'myClaims']);
+        Route::get('/reimbursements', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'index']);
+        Route::post('/reimbursements', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'store']);
+        // Resignation
+        Route::get('/resignations', [\App\Http\Controllers\Platform\Api\HRM\ResignationController::class, 'index']);
+        Route::post('/resignations', [\App\Http\Controllers\Platform\Api\HRM\ResignationController::class, 'store']);
+        // Reports
+        Route::get('/reports/turnover', [\App\Http\Controllers\Platform\Api\HRM\ReportController::class, 'turnover']);
+        Route::get('/reports/labor-cost', [\App\Http\Controllers\Platform\Api\HRM\ReportController::class, 'laborCost']);
+
+        // Office Locations
+        Route::resource('office-locations', \App\Http\Controllers\Platform\Api\HRM\OfficeLocationController::class)->except(['create', 'edit']);
+
+        // Employee Face Recognition
+        Route::post('/employees/{id}/enroll-face', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'enrollFace']);
+        Route::delete('/employees/{id}/face-data', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'removeFace']);
+    });
