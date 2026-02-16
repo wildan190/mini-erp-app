@@ -2,8 +2,8 @@
 
 namespace App\Services\CRM;
 
-use App\Models\Quotation;
-use App\Models\Customer;
+use App\Models\CRM\Quotation;
+use App\Models\CRM\Customer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 

@@ -2,7 +2,7 @@
 
 namespace App\Services\CRM;
 
-use App\Models\Customer;
+use App\Models\CRM\Customer;
 
 class CustomerService
 {

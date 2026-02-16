@@ -2,9 +2,9 @@
 
 namespace App\Services\CRM;
 
-use App\Models\Lead;
-use App\Models\Prospect;
-use App\Models\Customer;
+use App\Models\CRM\Lead;
+use App\Models\CRM\Prospect;
+use App\Models\CRM\Customer;
 use Illuminate\Support\Facades\DB;
 
 class LeadService

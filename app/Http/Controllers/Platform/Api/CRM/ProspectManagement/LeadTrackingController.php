@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Platform\Api\CRM\ProspectManagement;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Platform\CRM\ProspectManagement\LeadTrackingRequest;
-use App\Models\Lead;
+use App\Models\CRM\Lead;
 use App\Services\CRM\LeadService;
 use OpenApi\Attributes as OA;
 

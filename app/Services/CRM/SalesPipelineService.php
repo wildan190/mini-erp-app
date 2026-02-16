@@ -2,7 +2,7 @@
 
 namespace App\Services\CRM;
 
-use App\Models\SalesPipeline;
+use App\Models\CRM\SalesPipeline;
 
 class SalesPipelineService
 {
@@ -19,7 +19,7 @@ class SalesPipelineService
     public function create(array $data): SalesPipeline
     {
         if (isset($data['prospect_id'])) {
-            $data['prospect_id'] = \App\Models\Prospect::where('uuid', $data['prospect_id'])->value('id');
+            $data['prospect_id'] = \App\Models\CRM\Prospect::where('uuid', $data['prospect_id'])->value('id');
         }
 
         $data['user_id'] = auth()->id();

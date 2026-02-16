@@ -67,3 +67,33 @@ Route::prefix('platform/crm')
         Route::delete('/sales-pipeline/{uuid}', [SalesPipeLineController::class, 'destroy']);
     });
 
+Route::prefix('platform/hrm')
+    ->middleware('auth:sanctum')
+    ->group(function () {
+        // Departments
+        Route::get('/departments', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'index']);
+        Route::get('/departments/{id}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'show']);
+        Route::post('/departments', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'store']);
+        Route::put('/departments/{id}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'update']);
+        Route::delete('/departments/{id}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'destroy']);
+
+        // Designations
+        Route::get('/designations', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'index']);
+        Route::get('/designations/{id}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'show']);
+        Route::post('/designations', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'store']);
+        Route::put('/designations/{id}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'update']);
+        Route::delete('/designations/{id}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'destroy']);
+
+        // Employees
+        Route::get('/employees', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'index']);
+        Route::get('/employees/{id}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'show']);
+        Route::post('/employees', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'store']);
+        Route::put('/employees/{id}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'update']);
+        Route::delete('/employees/{id}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'destroy']);
+
+        // Employee Documents
+        Route::get('/employees/{employeeId}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'index']);
+        Route::post('/employees/{employeeId}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'store']);
+        Route::delete('/documents/{id}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'destroy']);
+    });
+

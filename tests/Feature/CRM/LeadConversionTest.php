@@ -3,7 +3,7 @@
 namespace Tests\Feature\CRM;
 
 use App\Models\User;
-use App\Models\Lead;
+use App\Models\CRM\Lead;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;

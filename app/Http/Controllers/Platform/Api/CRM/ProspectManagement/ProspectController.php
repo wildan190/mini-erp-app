@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Platform\Api\CRM\ProspectManagement;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Platform\CRM\ProspectManagement\ProspectRequest;
 use App\Http\Requests\Platform\CRM\ProspectManagement\ProspectStatusRequest;
-use App\Models\Prospect;
+use App\Models\CRM\Prospect;
 use App\Services\CRM\ProspectService;
 use OpenApi\Attributes as OA;
 
