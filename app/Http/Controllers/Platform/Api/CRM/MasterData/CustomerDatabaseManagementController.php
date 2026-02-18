@@ -61,14 +61,27 @@ class CustomerDatabaseManagementController extends Controller
                     required: ["name", "email", "customer_type", "status"],
                     properties: [
                         new OA\Property(property: "name", type: "string", example: "Acme Corp"),
-                        new OA\Property(property: "email", type: "string", example: "contact@acme.com"),
+                        new OA\Property(property: "email", type: "string", format: "email", example: "contact@acme.com"),
                         new OA\Property(property: "company_name", type: "string", example: "Acme Corporation Ltd."),
                         new OA\Property(property: "customer_type", type: "string", enum: ["corporate", "individual"]),
                         new OA\Property(property: "tax_id", type: "string", example: "12.345.678.9-012.000"),
                         new OA\Property(property: "industry", type: "string"),
-                        new OA\Property(property: "website", type: "string"),
+                        new OA\Property(property: "website", type: "string", format: "url"),
                         new OA\Property(property: "phone", type: "string"),
-                        new OA\Property(property: "status", type: "string", enum: ["active", "inactive", "blocked"])
+                        new OA\Property(property: "alt_phone", type: "string"),
+                        new OA\Property(property: "department", type: "string"),
+                        new OA\Property(property: "billing_address", type: "string"),
+                        new OA\Property(property: "shipping_address", type: "string"),
+                        new OA\Property(property: "city", type: "string"),
+                        new OA\Property(property: "province", type: "string"),
+                        new OA\Property(property: "postal_code", type: "string"),
+                        new OA\Property(property: "country", type: "string"),
+                        new OA\Property(property: "credit_limit", type: "number"),
+                        new OA\Property(property: "payment_terms", type: "string"),
+                        new OA\Property(property: "currency", type: "string", maxLength: 3),
+                        new OA\Property(property: "segment", type: "string"),
+                        new OA\Property(property: "status", type: "string", enum: ["active", "inactive", "blocked"]),
+                        new OA\Property(property: "notes", type: "string")
                     ]
                 )
             )
@@ -103,8 +116,27 @@ class CustomerDatabaseManagementController extends Controller
                 schema: new OA\Schema(
                     properties: [
                         new OA\Property(property: "name", type: "string"),
-                        new OA\Property(property: "email", type: "string"),
-                        new OA\Property(property: "status", type: "string", enum: ["active", "inactive", "blocked"])
+                        new OA\Property(property: "email", type: "string", format: "email"),
+                        new OA\Property(property: "company_name", type: "string"),
+                        new OA\Property(property: "customer_type", type: "string", enum: ["corporate", "individual"]),
+                        new OA\Property(property: "tax_id", type: "string"),
+                        new OA\Property(property: "industry", type: "string"),
+                        new OA\Property(property: "website", type: "string", format: "url"),
+                        new OA\Property(property: "phone", type: "string"),
+                        new OA\Property(property: "alt_phone", type: "string"),
+                        new OA\Property(property: "department", type: "string"),
+                        new OA\Property(property: "billing_address", type: "string"),
+                        new OA\Property(property: "shipping_address", type: "string"),
+                        new OA\Property(property: "city", type: "string"),
+                        new OA\Property(property: "province", type: "string"),
+                        new OA\Property(property: "postal_code", type: "string"),
+                        new OA\Property(property: "country", type: "string"),
+                        new OA\Property(property: "credit_limit", type: "number"),
+                        new OA\Property(property: "payment_terms", type: "string"),
+                        new OA\Property(property: "currency", type: "string", maxLength: 3),
+                        new OA\Property(property: "segment", type: "string"),
+                        new OA\Property(property: "status", type: "string", enum: ["active", "inactive", "blocked"]),
+                        new OA\Property(property: "notes", type: "string")
                     ]
                 )
             )

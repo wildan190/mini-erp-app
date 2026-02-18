@@ -1,18 +1,28 @@
 <?php
 
 return [
-    'default' => 'default',
+    'default' => 'crm',
     'documentations' => [
-        'default' => [
+        'crm' => [
             'api' => [
-                'title' => 'L5 Swagger UI',
+                'title' => 'Mini ERP - CRM API Documentation',
             ],
 
             'routes' => [
                 /*
                  * Route for accessing api documentation interface
                  */
-                'api' => 'api/documentation',
+                'api' => 'api/documentation/crm',
+
+                /*
+                 * Route for accessing parsed swagger annotations.
+                 */
+                'docs' => 'docs/crm',
+
+                /*
+                 * Route for Oauth2 authentication callback.
+                 */
+                'oauth2_callback' => 'api/oauth2-callback/crm',
             ],
             'paths' => [
                 /*
@@ -21,19 +31,19 @@ return [
                 'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
 
                 /*
-                * Edit to set path where swagger ui assets should be stored
-                */
+                 * Edit to set path where swagger ui assets should be stored
+                 */
                 'swagger_ui_assets_path' => env('L5_SWAGGER_UI_ASSETS_PATH', 'vendor/swagger-api/swagger-ui/dist/'),
 
                 /*
                  * File name of the generated json documentation file
                  */
-                'docs_json' => 'api-docs.json',
+                'docs_json' => 'crm-api-docs.json',
 
                 /*
                  * File name of the generated YAML documentation file
                  */
-                'docs_yaml' => 'api-docs.yaml',
+                'docs_yaml' => 'crm-api-docs.yaml',
 
                 /*
                  * Set this to `json` or `yaml` to determine which documentation file to use in UI
@@ -44,7 +54,63 @@ return [
                  * Absolute paths to directory containing the swagger annotations are stored.
                  */
                 'annotations' => [
-                    base_path('app'),
+                    base_path('app/Http/Controllers/Controller.php'),
+                    base_path('app/Http/Controllers/Platform/Api/CRM'),
+                ],
+            ],
+        ],
+        'hrm' => [
+            'api' => [
+                'title' => 'Mini ERP - HRM API Documentation',
+            ],
+
+            'routes' => [
+                /*
+                 * Route for accessing api documentation interface
+                 */
+                'api' => 'api/documentation/hrm',
+
+                /*
+                 * Route for accessing parsed swagger annotations.
+                 */
+                'docs' => 'docs/hrm',
+
+                /*
+                 * Route for Oauth2 authentication callback.
+                 */
+                'oauth2_callback' => 'api/oauth2-callback/hrm',
+            ],
+            'paths' => [
+                /*
+                 * Edit to include full URL in ui for assets
+                 */
+                'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
+
+                /*
+                 * Edit to set path where swagger ui assets should be stored
+                 */
+                'swagger_ui_assets_path' => env('L5_SWAGGER_UI_ASSETS_PATH', 'vendor/swagger-api/swagger-ui/dist/'),
+
+                /*
+                 * File name of the generated json documentation file
+                 */
+                'docs_json' => 'hrm-api-docs.json',
+
+                /*
+                 * File name of the generated YAML documentation file
+                 */
+                'docs_yaml' => 'hrm-api-docs.yaml',
+
+                /*
+                 * Set this to `json` or `yaml` to determine which documentation file to use in UI
+                 */
+                'format_to_use_for_docs' => env('L5_FORMAT_TO_USE_FOR_DOCS', 'json'),
+
+                /*
+                 * Absolute paths to directory containing the swagger annotations are stored.
+                 */
+                'annotations' => [
+                    base_path('app/Http/Controllers/Platform/Api/HRM'),
                 ],
             ],
         ],
@@ -108,16 +174,16 @@ return [
              * @link https://zircote.github.io/swagger-php/reference/processors.html
              */
             'default_processors_configuration' => [
-            /** Example */
-            /**
-             * 'operationId.hash' => true,
-             * 'pathFilter' => [
-             * 'tags' => [
-             * '/pets/',
-             * '/store/',
-             * ],
-             * ],.
-             */
+                /** Example */
+                /**
+                 * 'operationId.hash' => true,
+                 * 'pathFilter' => [
+                 * 'tags' => [
+                 * '/pets/',
+                 * '/store/',
+                 * ],
+                 * ],.
+                 */
             ],
 
             /**
@@ -167,7 +233,7 @@ return [
 
         /*
          * API security definitions. Will be generated into documentation file.
-        */
+         */
         'securityDefinitions' => [
             'securitySchemes' => [
                 /*

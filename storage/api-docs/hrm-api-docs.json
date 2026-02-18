@@ -1,0 +1,2688 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Mini ERP HRM API",
+        "description": "Human Resources Management API Documentation for Mini ERP App - Includes Employee Management, Attendance, Leave, Payroll, Reimbursements, Resignations, Office Locations, and Analytics & Reporting",
+        "contact": {
+            "email": "admin@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8001",
+            "description": "Primary API Server"
+        }
+    ],
+    "paths": {
+        "/api/platform/hrm/attendances": {
+            "get": {
+                "tags": [
+                    "HRM Attendance"
+                ],
+                "summary": "List all attendances",
+                "operationId": "11376a8a55a4ac263cefab536d75daf6",
+                "parameters": [
+                    {
+                        "name": "employee_uuid",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "department_uuid",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/attendances/clock-in": {
+            "post": {
+                "tags": [
+                    "HRM Attendance"
+                ],
+                "summary": "Clock In with face recognition and geofencing",
+                "operationId": "c3f4d12bded59dbfd2df841bff7696c5",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "face_image": {
+                                        "description": "Face photo for verification (if required)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "office_location_uuid": {
+                                        "description": "Office location UUID for geofencing",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "latitude": {
+                                        "description": "Current GPS latitude",
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "longitude": {
+                                        "description": "Current GPS longitude",
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "location_lat": {
+                                        "description": "Legacy location latitude",
+                                        "type": "string"
+                                    },
+                                    "location_long": {
+                                        "description": "Legacy location longitude",
+                                        "type": "string"
+                                    },
+                                    "notes": {
+                                        "description": "Optional notes",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Clocked in successfully - verification pending"
+                    },
+                    "400": {
+                        "description": "Already clocked in or validation error"
+                    },
+                    "404": {
+                        "description": "Employee record not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/attendances/clock-out": {
+            "post": {
+                "tags": [
+                    "HRM Attendance"
+                ],
+                "summary": "Clock Out with optional face and location verification",
+                "operationId": "3ba5ba3d195d22af6a291f60b796d1b7",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "face_image": {
+                                        "description": "Face photo for verification (optional)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "latitude": {
+                                        "description": "Current GPS latitude",
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "longitude": {
+                                        "description": "Current GPS longitude",
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "notes": {
+                                        "description": "Optional notes",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Clocked out successfully"
+                    },
+                    "400": {
+                        "description": "Not clocked in or already clocked out"
+                    },
+                    "404": {
+                        "description": "Employee record not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/departments": {
+            "get": {
+                "tags": [
+                    "HRM Departments"
+                ],
+                "summary": "List all departments",
+                "operationId": "2205133ca2bf3001701e509e9ecd29bf",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Departments"
+                ],
+                "summary": "Create a new department",
+                "operationId": "9659f7a7ecc5ed47ea92db52efa968e9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Department name",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Optional description",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Department created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/departments/{uuid}": {
+            "get": {
+                "tags": [
+                    "HRM Departments"
+                ],
+                "summary": "Get department details",
+                "operationId": "752ab393711db20e08bedc7bc3d4b92e",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Department not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "HRM Departments"
+                ],
+                "summary": "Update a department",
+                "operationId": "7b1503a35cfdd3150a934473da031240",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Department name",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Optional description",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Department updated"
+                    },
+                    "404": {
+                        "description": "Department not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "HRM Departments"
+                ],
+                "summary": "Delete a department",
+                "operationId": "f85bb1265cad0f351a6c0b6fee79b5f4",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Department deleted"
+                    },
+                    "404": {
+                        "description": "Department not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/designations": {
+            "get": {
+                "tags": [
+                    "HRM Designations"
+                ],
+                "summary": "List all designations",
+                "operationId": "59b36e47a66a9a1e09f2aa36861b98ac",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Designations"
+                ],
+                "summary": "Create a new designation",
+                "operationId": "86230d9e649e9fdabd6b0dd4756007a9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Designation name",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Optional description",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Designation created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/designations/{uuid}": {
+            "get": {
+                "tags": [
+                    "HRM Designations"
+                ],
+                "summary": "Get designation details",
+                "operationId": "2751824f55aa7c5361089ff6f1ed8f2b",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Designation not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "HRM Designations"
+                ],
+                "summary": "Update a designation",
+                "operationId": "66ac0fad4e9b9fdb31a47f4f7c6dbc55",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Designation name",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Optional description",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Designation updated"
+                    },
+                    "404": {
+                        "description": "Designation not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "HRM Designations"
+                ],
+                "summary": "Delete a designation",
+                "operationId": "79feb69bb24e3bb8a51977c5f10d9fe1",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Designation deleted"
+                    },
+                    "404": {
+                        "description": "Designation not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/employees": {
+            "get": {
+                "tags": [
+                    "HRM Employees"
+                ],
+                "summary": "List all employees",
+                "operationId": "5950c7af0956abe42f9de6539a7f9b83",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "department_uuid",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "designation_uuid",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "inactive",
+                                "terminated",
+                                "resigned"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Employees"
+                ],
+                "summary": "Create a new employee",
+                "operationId": "a25d2c6c2d1b2092d1c175b51e1cfb9d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name"
+                                ],
+                                "properties": {
+                                    "user_uuid": {
+                                        "description": "Existing User UUID (optional)",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "first_name": {
+                                        "description": "First Name",
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "description": "Last Name",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "Email (required if user_uuid is null)",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "description": "Password (required if user_uuid is null)",
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "department_uuid": {
+                                        "description": "Department UUID",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "designation_uuid": {
+                                        "description": "Designation UUID",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "emp_code": {
+                                        "description": "Employee code",
+                                        "type": "string"
+                                    },
+                                    "joining_date": {
+                                        "description": "Joining date",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive",
+                                            "terminated",
+                                            "resigned"
+                                        ]
+                                    },
+                                    "nik": {
+                                        "description": "National ID number",
+                                        "type": "string"
+                                    },
+                                    "place_of_birth": {
+                                        "description": "Place of birth",
+                                        "type": "string"
+                                    },
+                                    "date_of_birth": {
+                                        "description": "Date of birth",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female"
+                                        ]
+                                    },
+                                    "marital_status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "single",
+                                            "married",
+                                            "divorced",
+                                            "widowed"
+                                        ]
+                                    },
+                                    "religion": {
+                                        "description": "Religion",
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "description": "Address",
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "description": "Phone number",
+                                        "type": "string"
+                                    },
+                                    "emergency_contact_name": {
+                                        "description": "Emergency contact name",
+                                        "type": "string"
+                                    },
+                                    "emergency_contact_phone": {
+                                        "description": "Emergency contact phone",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Employee created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/employees/{uuid}": {
+            "get": {
+                "tags": [
+                    "HRM Employees"
+                ],
+                "summary": "Get employee details",
+                "operationId": "2c046500383b7d254a1f3c4400eb4ecd",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Employee not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "HRM Employees"
+                ],
+                "summary": "Update an employee",
+                "operationId": "d5fa8a1036cfae5008d70c6168012377",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "user_uuid": {
+                                        "description": "Existing User UUID",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "first_name": {
+                                        "description": "First Name",
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "description": "Last Name",
+                                        "type": "string"
+                                    },
+                                    "department_uuid": {
+                                        "description": "Department UUID",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "designation_uuid": {
+                                        "description": "Designation UUID",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "emp_code": {
+                                        "description": "Employee code",
+                                        "type": "string"
+                                    },
+                                    "joining_date": {
+                                        "description": "Joining date",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive",
+                                            "terminated",
+                                            "resigned"
+                                        ]
+                                    },
+                                    "nik": {
+                                        "description": "National ID number",
+                                        "type": "string"
+                                    },
+                                    "place_of_birth": {
+                                        "description": "Place of birth",
+                                        "type": "string"
+                                    },
+                                    "date_of_birth": {
+                                        "description": "Date of birth",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female"
+                                        ]
+                                    },
+                                    "marital_status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "single",
+                                            "married",
+                                            "divorced",
+                                            "widowed"
+                                        ]
+                                    },
+                                    "religion": {
+                                        "description": "Religion",
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "description": "Address",
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "description": "Phone number",
+                                        "type": "string"
+                                    },
+                                    "emergency_contact_name": {
+                                        "description": "Emergency contact name",
+                                        "type": "string"
+                                    },
+                                    "emergency_contact_phone": {
+                                        "description": "Emergency contact phone",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Employee updated"
+                    },
+                    "404": {
+                        "description": "Employee not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "HRM Employees"
+                ],
+                "summary": "Delete an employee",
+                "operationId": "5d83e37c5f2250155cdec8e89c8a3ba2",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Employee deleted"
+                    },
+                    "404": {
+                        "description": "Employee not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/employees/{uuid}/enroll-face": {
+            "post": {
+                "tags": [
+                    "HRM Employees"
+                ],
+                "summary": "Enroll employee face for recognition",
+                "operationId": "ad05c5d61ec2814ecf24d132b9dea46d",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "face_image"
+                                ],
+                                "properties": {
+                                    "face_image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Face enrolled successfully"
+                    },
+                    "404": {
+                        "description": "Employee not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/employees/{uuid}/face-data": {
+            "delete": {
+                "tags": [
+                    "HRM Employees"
+                ],
+                "summary": "Remove employee face data",
+                "operationId": "afdd2d7799c63a1fbe0bad771d3cfd26",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Face data removed"
+                    },
+                    "404": {
+                        "description": "Employee not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/employees/{employeeUuid}/documents": {
+            "get": {
+                "tags": [
+                    "HRM Employee Documents"
+                ],
+                "summary": "List all documents for an employee",
+                "operationId": "34017bd841086a9828910dd932461904",
+                "parameters": [
+                    {
+                        "name": "employeeUuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Employee Documents"
+                ],
+                "summary": "Upload a new document for an employee",
+                "operationId": "0b82e53b8fd74b7e4b9f646c3336e438",
+                "parameters": [
+                    {
+                        "name": "employeeUuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "file"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ktp",
+                                            "npwp",
+                                            "contract",
+                                            "certificate",
+                                            "other"
+                                        ]
+                                    },
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "expiry_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Document uploaded"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/documents/{uuid}": {
+            "delete": {
+                "tags": [
+                    "HRM Employee Documents"
+                ],
+                "summary": "Delete a document",
+                "operationId": "86de76045dc274bea53dcffe600c14fe",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Document deleted"
+                    },
+                    "404": {
+                        "description": "Document not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/leave-requests": {
+            "get": {
+                "tags": [
+                    "HRM Leave Requests"
+                ],
+                "summary": "List leave requests",
+                "operationId": "c49c15823760cdb23af2fc30c1b7c53f",
+                "parameters": [
+                    {
+                        "name": "employee_uuid",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "approved",
+                                "rejected"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Leave Requests"
+                ],
+                "summary": "Apply for leave",
+                "operationId": "8d3427781f6807893c0695e211abe3b6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "leave_type_uuid",
+                                    "start_date",
+                                    "end_date",
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "leave_type_uuid": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "reason": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Leave applied successfully"
+                    },
+                    "400": {
+                        "description": "Error (e.g., limit exceeded)"
+                    },
+                    "404": {
+                        "description": "Employee not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/leave-requests/{uuid}/status": {
+            "put": {
+                "tags": [
+                    "HRM Leave Requests"
+                ],
+                "summary": "Approve or Reject leave request",
+                "operationId": "3a25027e16e63ec566750b14fc1efc71",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "approved",
+                                            "rejected"
+                                        ]
+                                    },
+                                    "rejection_reason": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status updated"
+                    },
+                    "400": {
+                        "description": "Error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/leave-balances/my-balance": {
+            "get": {
+                "tags": [
+                    "HRM Leave Requests"
+                ],
+                "summary": "Get my leave balance",
+                "operationId": "1aaefda4ec4cc3c5b5bad2558b379bec",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/leave-types": {
+            "get": {
+                "tags": [
+                    "HRM Leave Types"
+                ],
+                "summary": "List all leave types",
+                "operationId": "70320d57104c40f920d21091ffe2667c",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Leave Types"
+                ],
+                "summary": "Create a new leave type",
+                "operationId": "474157f27060db222c35f7ecd8b1efb0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "days_allowed"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "days_allowed": {
+                                        "type": "integer"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Leave type created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/office-locations": {
+            "get": {
+                "tags": [
+                    "HRM Office Locations"
+                ],
+                "summary": "List office locations",
+                "operationId": "521b5ffddc3886b5de1074fdefae163c",
+                "parameters": [
+                    {
+                        "name": "is_active",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Office Locations"
+                ],
+                "summary": "Create office location",
+                "operationId": "a74730144405316c70220f67e3a75e71",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "address",
+                                    "latitude",
+                                    "longitude"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "radius": {
+                                        "type": "integer"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Office location created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/office-locations/{uuid}": {
+            "get": {
+                "tags": [
+                    "HRM Office Locations"
+                ],
+                "summary": "Get office location details",
+                "operationId": "fe3c0ec4bd7a9facea93dd49bc32b629",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "HRM Office Locations"
+                ],
+                "summary": "Update office location",
+                "operationId": "52d4bac672c8055ece586913b018aec7",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "latitude": {
+                                        "type": "number"
+                                    },
+                                    "longitude": {
+                                        "type": "number"
+                                    },
+                                    "radius": {
+                                        "type": "integer"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Office location updated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "HRM Office Locations"
+                ],
+                "summary": "Delete office location",
+                "operationId": "58e42a24852e8ef3fff889706e7a691d",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Office location deleted"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/payrolls": {
+            "get": {
+                "tags": [
+                    "HRM Payrolls"
+                ],
+                "summary": "List payrolls",
+                "operationId": "306b8e25d70ad454e87755121e899bf2",
+                "parameters": [
+                    {
+                        "name": "payroll_period_uuid",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "employee_uuid",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "draft",
+                                "paid"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/payrolls/{uuid}": {
+            "get": {
+                "tags": [
+                    "HRM Payrolls"
+                ],
+                "summary": "Get payroll details",
+                "operationId": "e1f2b2f3b5d14e0d212feb8b5eb30763",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Payroll not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/payrolls/{uuid}/pay": {
+            "post": {
+                "tags": [
+                    "HRM Payrolls"
+                ],
+                "summary": "Mark payroll as paid",
+                "operationId": "a123c8928169cc01b4154d2ac40f747b",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payroll paid"
+                    },
+                    "404": {
+                        "description": "Payroll not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/payroll-periods": {
+            "get": {
+                "tags": [
+                    "HRM Payroll Periods"
+                ],
+                "summary": "List all payroll periods",
+                "operationId": "25ef741d89715f6de918eb38ccded3fd",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Payroll Periods"
+                ],
+                "summary": "Create a new payroll period",
+                "operationId": "705a6c3711278146385de42195a7e6eb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "start_date",
+                                    "end_date"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "end_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Period created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/payroll-periods/generate": {
+            "post": {
+                "tags": [
+                    "HRM Payroll Periods"
+                ],
+                "summary": "Generate payroll for a period",
+                "operationId": "20cd7bb0c26b6ecb4cb66f1c3632409e",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "payroll_period_uuid"
+                                ],
+                                "properties": {
+                                    "payroll_period_uuid": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payroll generated"
+                    },
+                    "400": {
+                        "description": "Error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/reimbursements": {
+            "get": {
+                "tags": [
+                    "HRM Reimbursements"
+                ],
+                "summary": "List reimbursements",
+                "operationId": "7c98b6c4572300fe548a2b21f4c5d1cf",
+                "parameters": [
+                    {
+                        "name": "employee_uuid",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "approved",
+                                "rejected",
+                                "paid"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Reimbursements"
+                ],
+                "summary": "Submit a reimbursement claim",
+                "operationId": "8fcf2d7482c53622a392a4c070e49629",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "amount": {
+                                        "type": "number"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "proof_file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Claim submitted"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/reimbursements/{uuid}": {
+            "get": {
+                "tags": [
+                    "HRM Reimbursements"
+                ],
+                "summary": "Get reimbursement details",
+                "operationId": "1c27b4ff3cbdfc2431bb02b29227fd34",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/reimbursements/{uuid}/status": {
+            "put": {
+                "tags": [
+                    "HRM Reimbursements"
+                ],
+                "summary": "Update reimbursement status",
+                "operationId": "fa1426699221b31fe5a5cafd9af5c422",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "approved",
+                                            "rejected",
+                                            "paid"
+                                        ]
+                                    },
+                                    "reason": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status updated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/reimbursements/my-claims": {
+            "get": {
+                "tags": [
+                    "HRM Reimbursements"
+                ],
+                "summary": "Get my reimbursement claims",
+                "operationId": "74b2f0b5297514d90934e2b550ccea0c",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/reports/turnover": {
+            "get": {
+                "tags": [
+                    "HRM Reports"
+                ],
+                "summary": "Get employee turnover statistics",
+                "operationId": "09708e509418d064b8f09e57f7155be6",
+                "parameters": [
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/reports/labor-cost": {
+            "get": {
+                "tags": [
+                    "HRM Reports"
+                ],
+                "summary": "Get labor cost statistics",
+                "operationId": "3846cda93f644ca26caa19e333a87d24",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/resignations": {
+            "get": {
+                "tags": [
+                    "HRM Resignations"
+                ],
+                "summary": "List resignations",
+                "operationId": "a132c21b034f608c6a22d1e3bdc86915",
+                "parameters": [
+                    {
+                        "name": "employee_uuid",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "approved",
+                                "rejected",
+                                "withdrawn"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Resignations"
+                ],
+                "summary": "Submit a resignation request",
+                "operationId": "ee743b50d0b6e7d44642458f0dbd37a8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "notice_date",
+                                    "resignation_date",
+                                    "reason"
+                                ],
+                                "properties": {
+                                    "notice_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "resignation_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "reason": {
+                                        "type": "string"
+                                    },
+                                    "handover_to_uuid": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Resignation submitted"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/resignations/{uuid}": {
+            "get": {
+                "tags": [
+                    "HRM Resignations"
+                ],
+                "summary": "Get resignation details",
+                "operationId": "f3a7dd6ad5d98fb7629c2ba628f79183",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/resignations/{uuid}/status": {
+            "put": {
+                "tags": [
+                    "HRM Resignations"
+                ],
+                "summary": "Update resignation status",
+                "operationId": "b3d6f1f134fc21402fea45cc1d1b8870",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "approved",
+                                            "rejected",
+                                            "withdrawn"
+                                        ]
+                                    },
+                                    "remarks": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status updated"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/salary-components": {
+            "get": {
+                "tags": [
+                    "HRM Salary Components"
+                ],
+                "summary": "List all salary components",
+                "operationId": "e84ab5ce372d1673cc55bd6a60c4de37",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Salary Components"
+                ],
+                "summary": "Create a new salary component",
+                "operationId": "462558402a8cdf208c0e35b45cac163a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "type",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "earning",
+                                            "deduction"
+                                        ]
+                                    },
+                                    "is_taxable": {
+                                        "type": "boolean"
+                                    },
+                                    "is_fixed": {
+                                        "type": "boolean"
+                                    },
+                                    "value": {
+                                        "type": "number"
+                                    },
+                                    "percentage_of": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Component created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/shifts": {
+            "get": {
+                "tags": [
+                    "HRM Shifts"
+                ],
+                "summary": "List all shifts",
+                "operationId": "c8da7dbf3d8962967153e252e484367b",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Shifts"
+                ],
+                "summary": "Create a new shift",
+                "operationId": "5af93b8340b57ac6d938f8f4f04f033a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "start_time",
+                                    "end_time"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "start_time": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "09:00"
+                                    },
+                                    "end_time": {
+                                        "type": "string",
+                                        "format": "time",
+                                        "example": "17:00"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Shift created"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/shifts/{uuid}": {
+            "get": {
+                "tags": [
+                    "HRM Shifts"
+                ],
+                "summary": "Get shift details",
+                "operationId": "95149b3dacf69c4797101d1b0e45925e",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Shift not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "HRM Shifts"
+                ],
+                "summary": "Update a shift",
+                "operationId": "aa7f63ade9d390f99b4308cecccb4e87",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "start_time",
+                                    "end_time"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "start_time": {
+                                        "type": "string",
+                                        "format": "time"
+                                    },
+                                    "end_time": {
+                                        "type": "string",
+                                        "format": "time"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Shift updated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Shift not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "HRM Shifts"
+                ],
+                "summary": "Delete a shift",
+                "operationId": "036068581829373d835dec22813773f1",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Shift deleted"
+                    },
+                    "404": {
+                        "description": "Shift not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Use a token from Sanctum auth",
+                "name": "Token Based",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "HRM Attendance",
+            "description": "API Endpoints for Attendance Management"
+        },
+        {
+            "name": "HRM Departments",
+            "description": "API Endpoints for Department Management"
+        },
+        {
+            "name": "HRM Designations",
+            "description": "API Endpoints for Designation Management"
+        },
+        {
+            "name": "HRM Employees",
+            "description": "API Endpoints for Employee Management"
+        },
+        {
+            "name": "HRM Employee Documents",
+            "description": "API Endpoints for Employee Document Management"
+        },
+        {
+            "name": "HRM Leave Requests",
+            "description": "API Endpoints for Leave Requests"
+        },
+        {
+            "name": "HRM Leave Types",
+            "description": "API Endpoints for Leave Types"
+        },
+        {
+            "name": "HRM Office Locations",
+            "description": "API Endpoints for Office Location Management"
+        },
+        {
+            "name": "HRM Payrolls",
+            "description": "API Endpoints for Payrolls"
+        },
+        {
+            "name": "HRM Payroll Periods",
+            "description": "API Endpoints for Payroll Periods"
+        },
+        {
+            "name": "HRM Reimbursements",
+            "description": "API Endpoints for Claims & Reimbursements"
+        },
+        {
+            "name": "HRM Reports",
+            "description": "API Endpoints for HR Analytics & Reports"
+        },
+        {
+            "name": "HRM Resignations",
+            "description": "API Endpoints for Resignation & Offboarding"
+        },
+        {
+            "name": "HRM Salary Components",
+            "description": "API Endpoints for Salary Components"
+        },
+        {
+            "name": "HRM Shifts",
+            "description": "API Endpoints for Shift Management"
+        }
+    ]
+}

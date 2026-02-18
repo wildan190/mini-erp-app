@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Platform\Api\CRM\ProspectManagement;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Platform\CRM\ProspectManagement\ProspectRequest;
 use App\Http\Requests\Platform\CRM\ProspectManagement\ProspectStatusRequest;
-use App\Models\Prospect;
+use App\Models\CRM\Prospect;
 use App\Services\CRM\ProspectService;
 use OpenApi\Attributes as OA;
 
@@ -61,17 +61,17 @@ class ProspectController extends Controller
                 schema: new OA\Schema(
                     required: ["customer_id", "title", "status"],
                     properties: [
-                        new OA\Property(property: "customer_id", type: "string", description: "UUID or ID of customer"),
+                        new OA\Property(property: "customer_id", type: "string", description: "UUID of customer"),
                         new OA\Property(property: "title", type: "string", example: "New Project"),
                         new OA\Property(
                             property: "status",
                             type: "string",
-                            enum: ["new", "qualified", "proposal", "negotiation", "closed_won", "closed_lost"],
-                            example: "negotiation"
+                            enum: ["new", "contacted", "qualified", "proposal", "negotiation", "won", "lost"],
+                            example: "qualified"
                         ),
                         new OA\Property(property: "expected_value", type: "number"),
                         new OA\Property(property: "expected_closing_date", type: "string", format: "date"),
-                        new OA\Property(property: "probability", type: "integer"),
+                        new OA\Property(property: "probability", type: "integer", minimum: 0, maximum: 100),
                         new OA\Property(property: "notes", type: "string")
                     ]
                 )
@@ -105,12 +105,17 @@ class ProspectController extends Controller
                 mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     properties: [
+                        new OA\Property(property: "customer_id", type: "string", description: "UUID of customer"),
                         new OA\Property(property: "title", type: "string"),
                         new OA\Property(
                             property: "status",
                             type: "string",
-                            enum: ["new", "qualified", "proposal", "negotiation", "closed_won", "closed_lost"]
-                        )
+                            enum: ["new", "contacted", "qualified", "proposal", "negotiation", "won", "lost"]
+                        ),
+                        new OA\Property(property: "expected_value", type: "number"),
+                        new OA\Property(property: "expected_closing_date", type: "string", format: "date"),
+                        new OA\Property(property: "probability", type: "integer", minimum: 0, maximum: 100),
+                        new OA\Property(property: "notes", type: "string")
                     ]
                 )
             )
@@ -168,8 +173,8 @@ class ProspectController extends Controller
                         new OA\Property(
                             property: "status",
                             type: "string",
-                            enum: ["new", "qualified", "proposal", "negotiation", "closed_won", "closed_lost"],
-                            example: "closed_won"
+                            enum: ["new", "contacted", "qualified", "proposal", "negotiation", "won", "lost"],
+                            example: "won"
                         )
                     ]
                 )

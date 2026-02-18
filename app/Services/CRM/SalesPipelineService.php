@@ -2,7 +2,8 @@
 
 namespace App\Services\CRM;
 
-use App\Models\SalesPipeline;
+use App\Models\CRM\SalesPipeline;
+use Illuminate\Support\Str;
 
 class SalesPipelineService
 {
@@ -13,13 +14,21 @@ class SalesPipelineService
 
     public function show($id): SalesPipeline
     {
-        return SalesPipeline::with('prospect.customer')->where('uuid', $id)->firstOrFail();
+        if (is_numeric($id)) {
+            return SalesPipeline::with('prospect.customer')->findOrFail($id);
+        }
+        if (Str::isUuid($id)) {
+            return SalesPipeline::with('prospect.customer')->where('uuid', $id)->firstOrFail();
+        }
+        abort(404);
     }
 
     public function create(array $data): SalesPipeline
     {
         if (isset($data['prospect_id'])) {
-            $data['prospect_id'] = \App\Models\Prospect::where('uuid', $data['prospect_id'])->value('id');
+            if (Str::isUuid($data['prospect_id'])) {
+                $data['prospect_id'] = \App\Models\CRM\Prospect::where('uuid', $data['prospect_id'])->value('id');
+            }
         }
 
         $data['user_id'] = auth()->id();
@@ -29,6 +38,13 @@ class SalesPipelineService
 
     public function delete($id): bool
     {
-        return SalesPipeline::where('uuid', $id)->firstOrFail()->delete();
+        if (is_numeric($id)) {
+            $pipeline = SalesPipeline::findOrFail($id);
+        } elseif (Str::isUuid($id)) {
+            $pipeline = SalesPipeline::where('uuid', $id)->firstOrFail();
+        } else {
+            abort(404);
+        }
+        return $pipeline->delete();
     }
 }

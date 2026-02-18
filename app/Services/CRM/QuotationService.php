@@ -2,8 +2,8 @@
 
 namespace App\Services\CRM;
 
-use App\Models\Quotation;
-use App\Models\Customer;
+use App\Models\CRM\Quotation;
+use App\Models\CRM\Customer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -16,7 +16,13 @@ class QuotationService
 
     public function show($id): Quotation
     {
-        return Quotation::with(['customer', 'items'])->where('uuid', $id)->firstOrFail();
+        if (is_numeric($id)) {
+            return Quotation::with(['customer', 'items'])->findOrFail($id);
+        }
+        if (Str::isUuid($id)) {
+            return Quotation::with(['customer', 'items'])->where('uuid', $id)->firstOrFail();
+        }
+        abort(404);
     }
 
     public function create(array $data): Quotation
@@ -33,7 +39,9 @@ class QuotationService
             }
 
             if (isset($data['customer_id'])) {
-                $data['customer_id'] = Customer::where('uuid', $data['customer_id'])->value('id');
+                if (Str::isUuid($data['customer_id'])) {
+                    $data['customer_id'] = Customer::where('uuid', $data['customer_id'])->value('id');
+                }
             }
 
             $quotation = Quotation::create(array_merge($data, [
@@ -82,7 +90,13 @@ class QuotationService
     public function update($id, array $data): Quotation
     {
         return DB::transaction(function () use ($id, $data) {
-            $quotation = Quotation::where('uuid', $id)->firstOrFail();
+            if (is_numeric($id)) {
+                $quotation = Quotation::findOrFail($id);
+            } elseif (Str::isUuid($id)) {
+                $quotation = Quotation::where('uuid', $id)->firstOrFail();
+            } else {
+                abort(404);
+            }
             $items = $data['items'] ?? null;
 
             if ($items !== null) {
@@ -120,7 +134,9 @@ class QuotationService
             }
 
             if (isset($data['customer_id'])) {
-                $data['customer_id'] = Customer::where('uuid', $data['customer_id'])->value('id');
+                if (Str::isUuid($data['customer_id'])) {
+                    $data['customer_id'] = Customer::where('uuid', $data['customer_id'])->value('id');
+                }
             }
 
             unset($data['items']);
@@ -132,6 +148,13 @@ class QuotationService
 
     public function delete($id): bool
     {
-        return Quotation::where('uuid', $id)->firstOrFail()->delete();
+        if (is_numeric($id)) {
+            $quotation = Quotation::findOrFail($id);
+        } elseif (Str::isUuid($id)) {
+            $quotation = Quotation::where('uuid', $id)->firstOrFail();
+        } else {
+            abort(404);
+        }
+        return $quotation->delete();
     }
 }

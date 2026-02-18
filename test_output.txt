@@ -1,0 +1,83 @@
+"Employee class: App\Models\HRM\Employee" // app/Services/HRM/PayrollService.php:62
+"""
+Method signature: /**\n
+     * Calculate salary for an employee.\n
+     *\n
+     * @param Employee $employee\n
+     * @param PayrollPeriod $period\n
+     * @return Payroll\n
+     */\n
+Method [ <user> public method calculateSalary ] {\n
+  @@ /Users/wildanbelfiore/mini-erp-app/app/Services/HRM/PayrollService.php 82 - 142\n
+\n
+  - Parameters [2] {\n
+    Parameter #0 [ <required> $employee ]\n
+    Parameter #1 [ <required> App\Models\HRM\PayrollPeriod $period ]\n
+  }\n
+  - Return [ App\Models\HRM\Payroll ]\n
+}\n
+""" // app/Services/HRM/PayrollService.php:64
+array:1 [
+  "message" => """
+    SQLSTATE[23000]: Integrity constraint violation: 19 CHECK constraint failed: status (Connection: sqlite, Database: :memory:, SQL: update "payroll_periods" set "status" = processing, "updated_at" = 2026-02-16 18:22:07 where "id" = 1) #0 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(794): Illuminate\Database\Connection->runQueryCallback('update "payroll...', Array, Object(Closure))\n
+    #1 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(597): Illuminate\Database\Connection->run('update "payroll...', Array, Object(Closure))\n
+    #2 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(549): Illuminate\Database\Connection->affectingStatement('update "payroll...', Array)\n
+    #3 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(4118): Illuminate\Database\Connection->update('update "payroll...', Array)\n
+    #4 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(1266): Illuminate\Database\Query\Builder->update(Object(Illuminate\Support\Collection))\n
+    #5 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php(1316): Illuminate\Database\Eloquent\Builder->update(Array)\n
+    #6 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php(1233): Illuminate\Database\Eloquent\Model->performUpdate(Object(Illuminate\Database\Eloquent\Builder))\n
+    #7 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php(1090): Illuminate\Database\Eloquent\Model->save(Array)\n
+    #8 /Users/wildanbelfiore/mini-erp-app/app/Services/HRM/PayrollService.php(70): Illuminate\Database\Eloquent\Model->update(Array)\n
+    #9 /Users/wildanbelfiore/mini-erp-app/app/Http/Controllers/Platform/Api/HRM/PayrollPeriodController.php(100): App\Services\HRM\PayrollService->generatePayroll(Object(App\Models\HRM\PayrollPeriod))\n
+    #10 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): App\Http\Controllers\Platform\Api\HRM\PayrollPeriodController->generate(Object(App\Http\Requests\Platform\HRM\Payroll\GeneratePayrollRequest))\n
+    #11 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(265): Illuminate\Routing\ControllerDispatcher->dispatch(Object(Illuminate\Routing\Route), Object(App\Http\Controllers\Platform\Api\HRM\PayrollPeriodController), 'generate')\n
+    #12 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(211): Illuminate\Routing\Route->runController()\n
+    #13 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate\Routing\Route->run()\n
+    #14 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Routing\Router->{closure:Illuminate\Routing\Router::runRouteWithinStack():821}(Object(Illuminate\Http\Request))\n
+    #15 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(50): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))\n
+    #16 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Routing\Middleware\SubstituteBindings->handle(Object(Illuminate\Http\Request), Object(Closure))\n
+    #17 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(63): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))\n
+    #18 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Auth\Middleware\Authenticate->handle(Object(Illuminate\Http\Request), Object(Closure), 'sanctum')\n
+    #19 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))\n
+    #20 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate\Pipeline\Pipeline->then(Object(Closure))\n
+    #21 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate\Routing\Router->runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))\n
+    #22 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate\Routing\Router->runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))\n
+    #23 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate\Routing\Router->dispatchToRoute(Object(Illuminate\Http\Request))\n
+    #24 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\Routing\Router->dispatch(Object(Illuminate\Http\Request))\n
+    #25 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Foundation\Http\Kernel->{closure:Illuminate\Foundation\Http\Kernel::dispatchToRouter():197}(Object(Illuminate\Http\Request))\n
+    #26 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))\n
+    #27 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))\n
+    #28 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull->handle(Object(Illuminate\Http\Request), Object(Closure))\n
+    #29 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))\n
+    #30 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))\n
+    #31 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\TrimStrings->handle(Object(Illuminate\Http\Request), Object(Closure))\n
+    #32 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))\n
+    #33 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePostSize->handle(Object(Illuminate\Http\Request), Object(Closure))\n
+    #34 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(109): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))\n
+    #35 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance->handle(Object(Illuminate\Http\Request), Object(Closure))\n
+    #36 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(74): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))\n
+    #37 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\HandleCors->handle(Object(Illuminate\Http\Request), Object(Closure))\n
+    #38 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))\n
+    #39 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\TrustProxies->handle(Object(Illuminate\Http\Request), Object(Closure))\n
+    #40 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))\n
+    #41 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks->handle(Object(Illuminate\Http\Request), Object(Closure))\n
+    #42 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(26): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))\n
+    #43 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePathEncoding->handle(Object(Illuminate\Http\Request), Object(Closure))\n
+    #44 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))\n
+    #45 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\Pipeline\Pipeline->then(Object(Closure))\n
+    #46 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))\n
+    #47 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))\n
+    #48 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(573): Illuminate\Foundation\Testing\TestCase->call('POST', '/api/platform/h...', Array, Array, Array, Array, '{"payroll_perio...')\n
+    #49 /Users/wildanbelfiore/mini-erp-app/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(411): Illuminate\Foundation\Testing\TestCase->json('POST', '/api/platform/h...', Array, Array, 0)\n
+    #50 /Users/wildanbelfiore/mini-erp-app/tests/Feature/HRM/PayrollTest.php(82): Illuminate\Foundation\Testing\TestCase->postJson('/api/platform/h...', Array)\n
+    #51 /Users/wildanbelfiore/mini-erp-app/vendor/phpunit/phpunit/src/Framework/TestCase.php(1667): Tests\Feature\HRM\PayrollTest->test_can_generate_payroll()\n
+    #52 /Users/wildanbelfiore/mini-erp-app/vendor/phpunit/phpunit/src/Framework/TestCase.php(519): PHPUnit\Framework\TestCase->runTest()\n
+    #53 /Users/wildanbelfiore/mini-erp-app/vendor/phpunit/phpunit/src/Framework/TestRunner/TestRunner.php(87): PHPUnit\Framework\TestCase->runBare()\n
+    #54 /Users/wildanbelfiore/mini-erp-app/vendor/phpunit/phpunit/src/Framework/TestCase.php(365): PHPUnit\Framework\TestRunner->run(Object(Tests\Feature\HRM\PayrollTest))\n
+    #55 /Users/wildanbelfiore/mini-erp-app/vendor/phpunit/phpunit/src/Framework/TestSuite.php(369): PHPUnit\Framework\TestCase->run()\n
+    #56 /Users/wildanbelfiore/mini-erp-app/vendor/phpunit/phpunit/src/TextUI/TestRunner.php(64): PHPUnit\Framework\TestSuite->run()\n
+    #57 /Users/wildanbelfiore/mini-erp-app/vendor/phpunit/phpunit/src/TextUI/Application.php(211): PHPUnit\TextUI\TestRunner->run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))\n
+    #58 /Users/wildanbelfiore/mini-erp-app/vendor/phpunit/phpunit/phpunit(104): PHPUnit\TextUI\Application->run(Array)\n
+    #59 {main}
+    """
+] // tests/Feature/HRM/PayrollTest.php:86
