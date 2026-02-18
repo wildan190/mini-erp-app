@@ -13,9 +13,8 @@ class UpdateShiftRequest extends FormRequest
 
     public function rules(): array
     {
-        $shiftId = $this->route('id');
         return [
-            'name' => 'required|string|max:50|unique:shifts,name,' . $shiftId,
+            'name' => 'required|string|max:50|unique:shifts,name,' . $this->route('uuid') . ',uuid',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'description' => 'nullable|string|max:255',

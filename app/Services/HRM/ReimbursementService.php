@@ -19,8 +19,9 @@ class ReimbursementService
     public function getReimbursements(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         return Reimbursement::with(['employee.user', 'approver'])
-            ->when(isset($filters['employee_id']), function ($query) use ($filters) {
-                $query->where('employee_id', $filters['employee_id']);
+            ->when(isset($filters['employee_uuid']), function ($query) use ($filters) {
+                $employee = \App\Models\HRM\Employee::where('uuid', $filters['employee_uuid'])->first();
+                $query->where('employee_id', $employee?->id ?? 0);
             })
             ->when(isset($filters['status']), function ($query) use ($filters) {
                 $query->where('status', $filters['status']);

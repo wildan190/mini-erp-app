@@ -43,4 +43,27 @@ class ShiftTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_can_update_shift()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'sanctum');
+
+        $shift = Shift::create([
+            'name' => 'Afternoon ' . uniqid(),
+            'start_time' => '13:00',
+            'end_time' => '21:00',
+        ]);
+
+        $data = [
+            'name' => 'Afternoon Updated ' . uniqid(),
+            'start_time' => '14:00',
+            'end_time' => '22:00',
+        ];
+
+        $response = $this->putJson('/api/platform/hrm/shifts/' . $shift->uuid, $data);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['name' => $data['name']]);
+    }
 }

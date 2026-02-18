@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Platform\Api\CRM\Dashboard;
 
 
 use App\Http\Controllers\Controller;
-use App\Models\{Customer, Lead, Prospect, SalesPipeline, Quotation};
+use App\Models\CRM\{Customer, Lead, Prospect, SalesPipeline, Quotation};
 
 
 class CrmDashboardController extends Controller

@@ -72,36 +72,36 @@ Route::prefix('platform/hrm')
     ->group(function () {
         // Departments
         Route::get('/departments', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'index']);
-        Route::get('/departments/{id}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'show']);
+        Route::get('/departments/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'show']);
         Route::post('/departments', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'store']);
-        Route::put('/departments/{id}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'update']);
-        Route::delete('/departments/{id}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'destroy']);
+        Route::put('/departments/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'update']);
+        Route::delete('/departments/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'destroy']);
 
         // Designations
         Route::get('/designations', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'index']);
-        Route::get('/designations/{id}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'show']);
+        Route::get('/designations/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'show']);
         Route::post('/designations', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'store']);
-        Route::put('/designations/{id}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'update']);
-        Route::delete('/designations/{id}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'destroy']);
+        Route::put('/designations/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'update']);
+        Route::delete('/designations/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'destroy']);
 
         // Employees
         Route::get('/employees', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'index']);
-        Route::get('/employees/{id}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'show']);
+        Route::get('/employees/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'show']);
         Route::post('/employees', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'store']);
-        Route::put('/employees/{id}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'update']);
-        Route::delete('/employees/{id}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'destroy']);
+        Route::put('/employees/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'update']);
+        Route::delete('/employees/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'destroy']);
 
         // Employee Documents
-        Route::get('/employees/{employeeId}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'index']);
-        Route::post('/employees/{employeeId}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'store']);
-        Route::delete('/documents/{id}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'destroy']);
+        Route::get('/employees/{employeeUuid}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'index']);
+        Route::post('/employees/{employeeUuid}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'store']);
+        Route::delete('/documents/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'destroy']);
 
         // Shifts
         Route::get('/shifts', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'index']);
         Route::post('/shifts', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'store']);
-        Route::get('/shifts/{id}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'show']);
-        Route::put('/shifts/{id}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'update']);
-        Route::delete('/shifts/{id}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'destroy']);
+        Route::get('/shifts/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'show']);
+        Route::put('/shifts/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'update']);
+        Route::delete('/shifts/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'destroy']);
 
         // Attendance
         Route::get('/attendances', [\App\Http\Controllers\Platform\Api\HRM\AttendanceController::class, 'index']);
@@ -114,7 +114,7 @@ Route::prefix('platform/hrm')
     
         Route::get('/leave-requests', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'index']);
         Route::post('/leave-requests', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'store']);
-        Route::put('/leave-requests/{id}/status', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'updateStatus']); // Manager only ideally
+        Route::put('/leave-requests/{uuid}/status', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'updateStatus']); // Manager only ideally
         Route::get('/leave-balances/my-balance', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'myBalance']);
 
         // Payroll
@@ -125,21 +125,30 @@ Route::prefix('platform/hrm')
         Route::post('/payroll-periods', [\App\Http\Controllers\Platform\Api\HRM\PayrollPeriodController::class, 'store']);
         Route::post('/payroll-periods/generate', [\App\Http\Controllers\Platform\Api\HRM\PayrollPeriodController::class, 'generate']);
 
+        Route::get('/payrolls', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'index']);
+        Route::get('/payrolls/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'show']);
+        Route::post('/payrolls/{uuid}/pay', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'pay']);
+
         // Reimbursement
         Route::get('/reimbursements/my-claims', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'myClaims']);
         Route::get('/reimbursements', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'index']);
         Route::post('/reimbursements', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'store']);
+        Route::get('/reimbursements/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'show']);
+        Route::put('/reimbursements/{uuid}/status', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'updateStatus']);
+
         // Resignation
         Route::get('/resignations', [\App\Http\Controllers\Platform\Api\HRM\ResignationController::class, 'index']);
         Route::post('/resignations', [\App\Http\Controllers\Platform\Api\HRM\ResignationController::class, 'store']);
+        Route::get('/resignations/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\ResignationController::class, 'show']);
+        Route::put('/resignations/{uuid}/status', [\App\Http\Controllers\Platform\Api\HRM\ResignationController::class, 'updateStatus']);
         // Reports
         Route::get('/reports/turnover', [\App\Http\Controllers\Platform\Api\HRM\ReportController::class, 'turnover']);
         Route::get('/reports/labor-cost', [\App\Http\Controllers\Platform\Api\HRM\ReportController::class, 'laborCost']);
 
         // Office Locations
-        Route::resource('office-locations', \App\Http\Controllers\Platform\Api\HRM\OfficeLocationController::class)->except(['create', 'edit']);
+        Route::resource('office-locations', \App\Http\Controllers\Platform\Api\HRM\OfficeLocationController::class)->except(['create', 'edit'])->parameters(['office-locations' => 'uuid']);
 
         // Employee Face Recognition
-        Route::post('/employees/{id}/enroll-face', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'enrollFace']);
-        Route::delete('/employees/{id}/face-data', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'removeFace']);
+        Route::post('/employees/{uuid}/enroll-face', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'enrollFace']);
+        Route::delete('/employees/{uuid}/face-data', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'removeFace']);
     });

@@ -12,13 +12,13 @@ return new class extends Migration {
     {
         Schema::create('reimbursements', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('employee_id')->constrained()->onDelete('cascade');
+            $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
             $table->string('type'); // e.g., 'medical', 'travel', 'fuel'
             $table->decimal('amount', 15, 2);
             $table->text('description')->nullable();
             $table->string('proof_file')->nullable(); // Path to uploaded file
             $table->enum('status', ['pending', 'approved', 'rejected', 'paid'])->default('pending');
-            $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('approved_at')->nullable();
             $table->text('rejection_reason')->nullable();
             $table->timestamps();

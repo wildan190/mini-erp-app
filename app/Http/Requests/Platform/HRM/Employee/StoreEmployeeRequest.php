@@ -15,13 +15,13 @@ class StoreEmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'nullable|exists:users,id|unique:employees,user_id',
-            'first_name' => 'required_without:user_id|string|max:255',
-            'last_name' => 'required_without:user_id|string|max:255',
-            'email' => 'required_without:user_id|nullable|email|max:255|unique:users,email',
-            'password' => 'required_without:user_id|nullable|string|min:8',
-            'department_id' => 'nullable|exists:departments,id',
-            'designation_id' => 'nullable|exists:designations,id',
+            'user_uuid' => 'nullable|exists:users,uuid|unique:employees,user_uuid',
+            'first_name' => 'required_without:user_uuid|string|max:255',
+            'last_name' => 'required_without:user_uuid|string|max:255',
+            'email' => 'required_without:user_uuid|nullable|email|max:255|unique:users,email',
+            'password' => 'required_without:user_uuid|nullable|string|min:8',
+            'department_uuid' => 'nullable|exists:departments,uuid',
+            'designation_uuid' => 'nullable|exists:designations,uuid',
             'emp_code' => 'nullable|string|max:50|unique:employees,emp_code',
             'joining_date' => 'nullable|date',
             'status' => ['nullable', Rule::in(['active', 'inactive', 'terminated', 'resigned'])],

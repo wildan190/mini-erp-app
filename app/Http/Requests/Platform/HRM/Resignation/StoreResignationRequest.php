@@ -17,7 +17,7 @@ class StoreResignationRequest extends FormRequest
             'notice_date' => 'required|date',
             'resignation_date' => 'required|date|after_or_equal:notice_date',
             'reason' => 'required|string',
-            'handover_to' => 'nullable|exists:employees,id',
+            'handover_to_uuid' => 'nullable|exists:employees,uuid',
         ];
     }
 }

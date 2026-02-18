@@ -24,8 +24,9 @@ class LeaveService
     public function getLeaveRequests(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         return LeaveRequest::with(['employee.user', 'leaveType', 'approver'])
-            ->when(isset($filters['employee_id']), function (Builder $query) use ($filters) {
-                $query->where('employee_id', $filters['employee_id']);
+            ->when(isset($filters['employee_uuid']), function (Builder $query) use ($filters) {
+                $employee = Employee::where('uuid', $filters['employee_uuid'])->first();
+                $query->where('employee_id', $employee?->id ?? 0);
             })
             ->when(isset($filters['status']), function (Builder $query) use ($filters) {
                 $query->where('status', $filters['status']);
@@ -50,8 +51,14 @@ class LeaveService
 
         // specific logic for weekends/holidays can be added here
 
+        // Resolve UUID
+        if (isset($data['leave_type_uuid'])) {
+            $data['leave_type_id'] = LeaveType::where('uuid', $data['leave_type_uuid'])->value('id');
+        }
+
         // Check balance
         $year = $startDate->year;
+        $leaveType = LeaveType::findOrFail($data['leave_type_id']);
         $balance = LeaveBalance::firstOrCreate(
             [
                 'employee_id' => $employee->id,
@@ -59,9 +66,9 @@ class LeaveService
                 'year' => $year
             ],
             [
-                'total_days' => LeaveType::find($data['leave_type_id'])->days_allowed,
+                'total_days' => $leaveType->days_allowed,
                 'used_days' => 0,
-                'remaining_days' => LeaveType::find($data['leave_type_id'])->days_allowed
+                'remaining_days' => $leaveType->days_allowed
             ]
         );
 

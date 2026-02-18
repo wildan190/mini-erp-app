@@ -19,8 +19,9 @@ class ResignationService
     public function getResignations(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         return Resignation::with(['employee.user', 'handoverTo.user'])
-            ->when(isset($filters['employee_id']), function ($query) use ($filters) {
-                $query->where('employee_id', $filters['employee_id']);
+            ->when(isset($filters['employee_uuid']), function ($query) use ($filters) {
+                $employee = Employee::where('uuid', $filters['employee_uuid'])->first();
+                $query->where('employee_id', $employee?->id ?? 0);
             })
             ->when(isset($filters['status']), function ($query) use ($filters) {
                 $query->where('status', $filters['status']);
@@ -37,6 +38,9 @@ class ResignationService
      */
     public function submitResignation(array $data): Resignation
     {
+        if (isset($data['handover_to_uuid'])) {
+            $data['handover_to'] = Employee::where('uuid', $data['handover_to_uuid'])->value('id');
+        }
         return Resignation::create($data);
     }
 

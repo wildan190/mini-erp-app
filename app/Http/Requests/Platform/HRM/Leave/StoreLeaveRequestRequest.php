@@ -14,7 +14,7 @@ class StoreLeaveRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'leave_type_id' => 'required|exists:leave_types,id',
+            'leave_type_uuid' => 'required|exists:leave_types,uuid',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'required|string|max:500',

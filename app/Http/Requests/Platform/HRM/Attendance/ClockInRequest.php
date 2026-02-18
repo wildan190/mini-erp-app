@@ -19,7 +19,7 @@ class ClockInRequest extends FormRequest
             'notes' => 'nullable|string',
             // Face & Location Verification
             'face_image' => 'nullable|image|max:5120', // 5MB max
-            'office_location_id' => 'nullable|exists:office_locations,id',
+            'office_location_uuid' => 'nullable|exists:office_locations,uuid',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
         ];

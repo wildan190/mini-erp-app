@@ -15,11 +15,29 @@ class EmployeeService
      * @param int $perPage
      * @return LengthAwarePaginator
      */
-    public function getAllEmployees(int $perPage = 15): LengthAwarePaginator
+    public function getAllEmployees(int $perPage = 15, array $filters = []): LengthAwarePaginator
     {
-        return Employee::with(['user', 'department', 'designation'])
-            ->latest()
-            ->paginate($perPage);
+        $query = Employee::with(['user', 'department', 'designation']);
+
+        if (isset($filters['department_uuid'])) {
+            $departmentId = \App\Models\HRM\Department::where('uuid', $filters['department_uuid'])->value('id');
+            if ($departmentId) {
+                $query->where('department_id', $departmentId);
+            }
+        }
+
+        if (isset($filters['designation_uuid'])) {
+            $designationId = \App\Models\HRM\Designation::where('uuid', $filters['designation_uuid'])->value('id');
+            if ($designationId) {
+                $query->where('designation_id', $designationId);
+            }
+        }
+
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        return $query->latest()->paginate($perPage);
     }
 
     /**
@@ -31,6 +49,17 @@ class EmployeeService
     public function createEmployee(array $data): Employee
     {
         return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
+            // Resolve UUIDs
+            if (isset($data['user_uuid'])) {
+                $data['user_id'] = \App\Models\User::where('uuid', $data['user_uuid'])->value('id');
+            }
+            if (isset($data['department_uuid'])) {
+                $data['department_id'] = \App\Models\HRM\Department::where('uuid', $data['department_uuid'])->value('id');
+            }
+            if (isset($data['designation_uuid'])) {
+                $data['designation_id'] = \App\Models\HRM\Designation::where('uuid', $data['designation_uuid'])->value('id');
+            }
+
             if (empty($data['user_id'])) {
                 $user = \App\Models\User::create([
                     'name' => trim($data['first_name'] . ' ' . ($data['last_name'] ?? '')),
@@ -53,6 +82,17 @@ class EmployeeService
      */
     public function updateEmployee(Employee $employee, array $data): Employee
     {
+        // Resolve UUIDs
+        if (isset($data['user_uuid'])) {
+            $data['user_id'] = \App\Models\User::where('uuid', $data['user_uuid'])->value('id');
+        }
+        if (isset($data['department_uuid'])) {
+            $data['department_id'] = \App\Models\HRM\Department::where('uuid', $data['department_uuid'])->value('id');
+        }
+        if (isset($data['designation_uuid'])) {
+            $data['designation_id'] = \App\Models\HRM\Designation::where('uuid', $data['designation_uuid'])->value('id');
+        }
+
         $employee->update($data);
         return $employee;
     }

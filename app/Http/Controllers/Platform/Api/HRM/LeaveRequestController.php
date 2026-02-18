@@ -26,7 +26,7 @@ class LeaveRequestController extends Controller
         security: [["sanctum" => []]],
         tags: ["HRM Leave Requests"],
         parameters: [
-            new OA\Parameter(name: "employee_id", in: "query", schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "employee_uuid", in: "query", schema: new OA\Schema(type: "string", format: "uuid")),
             new OA\Parameter(name: "status", in: "query", schema: new OA\Schema(type: "string", enum: ["pending", "approved", "rejected"])),
             new OA\Parameter(name: "per_page", in: "query", schema: new OA\Schema(type: "integer"))
         ],
@@ -36,7 +36,7 @@ class LeaveRequestController extends Controller
     )]
     public function index(): JsonResponse
     {
-        $filters = request()->only(['employee_id', 'status']);
+        $filters = request()->only(['employee_uuid', 'status']);
         $perPage = request()->input('per_page', 15);
         $requests = $this->leaveService->getLeaveRequests($filters, $perPage);
         return response()->json([
@@ -55,9 +55,9 @@ class LeaveRequestController extends Controller
             content: new OA\MediaType(
                 mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
-                    required: ["leave_type_id", "start_date", "end_date", "reason"],
+                    required: ["leave_type_uuid", "start_date", "end_date", "reason"],
                     properties: [
-                        new OA\Property(property: "leave_type_id", type: "integer"),
+                        new OA\Property(property: "leave_type_uuid", type: "string", format: "uuid"),
                         new OA\Property(property: "start_date", type: "string", format: "date"),
                         new OA\Property(property: "end_date", type: "string", format: "date"),
                         new OA\Property(property: "reason", type: "string")

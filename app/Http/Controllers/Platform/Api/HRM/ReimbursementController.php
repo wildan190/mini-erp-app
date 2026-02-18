@@ -28,7 +28,7 @@ class ReimbursementController extends Controller
         security: [["sanctum" => []]],
         tags: ["HRM Reimbursements"],
         parameters: [
-            new OA\Parameter(name: "employee_id", in: "query", schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "employee_uuid", in: "query", schema: new OA\Schema(type: "string", format: "uuid")),
             new OA\Parameter(name: "status", in: "query", schema: new OA\Schema(type: "string", enum: ["pending", "approved", "rejected", "paid"])),
             new OA\Parameter(name: "per_page", in: "query", schema: new OA\Schema(type: "integer"))
         ],
@@ -38,7 +38,7 @@ class ReimbursementController extends Controller
     )]
     public function index(): JsonResponse
     {
-        $filters = request()->only(['employee_id', 'status']);
+        $filters = request()->only(['employee_uuid', 'status']);
         $perPage = request()->input('per_page', 15);
         $reimbursements = $this->reimbursementService->getReimbursements($filters, $perPage);
         return response()->json([

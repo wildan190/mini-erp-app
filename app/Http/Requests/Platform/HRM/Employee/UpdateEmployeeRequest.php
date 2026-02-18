@@ -14,15 +14,17 @@ class UpdateEmployeeRequest extends FormRequest
 
     public function rules(): array
     {
-        $employeeId = $this->route('employee')->id;
+        $uuid = $this->route('uuid');
         return [
-            'user_id' => 'required|exists:users,id|unique:employees,user_id,' . $employeeId,
-            'department_id' => 'nullable|exists:departments,id',
-            'designation_id' => 'nullable|exists:designations,id',
-            'emp_code' => 'nullable|string|max:50|unique:employees,emp_code,' . $employeeId,
+            'user_uuid' => 'nullable|exists:users,uuid',
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'department_uuid' => 'nullable|exists:departments,uuid',
+            'designation_uuid' => 'nullable|exists:designations,uuid',
+            'emp_code' => 'nullable|string|max:50|unique:employees,emp_code,' . $uuid . ',uuid',
             'joining_date' => 'nullable|date',
             'status' => ['nullable', Rule::in(['active', 'inactive', 'terminated', 'resigned'])],
-            'nik' => 'nullable|string|unique:employees,nik,' . $employeeId,
+            'nik' => 'nullable|string|unique:employees,nik,' . $uuid . ',uuid',
             'place_of_birth' => 'nullable|string|max:255',
             'date_of_birth' => 'nullable|date',
             'gender' => ['nullable', Rule::in(['male', 'female'])],

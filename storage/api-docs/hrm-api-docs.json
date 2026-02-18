@@ -24,10 +24,11 @@
                 "operationId": "11376a8a55a4ac263cefab536d75daf6",
                 "parameters": [
                     {
-                        "name": "employee_id",
+                        "name": "employee_uuid",
                         "in": "query",
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     {
@@ -39,10 +40,11 @@
                         }
                     },
                     {
-                        "name": "department_id",
+                        "name": "department_uuid",
                         "in": "query",
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     {
@@ -83,9 +85,10 @@
                                         "type": "string",
                                         "format": "binary"
                                     },
-                                    "office_location_id": {
-                                        "description": "Office location ID for geofencing",
-                                        "type": "integer"
+                                    "office_location_uuid": {
+                                        "description": "Office location UUID for geofencing",
+                                        "type": "string",
+                                        "format": "uuid"
                                     },
                                     "latitude": {
                                         "description": "Current GPS latitude",
@@ -251,20 +254,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/departments/{id}": {
+        "/api/platform/hrm/departments/{uuid}": {
             "get": {
                 "tags": [
                     "HRM Departments"
                 ],
                 "summary": "Get department details",
-                "operationId": "0081915660a0c1eac311a5e1bc78824c",
+                "operationId": "752ab393711db20e08bedc7bc3d4b92e",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -287,14 +291,15 @@
                     "HRM Departments"
                 ],
                 "summary": "Update a department",
-                "operationId": "88e8693a30d5e98597b28e4494e31f40",
+                "operationId": "7b1503a35cfdd3150a934473da031240",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -340,14 +345,15 @@
                     "HRM Departments"
                 ],
                 "summary": "Delete a department",
-                "operationId": "4f331441a0dccc009ee415f0e2e6b80c",
+                "operationId": "f85bb1265cad0f351a6c0b6fee79b5f4",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -428,20 +434,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/designations/{id}": {
+        "/api/platform/hrm/designations/{uuid}": {
             "get": {
                 "tags": [
                     "HRM Designations"
                 ],
                 "summary": "Get designation details",
-                "operationId": "7129a5aefa011ef7af1b15d832dad628",
+                "operationId": "2751824f55aa7c5361089ff6f1ed8f2b",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -464,14 +471,15 @@
                     "HRM Designations"
                 ],
                 "summary": "Update a designation",
-                "operationId": "bb09b9ff7abccb3d45d7f5ff44b9e4b6",
+                "operationId": "66ac0fad4e9b9fdb31a47f4f7c6dbc55",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -517,14 +525,15 @@
                     "HRM Designations"
                 ],
                 "summary": "Delete a designation",
-                "operationId": "2d3486a64f443d9a9c5d0dbdf7e41858",
+                "operationId": "79feb69bb24e3bb8a51977c5f10d9fe1",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -566,17 +575,19 @@
                         }
                     },
                     {
-                        "name": "department_id",
+                        "name": "department_uuid",
                         "in": "query",
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     {
-                        "name": "designation_id",
+                        "name": "designation_uuid",
                         "in": "query",
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     {
@@ -620,9 +631,10 @@
                                     "last_name"
                                 ],
                                 "properties": {
-                                    "user_id": {
-                                        "description": "Existing User ID (optional)",
-                                        "type": "integer"
+                                    "user_uuid": {
+                                        "description": "Existing User UUID (optional)",
+                                        "type": "string",
+                                        "format": "uuid"
                                     },
                                     "first_name": {
                                         "description": "First Name",
@@ -633,22 +645,24 @@
                                         "type": "string"
                                     },
                                     "email": {
-                                        "description": "Email (required if user_id is null)",
+                                        "description": "Email (required if user_uuid is null)",
                                         "type": "string",
                                         "format": "email"
                                     },
                                     "password": {
-                                        "description": "Password (required if user_id is null)",
+                                        "description": "Password (required if user_uuid is null)",
                                         "type": "string",
                                         "format": "password"
                                     },
-                                    "department_id": {
-                                        "description": "Department ID",
-                                        "type": "integer"
+                                    "department_uuid": {
+                                        "description": "Department UUID",
+                                        "type": "string",
+                                        "format": "uuid"
                                     },
-                                    "designation_id": {
-                                        "description": "Designation ID",
-                                        "type": "integer"
+                                    "designation_uuid": {
+                                        "description": "Designation UUID",
+                                        "type": "string",
+                                        "format": "uuid"
                                     },
                                     "emp_code": {
                                         "description": "Employee code",
@@ -738,20 +752,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/employees/{id}": {
+        "/api/platform/hrm/employees/{uuid}": {
             "get": {
                 "tags": [
                     "HRM Employees"
                 ],
                 "summary": "Get employee details",
-                "operationId": "faef458ffb4ec5ca271f74fd30ab1060",
+                "operationId": "2c046500383b7d254a1f3c4400eb4ecd",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -774,14 +789,15 @@
                     "HRM Employees"
                 ],
                 "summary": "Update an employee",
-                "operationId": "61858d5f905996dc2ce995d4fa21e64d",
+                "operationId": "d5fa8a1036cfae5008d70c6168012377",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -791,9 +807,10 @@
                         "application/x-www-form-urlencoded": {
                             "schema": {
                                 "properties": {
-                                    "user_id": {
-                                        "description": "Existing User ID",
-                                        "type": "integer"
+                                    "user_uuid": {
+                                        "description": "Existing User UUID",
+                                        "type": "string",
+                                        "format": "uuid"
                                     },
                                     "first_name": {
                                         "description": "First Name",
@@ -803,13 +820,15 @@
                                         "description": "Last Name",
                                         "type": "string"
                                     },
-                                    "department_id": {
-                                        "description": "Department ID",
-                                        "type": "integer"
+                                    "department_uuid": {
+                                        "description": "Department UUID",
+                                        "type": "string",
+                                        "format": "uuid"
                                     },
-                                    "designation_id": {
-                                        "description": "Designation ID",
-                                        "type": "integer"
+                                    "designation_uuid": {
+                                        "description": "Designation UUID",
+                                        "type": "string",
+                                        "format": "uuid"
                                     },
                                     "emp_code": {
                                         "description": "Employee code",
@@ -903,14 +922,15 @@
                     "HRM Employees"
                 ],
                 "summary": "Delete an employee",
-                "operationId": "8f3f670276d73ecb60b91d007c95e7c7",
+                "operationId": "5d83e37c5f2250155cdec8e89c8a3ba2",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -929,20 +949,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/employees/{id}/enroll-face": {
+        "/api/platform/hrm/employees/{uuid}/enroll-face": {
             "post": {
                 "tags": [
                     "HRM Employees"
                 ],
                 "summary": "Enroll employee face for recognition",
-                "operationId": "b486f8b416b4932cb2cf17662458ef48",
+                "operationId": "ad05c5d61ec2814ecf24d132b9dea46d",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -980,20 +1001,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/employees/{id}/face-data": {
+        "/api/platform/hrm/employees/{uuid}/face-data": {
             "delete": {
                 "tags": [
                     "HRM Employees"
                 ],
                 "summary": "Remove employee face data",
-                "operationId": "fd463ca2b5b7919cd945d3a248e3172d",
+                "operationId": "afdd2d7799c63a1fbe0bad771d3cfd26",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -1012,20 +1034,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/employees/{employeeId}/documents": {
+        "/api/platform/hrm/employees/{employeeUuid}/documents": {
             "get": {
                 "tags": [
                     "HRM Employee Documents"
                 ],
                 "summary": "List all documents for an employee",
-                "operationId": "2cdc397a818a8d11fd1b1c6fc8e0b92d",
+                "operationId": "34017bd841086a9828910dd932461904",
                 "parameters": [
                     {
-                        "name": "employeeId",
+                        "name": "employeeUuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -1045,14 +1068,15 @@
                     "HRM Employee Documents"
                 ],
                 "summary": "Upload a new document for an employee",
-                "operationId": "28ec0afb52d3abf42c7d7b636667cad9",
+                "operationId": "0b82e53b8fd74b7e4b9f646c3336e438",
                 "parameters": [
                     {
-                        "name": "employeeId",
+                        "name": "employeeUuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -1108,20 +1132,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/documents/{id}": {
+        "/api/platform/hrm/documents/{uuid}": {
             "delete": {
                 "tags": [
                     "HRM Employee Documents"
                 ],
                 "summary": "Delete a document",
-                "operationId": "1680b7d97ce86690431a077af70a9f01",
+                "operationId": "86de76045dc274bea53dcffe600c14fe",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -1149,10 +1174,11 @@
                 "operationId": "c49c15823760cdb23af2fc30c1b7c53f",
                 "parameters": [
                     {
-                        "name": "employee_id",
+                        "name": "employee_uuid",
                         "in": "query",
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     {
@@ -1198,14 +1224,15 @@
                         "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
-                                    "leave_type_id",
+                                    "leave_type_uuid",
                                     "start_date",
                                     "end_date",
                                     "reason"
                                 ],
                                 "properties": {
-                                    "leave_type_id": {
-                                        "type": "integer"
+                                    "leave_type_uuid": {
+                                        "type": "string",
+                                        "format": "uuid"
                                     },
                                     "start_date": {
                                         "type": "string",
@@ -1242,20 +1269,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/leave-requests/{id}/status": {
+        "/api/platform/hrm/leave-requests/{uuid}/status": {
             "put": {
                 "tags": [
                     "HRM Leave Requests"
                 ],
                 "summary": "Approve or Reject leave request",
-                "operationId": "6538c0fd333f397ecde189ee8ee9dea6",
+                "operationId": "3a25027e16e63ec566750b14fc1efc71",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -1473,20 +1501,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/office-locations/{id}": {
+        "/api/platform/hrm/office-locations/{uuid}": {
             "get": {
                 "tags": [
                     "HRM Office Locations"
                 ],
                 "summary": "Get office location details",
-                "operationId": "3dd60a691e942d3c052bdf04cfa0de70",
+                "operationId": "fe3c0ec4bd7a9facea93dd49bc32b629",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -1509,14 +1538,15 @@
                     "HRM Office Locations"
                 ],
                 "summary": "Update office location",
-                "operationId": "4bccf602b903f3e67af0e764c61c3a19",
+                "operationId": "52d4bac672c8055ece586913b018aec7",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -1569,14 +1599,15 @@
                     "HRM Office Locations"
                 ],
                 "summary": "Delete office location",
-                "operationId": "ef2769c63a74e78459dd6682c4388182",
+                "operationId": "58e42a24852e8ef3fff889706e7a691d",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -1604,17 +1635,19 @@
                 "operationId": "306b8e25d70ad454e87755121e899bf2",
                 "parameters": [
                     {
-                        "name": "payroll_period_id",
+                        "name": "payroll_period_uuid",
                         "in": "query",
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     {
-                        "name": "employee_id",
+                        "name": "employee_uuid",
                         "in": "query",
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     {
@@ -1648,20 +1681,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/payrolls/{id}": {
+        "/api/platform/hrm/payrolls/{uuid}": {
             "get": {
                 "tags": [
                     "HRM Payrolls"
                 ],
                 "summary": "Get payroll details",
-                "operationId": "3371bbe978460361d830e7cf39dfb61d",
+                "operationId": "e1f2b2f3b5d14e0d212feb8b5eb30763",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -1680,20 +1714,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/payrolls/{id}/pay": {
+        "/api/platform/hrm/payrolls/{uuid}/pay": {
             "post": {
                 "tags": [
                     "HRM Payrolls"
                 ],
                 "summary": "Mark payroll as paid",
-                "operationId": "e467f6e32a31c450d89771b93d93ef4d",
+                "operationId": "a123c8928169cc01b4154d2ac40f747b",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -1792,11 +1827,12 @@
                         "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
-                                    "payroll_period_id"
+                                    "payroll_period_uuid"
                                 ],
                                 "properties": {
-                                    "payroll_period_id": {
-                                        "type": "integer"
+                                    "payroll_period_uuid": {
+                                        "type": "string",
+                                        "format": "uuid"
                                     }
                                 },
                                 "type": "object"
@@ -1828,10 +1864,11 @@
                 "operationId": "7c98b6c4572300fe548a2b21f4c5d1cf",
                 "parameters": [
                     {
-                        "name": "employee_id",
+                        "name": "employee_uuid",
                         "in": "query",
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     {
@@ -1916,20 +1953,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/reimbursements/{id}": {
+        "/api/platform/hrm/reimbursements/{uuid}": {
             "get": {
                 "tags": [
                     "HRM Reimbursements"
                 ],
                 "summary": "Get reimbursement details",
-                "operationId": "aea0d527a0143d9389ffa59dc8d086b7",
+                "operationId": "1c27b4ff3cbdfc2431bb02b29227fd34",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -1948,20 +1986,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/reimbursements/{id}/status": {
+        "/api/platform/hrm/reimbursements/{uuid}/status": {
             "put": {
                 "tags": [
                     "HRM Reimbursements"
                 ],
                 "summary": "Update reimbursement status",
-                "operationId": "360cc541bcadb9085d89273636f9cc72",
+                "operationId": "fa1426699221b31fe5a5cafd9af5c422",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -2099,10 +2138,11 @@
                 "operationId": "a132c21b034f608c6a22d1e3bdc86915",
                 "parameters": [
                     {
-                        "name": "employee_id",
+                        "name": "employee_uuid",
                         "in": "query",
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     },
                     {
@@ -2165,8 +2205,9 @@
                                     "reason": {
                                         "type": "string"
                                     },
-                                    "handover_to": {
-                                        "type": "integer"
+                                    "handover_to_uuid": {
+                                        "type": "string",
+                                        "format": "uuid"
                                     }
                                 },
                                 "type": "object"
@@ -2189,20 +2230,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/resignations/{id}": {
+        "/api/platform/hrm/resignations/{uuid}": {
             "get": {
                 "tags": [
                     "HRM Resignations"
                 ],
                 "summary": "Get resignation details",
-                "operationId": "9e7276da8004843ee9f67859c433c36a",
+                "operationId": "f3a7dd6ad5d98fb7629c2ba628f79183",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -2221,20 +2263,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/resignations/{id}/status": {
+        "/api/platform/hrm/resignations/{uuid}/status": {
             "put": {
                 "tags": [
                     "HRM Resignations"
                 ],
                 "summary": "Update resignation status",
-                "operationId": "8c2aebb0add5357b07734c689df49b8d",
+                "operationId": "b3d6f1f134fc21402fea45cc1d1b8870",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -2438,20 +2481,21 @@
                 ]
             }
         },
-        "/api/platform/hrm/shifts/{id}": {
+        "/api/platform/hrm/shifts/{uuid}": {
             "get": {
                 "tags": [
                     "HRM Shifts"
                 ],
                 "summary": "Get shift details",
-                "operationId": "d52d6eb4dbfb8e98d26935bade42fd66",
+                "operationId": "95149b3dacf69c4797101d1b0e45925e",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -2474,14 +2518,15 @@
                     "HRM Shifts"
                 ],
                 "summary": "Update a shift",
-                "operationId": "b1ce87f3e2d3aee745dbf43bb97ac709",
+                "operationId": "aa7f63ade9d390f99b4308cecccb4e87",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
@@ -2538,14 +2583,15 @@
                     "HRM Shifts"
                 ],
                 "summary": "Delete a shift",
-                "operationId": "f13e56d18c47e25b7dbccd7641fb56d8",
+                "operationId": "036068581829373d835dec22813773f1",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "uuid",
                         "in": "path",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],

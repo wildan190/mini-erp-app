@@ -34,20 +34,17 @@ class AttendanceService
     public function getAttendances(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         return Attendance::with(['employee.user', 'shift'])
-            ->when(isset($filters['employee_id']), function (Builder $query) use ($filters) {
-                $employeeId = $filters['employee_id'];
-                if (!is_numeric($employeeId)) {
-                    $employee = $this->employeeService->findEmployee($employeeId);
-                    $employeeId = $employee ? $employee->id : 0;
-                }
-                $query->where('employee_id', $employeeId);
+            ->when(isset($filters['employee_uuid']), function (Builder $query) use ($filters) {
+                $employee = Employee::where('uuid', $filters['employee_uuid'])->first();
+                $query->where('employee_id', $employee?->id ?? 0);
             })
             ->when(isset($filters['date']), function (Builder $query) use ($filters) {
                 $query->whereDate('date', $filters['date']);
             })
-            ->when(isset($filters['department_id']), function (Builder $query) use ($filters) {
-                $query->whereHas('employee', function ($q) use ($filters) {
-                    $q->where('department_id', $filters['department_id']);
+            ->when(isset($filters['department_uuid']), function (Builder $query) use ($filters) {
+                $department = \App\Models\HRM\Department::where('uuid', $filters['department_uuid'])->first();
+                $query->whereHas('employee', function ($q) use ($department) {
+                    $q->where('department_id', $department?->id ?? 0);
                 });
             })
             ->latest('date')
@@ -68,7 +65,7 @@ class AttendanceService
 
         // Check if already clocked in today
         $existingAttendance = Attendance::where('employee_id', $employee->id)
-            ->whereDate('date', $today)
+            ->where('date', $today->toDateString())
             ->first();
 
         if ($existingAttendance) {
@@ -83,6 +80,9 @@ class AttendanceService
 
         // Get location data
         $officeLocationId = $data['office_location_id'] ?? null;
+        if (isset($data['office_location_uuid'])) {
+            $officeLocationId = OfficeLocation::where('uuid', $data['office_location_uuid'])->value('id');
+        }
         $latitude = $data['latitude'] ?? null;
         $longitude = $data['longitude'] ?? null;
 
@@ -136,7 +136,7 @@ class AttendanceService
         $today = Carbon::today();
 
         $attendance = Attendance::where('employee_id', $employee->id)
-            ->whereDate('date', $today)
+            ->where('date', $today->toDateString())
             ->first();
 
         if (!$attendance) {

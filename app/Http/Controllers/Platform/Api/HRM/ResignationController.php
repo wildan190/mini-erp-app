@@ -28,7 +28,7 @@ class ResignationController extends Controller
         security: [["sanctum" => []]],
         tags: ["HRM Resignations"],
         parameters: [
-            new OA\Parameter(name: "employee_id", in: "query", schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "employee_uuid", in: "query", schema: new OA\Schema(type: "string", format: "uuid")),
             new OA\Parameter(name: "status", in: "query", schema: new OA\Schema(type: "string", enum: ["pending", "approved", "rejected", "withdrawn"])),
             new OA\Parameter(name: "per_page", in: "query", schema: new OA\Schema(type: "integer"))
         ],
@@ -38,7 +38,7 @@ class ResignationController extends Controller
     )]
     public function index(): JsonResponse
     {
-        $filters = request()->only(['employee_id', 'status']);
+        $filters = request()->only(['employee_uuid', 'status']);
         $perPage = request()->input('per_page', 15);
         $resignations = $this->resignationService->getResignations($filters, $perPage);
         return response()->json([
@@ -62,7 +62,7 @@ class ResignationController extends Controller
                         new OA\Property(property: "notice_date", type: "string", format: "date"),
                         new OA\Property(property: "resignation_date", type: "string", format: "date"),
                         new OA\Property(property: "reason", type: "string"),
-                        new OA\Property(property: "handover_to", type: "integer"),
+                        new OA\Property(property: "handover_to_uuid", type: "string", format: "uuid"),
                     ]
                 )
             )

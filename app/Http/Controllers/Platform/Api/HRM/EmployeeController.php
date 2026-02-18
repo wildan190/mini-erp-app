@@ -32,8 +32,8 @@ class EmployeeController extends Controller
         parameters: [
             new OA\Parameter(name: "page", in: "query", schema: new OA\Schema(type: "integer")),
             new OA\Parameter(name: "per_page", in: "query", schema: new OA\Schema(type: "integer")),
-            new OA\Parameter(name: "department_id", in: "query", schema: new OA\Schema(type: "integer")),
-            new OA\Parameter(name: "designation_id", in: "query", schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "department_uuid", in: "query", schema: new OA\Schema(type: "string", format: "uuid")),
+            new OA\Parameter(name: "designation_uuid", in: "query", schema: new OA\Schema(type: "string", format: "uuid")),
             new OA\Parameter(name: "status", in: "query", schema: new OA\Schema(type: "string", enum: ["active", "inactive", "terminated", "resigned"]))
         ],
         responses: [
@@ -42,8 +42,9 @@ class EmployeeController extends Controller
     )]
     public function index(): JsonResponse
     {
+        $filters = request()->only(['department_uuid', 'designation_uuid', 'status']);
         $perPage = request()->input('per_page', 15);
-        $employees = $this->employeeService->getAllEmployees($perPage);
+        $employees = $this->employeeService->getAllEmployees($perPage, $filters);
         return response()->json([
             'message' => 'List of employees',
             'data' => $employees
@@ -62,13 +63,13 @@ class EmployeeController extends Controller
                 schema: new OA\Schema(
                     required: ["first_name", "last_name"],
                     properties: [
-                        new OA\Property(property: "user_id", type: "integer", description: "Existing User ID (optional)"),
+                        new OA\Property(property: "user_uuid", type: "string", format: "uuid", description: "Existing User UUID (optional)"),
                         new OA\Property(property: "first_name", type: "string", description: "First Name"),
                         new OA\Property(property: "last_name", type: "string", description: "Last Name"),
-                        new OA\Property(property: "email", type: "string", format: "email", description: "Email (required if user_id is null)"),
-                        new OA\Property(property: "password", type: "string", format: "password", description: "Password (required if user_id is null)"),
-                        new OA\Property(property: "department_id", type: "integer", description: "Department ID"),
-                        new OA\Property(property: "designation_id", type: "integer", description: "Designation ID"),
+                        new OA\Property(property: "email", type: "string", format: "email", description: "Email (required if user_uuid is null)"),
+                        new OA\Property(property: "password", type: "string", format: "password", description: "Password (required if user_uuid is null)"),
+                        new OA\Property(property: "department_uuid", type: "string", format: "uuid", description: "Department UUID"),
+                        new OA\Property(property: "designation_uuid", type: "string", format: "uuid", description: "Designation UUID"),
                         new OA\Property(property: "emp_code", type: "string", description: "Employee code"),
                         new OA\Property(property: "joining_date", type: "string", format: "date", description: "Joining date"),
                         new OA\Property(property: "status", type: "string", enum: ["active", "inactive", "terminated", "resigned"]),
@@ -141,11 +142,11 @@ class EmployeeController extends Controller
                 mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     properties: [
-                        new OA\Property(property: "user_id", type: "integer", description: "Existing User ID"),
+                        new OA\Property(property: "user_uuid", type: "string", format: "uuid", description: "Existing User UUID"),
                         new OA\Property(property: "first_name", type: "string", description: "First Name"),
                         new OA\Property(property: "last_name", type: "string", description: "Last Name"),
-                        new OA\Property(property: "department_id", type: "integer", description: "Department ID"),
-                        new OA\Property(property: "designation_id", type: "integer", description: "Designation ID"),
+                        new OA\Property(property: "department_uuid", type: "string", format: "uuid", description: "Department UUID"),
+                        new OA\Property(property: "designation_uuid", type: "string", format: "uuid", description: "Designation UUID"),
                         new OA\Property(property: "emp_code", type: "string", description: "Employee code"),
                         new OA\Property(property: "joining_date", type: "string", format: "date", description: "Joining date"),
                         new OA\Property(property: "status", type: "string", enum: ["active", "inactive", "terminated", "resigned"]),

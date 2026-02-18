@@ -68,18 +68,18 @@ class EmployeeTest extends TestCase
         $designation = Designation::create(['name' => 'Manager ' . uniqid(), 'description' => 'Manager']);
 
         $data = [
-            'user_id' => $newUser->id,
-            'department_id' => $department->id,
-            'designation_id' => $designation->id,
+            'user_uuid' => $newUser->uuid,
+            'department_uuid' => $department->uuid,
+            'designation_uuid' => $designation->uuid,
             'emp_code' => 'EMP-' . uniqid(),
             'joining_date' => '2023-01-01',
             'status' => 'active',
-            'nik' => '1234567890123456',
+            'nik' => '123' . rand(100000000, 999999999),
             'place_of_birth' => 'Jakarta',
             'date_of_birth' => '1990-01-01',
             'gender' => 'male',
             'marital_status' => 'single',
-            'phone' => '081234567890',
+            'phone' => '0812' . rand(10000000, 99999999),
         ];
 
         $response = $this->postJson('/api/platform/hrm/employees', $data);
@@ -87,6 +87,69 @@ class EmployeeTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonFragment(['emp_code' => $data['emp_code']])
             ->assertJsonFragment(['nik' => $data['nik']]);
+    }
+
+    public function test_can_update_department()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'sanctum');
+
+        $department = Department::create(['name' => 'IT ' . uniqid(), 'description' => 'Old Desc']);
+
+        $data = [
+            'name' => 'IT Updated ' . uniqid(),
+            'description' => 'New Desc',
+        ];
+
+        $response = $this->putJson('/api/platform/hrm/departments/' . $department->uuid, $data);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['name' => $data['name']]);
+    }
+
+    public function test_can_update_designation()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'sanctum');
+
+        $designation = Designation::create(['name' => 'Dev ' . uniqid(), 'description' => 'Old Desc']);
+
+        $data = [
+            'name' => 'Dev Updated ' . uniqid(),
+            'description' => 'New Desc',
+        ];
+
+        $response = $this->putJson('/api/platform/hrm/designations/' . $designation->uuid, $data);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['name' => $data['name']]);
+    }
+
+    public function test_can_update_employee()
+    {
+        $admin = User::factory()->create();
+        $this->actingAs($admin, 'sanctum');
+
+        $user = User::factory()->create();
+        $employee = Employee::create([
+            'user_id' => $user->id,
+            'emp_code' => 'EMP-U-' . uniqid(),
+            'first_name' => 'Update',
+            'last_name' => 'Me',
+            'status' => 'active',
+            'nik' => '987' . rand(100000000, 999999999),
+        ]);
+
+        $data = [
+            'first_name' => 'Updated',
+            'last_name' => 'Name',
+            'status' => 'inactive',
+        ];
+
+        $response = $this->putJson('/api/platform/hrm/employees/' . $employee->uuid, $data);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['first_name' => 'Updated']);
     }
 
     public function test_can_create_employee_with_new_user_account()

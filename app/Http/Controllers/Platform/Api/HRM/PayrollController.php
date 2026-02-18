@@ -24,8 +24,8 @@ class PayrollController extends Controller
         security: [["sanctum" => []]],
         tags: ["HRM Payrolls"],
         parameters: [
-            new OA\Parameter(name: "payroll_period_id", in: "query", schema: new OA\Schema(type: "integer")),
-            new OA\Parameter(name: "employee_id", in: "query", schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "payroll_period_uuid", in: "query", schema: new OA\Schema(type: "string", format: "uuid")),
+            new OA\Parameter(name: "employee_uuid", in: "query", schema: new OA\Schema(type: "string", format: "uuid")),
             new OA\Parameter(name: "status", in: "query", schema: new OA\Schema(type: "string", enum: ["draft", "paid"])),
             new OA\Parameter(name: "per_page", in: "query", schema: new OA\Schema(type: "integer"))
         ],
@@ -35,7 +35,7 @@ class PayrollController extends Controller
     )]
     public function index(): JsonResponse
     {
-        $filters = request()->only(['payroll_period_id', 'employee_id', 'status']);
+        $filters = request()->only(['payroll_period_uuid', 'employee_uuid', 'status']);
         $perPage = request()->input('per_page', 15);
         $payrolls = $this->payrollService->getPayrolls($filters, $perPage);
         return response()->json([

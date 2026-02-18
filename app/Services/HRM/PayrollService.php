@@ -24,11 +24,13 @@ class PayrollService
     public function getPayrolls(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         return Payroll::with(['employee.user', 'payrollPeriod'])
-            ->when(isset($filters['payroll_period_id']), function (Builder $query) use ($filters) {
-                $query->where('payroll_period_id', $filters['payroll_period_id']);
+            ->when(isset($filters['payroll_period_uuid']), function (Builder $query) use ($filters) {
+                $period = PayrollPeriod::where('uuid', $filters['payroll_period_uuid'])->first();
+                $query->where('payroll_period_id', $period?->id ?? 0);
             })
-            ->when(isset($filters['employee_id']), function (Builder $query) use ($filters) {
-                $query->where('employee_id', $filters['employee_id']);
+            ->when(isset($filters['employee_uuid']), function (Builder $query) use ($filters) {
+                $employee = Employee::where('uuid', $filters['employee_uuid'])->first();
+                $query->where('employee_id', $employee?->id ?? 0);
             })
             ->when(isset($filters['status']), function (Builder $query) use ($filters) {
                 $query->where('status', $filters['status']);

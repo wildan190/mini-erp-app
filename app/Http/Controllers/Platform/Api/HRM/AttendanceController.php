@@ -26,9 +26,9 @@ class AttendanceController extends Controller
         security: [["sanctum" => []]],
         tags: ["HRM Attendance"],
         parameters: [
-            new OA\Parameter(name: "employee_id", in: "query", schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "employee_uuid", in: "query", schema: new OA\Schema(type: "string", format: "uuid")),
             new OA\Parameter(name: "date", in: "query", schema: new OA\Schema(type: "string", format: "date")),
-            new OA\Parameter(name: "department_id", in: "query", schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "department_uuid", in: "query", schema: new OA\Schema(type: "string", format: "uuid")),
             new OA\Parameter(name: "per_page", in: "query", schema: new OA\Schema(type: "integer"))
         ],
         responses: [
@@ -37,7 +37,7 @@ class AttendanceController extends Controller
     )]
     public function index(): JsonResponse
     {
-        $filters = request()->only(['employee_id', 'date', 'department_id']);
+        $filters = request()->only(['employee_uuid', 'date', 'department_uuid']);
         $perPage = request()->input('per_page', 15);
         $attendances = $this->attendanceService->getAttendances($filters, $perPage);
         return response()->json([
@@ -58,7 +58,7 @@ class AttendanceController extends Controller
                 schema: new OA\Schema(
                     properties: [
                         new OA\Property(property: "face_image", type: "string", format: "binary", description: "Face photo for verification (if required)"),
-                        new OA\Property(property: "office_location_id", type: "integer", description: "Office location ID for geofencing"),
+                        new OA\Property(property: "office_location_uuid", type: "string", format: "uuid", description: "Office location UUID for geofencing"),
                         new OA\Property(property: "latitude", type: "number", format: "float", description: "Current GPS latitude"),
                         new OA\Property(property: "longitude", type: "number", format: "float", description: "Current GPS longitude"),
                         new OA\Property(property: "location_lat", type: "string", description: "Legacy location latitude"),

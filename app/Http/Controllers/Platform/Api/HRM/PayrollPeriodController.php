@@ -81,9 +81,9 @@ class PayrollPeriodController extends Controller
             content: new OA\MediaType(
                 mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
-                    required: ["payroll_period_id"],
+                    required: ["payroll_period_uuid"],
                     properties: [
-                        new OA\Property(property: "payroll_period_id", type: "string", format: "uuid")
+                        new OA\Property(property: "payroll_period_uuid", type: "string", format: "uuid")
                     ]
                 )
             )
@@ -96,7 +96,7 @@ class PayrollPeriodController extends Controller
     public function generate(GeneratePayrollRequest $request): JsonResponse
     {
         try {
-            $period = $this->payrollService->findPayrollPeriod($request->payroll_period_id);
+            $period = $this->payrollService->findPayrollPeriod($request->payroll_period_uuid);
             if (!$period) {
                 return response()->json(['message' => 'Payroll period not found'], 404);
             }

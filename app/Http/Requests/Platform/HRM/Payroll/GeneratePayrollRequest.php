@@ -14,7 +14,7 @@ class GeneratePayrollRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payroll_period_id' => 'required|exists:payroll_periods,id',
+            'payroll_period_uuid' => 'required|exists:payroll_periods,uuid',
         ];
     }
 }
