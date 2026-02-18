@@ -55,7 +55,7 @@ class ResignationController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     required: ["notice_date", "resignation_date", "reason"],
                     properties: [
@@ -91,21 +91,24 @@ class ResignationController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/platform/hrm/resignations/{id}",
+        path: "/api/platform/hrm/resignations/{uuid}",
         summary: "Get resignation details",
         security: [["sanctum" => []]],
         tags: ["HRM Resignations"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Successful operation"),
             new OA\Response(response: 404, description: "Not found")
         ]
     )]
-    public function show($id): JsonResponse
+    public function show($uuid): JsonResponse
     {
-        $resignation = Resignation::with(['employee.user', 'handoverTo.user'])->findOrFail($id);
+        $resignation = $this->resignationService->findResignation($uuid);
+        if (!$resignation) {
+            return response()->json(['message' => 'Resignation not found'], 404);
+        }
         return response()->json([
             'message' => 'Resignation details',
             'data' => $resignation
@@ -113,17 +116,17 @@ class ResignationController extends Controller
     }
 
     #[OA\Put(
-        path: "/api/platform/hrm/resignations/{id}/status",
+        path: "/api/platform/hrm/resignations/{uuid}/status",
         summary: "Update resignation status",
         security: [["sanctum" => []]],
         tags: ["HRM Resignations"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     required: ["status"],
                     properties: [
@@ -138,9 +141,12 @@ class ResignationController extends Controller
             new OA\Response(response: 404, description: "Not found")
         ]
     )]
-    public function updateStatus(UpdateResignationStatusRequest $request, $id): JsonResponse
+    public function updateStatus(UpdateResignationStatusRequest $request, $uuid): JsonResponse
     {
-        $resignation = Resignation::findOrFail($id);
+        $resignation = $this->resignationService->findResignation($uuid);
+        if (!$resignation) {
+            return response()->json(['message' => 'Resignation not found'], 404);
+        }
         $status = $request->status;
         $remarks = $request->remarks;
 

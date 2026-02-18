@@ -15,7 +15,11 @@ class StoreEmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:users,id|unique:employees,user_id',
+            'user_id' => 'nullable|exists:users,id|unique:employees,user_id',
+            'first_name' => 'required_without:user_id|string|max:255',
+            'last_name' => 'required_without:user_id|string|max:255',
+            'email' => 'required_without:user_id|nullable|email|max:255|unique:users,email',
+            'password' => 'required_without:user_id|nullable|string|min:8',
             'department_id' => 'nullable|exists:departments,id',
             'designation_id' => 'nullable|exists:designations,id',
             'emp_code' => 'nullable|string|max:50|unique:employees,emp_code',

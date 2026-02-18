@@ -6,6 +6,7 @@ use App\Models\CRM\Lead;
 use App\Models\CRM\Prospect;
 use App\Models\CRM\Customer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class LeadService
 {
@@ -16,7 +17,13 @@ class LeadService
 
     public function show($id): Lead
     {
-        return Lead::where('uuid', $id)->firstOrFail();
+        if (is_numeric($id)) {
+            return Lead::findOrFail($id);
+        }
+        if (Str::isUuid($id)) {
+            return Lead::where('uuid', $id)->firstOrFail();
+        }
+        abort(404);
     }
 
     public function create(array $data): Lead
@@ -26,14 +33,27 @@ class LeadService
 
     public function update($id, array $data): Lead
     {
-        $lead = Lead::where('uuid', $id)->firstOrFail();
+        if (is_numeric($id)) {
+            $lead = Lead::findOrFail($id);
+        } elseif (Str::isUuid($id)) {
+            $lead = Lead::where('uuid', $id)->firstOrFail();
+        } else {
+            abort(404);
+        }
         $lead->update($data);
         return $lead;
     }
 
     public function delete($id): bool
     {
-        return Lead::where('uuid', $id)->firstOrFail()->delete();
+        if (is_numeric($id)) {
+            $lead = Lead::findOrFail($id);
+        } elseif (Str::isUuid($id)) {
+            $lead = Lead::where('uuid', $id)->firstOrFail();
+        } else {
+            abort(404);
+        }
+        return $lead->delete();
     }
 
     public function convertToProspect(Lead $lead): Prospect

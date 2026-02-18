@@ -53,7 +53,7 @@ class LeaveRequestController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     required: ["leave_type_id", "start_date", "end_date", "reason"],
                     properties: [
@@ -90,17 +90,17 @@ class LeaveRequestController extends Controller
     }
 
     #[OA\Put(
-        path: "/api/platform/hrm/leave-requests/{id}/status",
+        path: "/api/platform/hrm/leave-requests/{uuid}/status",
         summary: "Approve or Reject leave request",
         security: [["sanctum" => []]],
         tags: ["HRM Leave Requests"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     required: ["status"],
                     properties: [
@@ -115,9 +115,12 @@ class LeaveRequestController extends Controller
             new OA\Response(response: 400, description: "Error")
         ]
     )]
-    public function updateStatus(UpdateLeaveStatusRequest $request, $id): JsonResponse
+    public function updateStatus(UpdateLeaveStatusRequest $request, $uuid): JsonResponse
     {
-        $leaveRequest = LeaveRequest::findOrFail($id);
+        $leaveRequest = $this->leaveService->findLeaveRequest($uuid);
+        if (!$leaveRequest) {
+            return response()->json(['message' => 'Leave request not found'], 404);
+        }
 
         try {
             $updatedRequest = $this->leaveService->updateLeaveStatus(

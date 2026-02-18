@@ -31,7 +31,10 @@ class EmployeeController extends Controller
         tags: ["HRM Employees"],
         parameters: [
             new OA\Parameter(name: "page", in: "query", schema: new OA\Schema(type: "integer")),
-            new OA\Parameter(name: "per_page", in: "query", schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "per_page", in: "query", schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "department_id", in: "query", schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "designation_id", in: "query", schema: new OA\Schema(type: "integer")),
+            new OA\Parameter(name: "status", in: "query", schema: new OA\Schema(type: "string", enum: ["active", "inactive", "terminated", "resigned"]))
         ],
         responses: [
             new OA\Response(response: 200, description: "Successful operation")
@@ -52,6 +55,37 @@ class EmployeeController extends Controller
         summary: "Create a new employee",
         security: [["sanctum" => []]],
         tags: ["HRM Employees"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(
+                    required: ["first_name", "last_name"],
+                    properties: [
+                        new OA\Property(property: "user_id", type: "integer", description: "Existing User ID (optional)"),
+                        new OA\Property(property: "first_name", type: "string", description: "First Name"),
+                        new OA\Property(property: "last_name", type: "string", description: "Last Name"),
+                        new OA\Property(property: "email", type: "string", format: "email", description: "Email (required if user_id is null)"),
+                        new OA\Property(property: "password", type: "string", format: "password", description: "Password (required if user_id is null)"),
+                        new OA\Property(property: "department_id", type: "integer", description: "Department ID"),
+                        new OA\Property(property: "designation_id", type: "integer", description: "Designation ID"),
+                        new OA\Property(property: "emp_code", type: "string", description: "Employee code"),
+                        new OA\Property(property: "joining_date", type: "string", format: "date", description: "Joining date"),
+                        new OA\Property(property: "status", type: "string", enum: ["active", "inactive", "terminated", "resigned"]),
+                        new OA\Property(property: "nik", type: "string", description: "National ID number"),
+                        new OA\Property(property: "place_of_birth", type: "string", description: "Place of birth"),
+                        new OA\Property(property: "date_of_birth", type: "string", format: "date", description: "Date of birth"),
+                        new OA\Property(property: "gender", type: "string", enum: ["male", "female"]),
+                        new OA\Property(property: "marital_status", type: "string", enum: ["single", "married", "divorced", "widowed"]),
+                        new OA\Property(property: "religion", type: "string", description: "Religion"),
+                        new OA\Property(property: "address", type: "string", description: "Address"),
+                        new OA\Property(property: "phone", type: "string", description: "Phone number"),
+                        new OA\Property(property: "emergency_contact_name", type: "string", description: "Emergency contact name"),
+                        new OA\Property(property: "emergency_contact_phone", type: "string", description: "Emergency contact phone")
+                    ]
+                )
+            )
+        ),
         responses: [
             new OA\Response(response: 201, description: "Employee created"),
             new OA\Response(response: 422, description: "Validation error")
@@ -67,21 +101,21 @@ class EmployeeController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/platform/hrm/employees/{id}",
+        path: "/api/platform/hrm/employees/{uuid}",
         summary: "Get employee details",
         security: [["sanctum" => []]],
         tags: ["HRM Employees"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Successful operation"),
             new OA\Response(response: 404, description: "Employee not found")
         ]
     )]
-    public function show($id): JsonResponse
+    public function show($uuid): JsonResponse
     {
-        $employee = $this->employeeService->findEmployee($id);
+        $employee = $this->employeeService->findEmployee($uuid);
 
         if (!$employee) {
             return response()->json(['message' => 'Employee not found'], 404);
@@ -94,21 +128,49 @@ class EmployeeController extends Controller
     }
 
     #[OA\Put(
-        path: "/api/platform/hrm/employees/{id}",
+        path: "/api/platform/hrm/employees/{uuid}",
         summary: "Update an employee",
         security: [["sanctum" => []]],
         tags: ["HRM Employees"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(
+                    properties: [
+                        new OA\Property(property: "user_id", type: "integer", description: "Existing User ID"),
+                        new OA\Property(property: "first_name", type: "string", description: "First Name"),
+                        new OA\Property(property: "last_name", type: "string", description: "Last Name"),
+                        new OA\Property(property: "department_id", type: "integer", description: "Department ID"),
+                        new OA\Property(property: "designation_id", type: "integer", description: "Designation ID"),
+                        new OA\Property(property: "emp_code", type: "string", description: "Employee code"),
+                        new OA\Property(property: "joining_date", type: "string", format: "date", description: "Joining date"),
+                        new OA\Property(property: "status", type: "string", enum: ["active", "inactive", "terminated", "resigned"]),
+                        new OA\Property(property: "nik", type: "string", description: "National ID number"),
+                        new OA\Property(property: "place_of_birth", type: "string", description: "Place of birth"),
+                        new OA\Property(property: "date_of_birth", type: "string", format: "date", description: "Date of birth"),
+                        new OA\Property(property: "gender", type: "string", enum: ["male", "female"]),
+                        new OA\Property(property: "marital_status", type: "string", enum: ["single", "married", "divorced", "widowed"]),
+                        new OA\Property(property: "religion", type: "string", description: "Religion"),
+                        new OA\Property(property: "address", type: "string", description: "Address"),
+                        new OA\Property(property: "phone", type: "string", description: "Phone number"),
+                        new OA\Property(property: "emergency_contact_name", type: "string", description: "Emergency contact name"),
+                        new OA\Property(property: "emergency_contact_phone", type: "string", description: "Emergency contact phone")
+                    ]
+                )
+            )
+        ),
         responses: [
             new OA\Response(response: 200, description: "Employee updated"),
             new OA\Response(response: 404, description: "Employee not found")
         ]
     )]
-    public function update(UpdateEmployeeRequest $request, $id): JsonResponse
+    public function update(UpdateEmployeeRequest $request, $uuid): JsonResponse
     {
-        $employee = $this->employeeService->findEmployee($id);
+        $employee = $this->employeeService->findEmployee($uuid);
 
         if (!$employee) {
             return response()->json(['message' => 'Employee not found'], 404);
@@ -122,21 +184,21 @@ class EmployeeController extends Controller
     }
 
     #[OA\Delete(
-        path: "/api/platform/hrm/employees/{id}",
+        path: "/api/platform/hrm/employees/{uuid}",
         summary: "Delete an employee",
         security: [["sanctum" => []]],
         tags: ["HRM Employees"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Employee deleted"),
             new OA\Response(response: 404, description: "Employee not found")
         ]
     )]
-    public function destroy($id): JsonResponse
+    public function destroy($uuid): JsonResponse
     {
-        $employee = $this->employeeService->findEmployee($id);
+        $employee = $this->employeeService->findEmployee($uuid);
 
         if (!$employee) {
             return response()->json(['message' => 'Employee not found'], 404);
@@ -149,12 +211,12 @@ class EmployeeController extends Controller
     }
 
     #[OA\Post(
-        path: "/api/platform/hrm/employees/{id}/enroll-face",
+        path: "/api/platform/hrm/employees/{uuid}/enroll-face",
         summary: "Enroll employee face for recognition",
         security: [["sanctum" => []]],
         tags: ["HRM Employees"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         requestBody: new OA\RequestBody(
             required: true,
@@ -173,13 +235,13 @@ class EmployeeController extends Controller
             new OA\Response(response: 404, description: "Employee not found")
         ]
     )]
-    public function enrollFace(Request $request, $id): JsonResponse
+    public function enrollFace(Request $request, $uuid): JsonResponse
     {
         $request->validate([
             'face_image' => 'required|image|max:5120',
         ]);
 
-        $employee = $this->employeeService->findEmployee($id);
+        $employee = $this->employeeService->findEmployee($uuid);
 
         if (!$employee) {
             return response()->json(['message' => 'Employee not found'], 404);
@@ -196,21 +258,21 @@ class EmployeeController extends Controller
     }
 
     #[OA\Delete(
-        path: "/api/platform/hrm/employees/{id}/face-data",
+        path: "/api/platform/hrm/employees/{uuid}/face-data",
         summary: "Remove employee face data",
         security: [["sanctum" => []]],
         tags: ["HRM Employees"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Face data removed"),
             new OA\Response(response: 404, description: "Employee not found")
         ]
     )]
-    public function removeFace($id): JsonResponse
+    public function removeFace($uuid): JsonResponse
     {
-        $employee = $this->employeeService->findEmployee($id);
+        $employee = $this->employeeService->findEmployee($uuid);
 
         if (!$employee) {
             return response()->json(['message' => 'Employee not found'], 404);

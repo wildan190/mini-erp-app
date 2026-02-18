@@ -50,7 +50,7 @@ class ShiftController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     required: ["name", "start_time", "end_time"],
                     properties: [
@@ -77,21 +77,24 @@ class ShiftController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/platform/hrm/shifts/{id}",
+        path: "/api/platform/hrm/shifts/{uuid}",
         summary: "Get shift details",
         security: [["sanctum" => []]],
         tags: ["HRM Shifts"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Successful operation"),
             new OA\Response(response: 404, description: "Shift not found")
         ]
     )]
-    public function show($id): JsonResponse
+    public function show($uuid): JsonResponse
     {
-        $shift = Shift::findOrFail($id);
+        $shift = $this->shiftService->findShift($uuid);
+        if (!$shift) {
+            return response()->json(['message' => 'Shift not found'], 404);
+        }
         return response()->json([
             'message' => 'Shift details',
             'data' => $shift
@@ -99,17 +102,17 @@ class ShiftController extends Controller
     }
 
     #[OA\Put(
-        path: "/api/platform/hrm/shifts/{id}",
+        path: "/api/platform/hrm/shifts/{uuid}",
         summary: "Update a shift",
         security: [["sanctum" => []]],
         tags: ["HRM Shifts"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     required: ["name", "start_time", "end_time"],
                     properties: [
@@ -127,9 +130,12 @@ class ShiftController extends Controller
             new OA\Response(response: 404, description: "Shift not found")
         ]
     )]
-    public function update(UpdateShiftRequest $request, $id): JsonResponse
+    public function update(UpdateShiftRequest $request, $uuid): JsonResponse
     {
-        $shift = Shift::findOrFail($id);
+        $shift = $this->shiftService->findShift($uuid);
+        if (!$shift) {
+            return response()->json(['message' => 'Shift not found'], 404);
+        }
         $updatedShift = $this->shiftService->updateShift($shift, $request->validated());
         return response()->json([
             'message' => 'Shift updated successfully',
@@ -138,21 +144,24 @@ class ShiftController extends Controller
     }
 
     #[OA\Delete(
-        path: "/api/platform/hrm/shifts/{id}",
+        path: "/api/platform/hrm/shifts/{uuid}",
         summary: "Delete a shift",
         security: [["sanctum" => []]],
         tags: ["HRM Shifts"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Shift deleted"),
             new OA\Response(response: 404, description: "Shift not found")
         ]
     )]
-    public function destroy($id): JsonResponse
+    public function destroy($uuid): JsonResponse
     {
-        $shift = Shift::findOrFail($id);
+        $shift = $this->shiftService->findShift($uuid);
+        if (!$shift) {
+            return response()->json(['message' => 'Shift not found'], 404);
+        }
         $this->shiftService->deleteShift($shift);
         return response()->json([
             'message' => 'Shift deleted successfully'

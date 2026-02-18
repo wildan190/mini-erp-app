@@ -5,6 +5,7 @@ namespace App\Services\HRM;
 use App\Models\HRM\Employee;
 use App\Models\HRM\Resignation;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 
 class ResignationService
 {
@@ -76,5 +77,21 @@ class ResignationService
     {
         $resignation->update(['status' => 'withdrawn']);
         return $resignation;
+    }
+    /**
+     * Find resignation by ID or UUID.
+     *
+     * @param string|int $id
+     * @return Resignation|null
+     */
+    public function findResignation(string|int $id): ?Resignation
+    {
+        if (is_numeric($id)) {
+            return Resignation::with(['employee.user', 'handoverTo.user'])->find($id);
+        }
+        if (Str::isUuid($id)) {
+            return Resignation::with(['employee.user', 'handoverTo.user'])->where('uuid', $id)->first();
+        }
+        return null;
     }
 }

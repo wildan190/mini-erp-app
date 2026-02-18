@@ -5,6 +5,7 @@ namespace App\Services\HRM;
 use App\Models\HRM\Shift;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 
 class ShiftService
 {
@@ -62,5 +63,22 @@ class ShiftService
     public function deleteShift(Shift $shift): ?bool
     {
         return $shift->delete();
+    }
+
+    /**
+     * Find shift by ID or UUID.
+     *
+     * @param string|int $id
+     * @return Shift|null
+     */
+    public function findShift(string|int $id): ?Shift
+    {
+        if (is_numeric($id)) {
+            return Shift::find($id);
+        }
+        if (Str::isUuid($id)) {
+            return Shift::where('uuid', $id)->first();
+        }
+        return null;
     }
 }

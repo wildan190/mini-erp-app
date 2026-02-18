@@ -5,6 +5,7 @@ namespace App\Services\HRM;
 use App\Models\HRM\Reimbursement;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ReimbursementService
 {
@@ -80,5 +81,21 @@ class ReimbursementService
     {
         $reimbursement->update(['status' => 'paid']);
         return $reimbursement;
+    }
+    /**
+     * Find reimbursement by ID or UUID.
+     *
+     * @param string|int $id
+     * @return Reimbursement|null
+     */
+    public function findReimbursement(string|int $id): ?Reimbursement
+    {
+        if (is_numeric($id)) {
+            return Reimbursement::with(['employee.user', 'approver'])->find($id);
+        }
+        if (Str::isUuid($id)) {
+            return Reimbursement::with(['employee.user', 'approver'])->where('uuid', $id)->first();
+        }
+        return null;
     }
 }

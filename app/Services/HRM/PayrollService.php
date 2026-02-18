@@ -10,6 +10,7 @@ use App\Models\HRM\SalaryComponent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PayrollService
 {
@@ -150,5 +151,38 @@ class PayrollService
         ]);
 
         return $payroll;
+    }
+    /**
+     * Find payroll by ID or UUID.
+     *
+     * @param string|int $id
+     * @return Payroll|null
+     */
+    public function findPayroll(string|int $id): ?Payroll
+    {
+        if (is_numeric($id)) {
+            return Payroll::with(['employee.user', 'payrollPeriod', 'items'])->find($id);
+        }
+        if (Str::isUuid($id)) {
+            return Payroll::with(['employee.user', 'payrollPeriod', 'items'])->where('uuid', $id)->first();
+        }
+        return null;
+    }
+
+    /**
+     * Find payroll period by ID or UUID.
+     *
+     * @param string|int $id
+     * @return PayrollPeriod|null
+     */
+    public function findPayrollPeriod(string|int $id): ?PayrollPeriod
+    {
+        if (is_numeric($id)) {
+            return PayrollPeriod::find($id);
+        }
+        if (Str::isUuid($id)) {
+            return PayrollPeriod::where('uuid', $id)->first();
+        }
+        return null;
     }
 }

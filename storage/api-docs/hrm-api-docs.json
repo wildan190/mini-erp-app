@@ -70,21 +70,43 @@
                 "tags": [
                     "HRM Attendance"
                 ],
-                "summary": "Clock In for the authenticated user (employee)",
+                "summary": "Clock In with face recognition and geofencing",
                 "operationId": "c3f4d12bded59dbfd2df841bff7696c5",
                 "requestBody": {
                     "required": false,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "properties": {
+                                    "face_image": {
+                                        "description": "Face photo for verification (if required)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "office_location_id": {
+                                        "description": "Office location ID for geofencing",
+                                        "type": "integer"
+                                    },
+                                    "latitude": {
+                                        "description": "Current GPS latitude",
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "longitude": {
+                                        "description": "Current GPS longitude",
+                                        "type": "number",
+                                        "format": "float"
+                                    },
                                     "location_lat": {
+                                        "description": "Legacy location latitude",
                                         "type": "string"
                                     },
                                     "location_long": {
+                                        "description": "Legacy location longitude",
                                         "type": "string"
                                     },
                                     "notes": {
+                                        "description": "Optional notes",
                                         "type": "string"
                                     }
                                 },
@@ -95,10 +117,10 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Clocked in successfully"
+                        "description": "Clocked in successfully - verification pending"
                     },
                     "400": {
-                        "description": "Already clocked in"
+                        "description": "Already clocked in or validation error"
                     },
                     "404": {
                         "description": "Employee record not found"
@@ -116,15 +138,31 @@
                 "tags": [
                     "HRM Attendance"
                 ],
-                "summary": "Clock Out for the authenticated user (employee)",
+                "summary": "Clock Out with optional face and location verification",
                 "operationId": "3ba5ba3d195d22af6a291f60b796d1b7",
                 "requestBody": {
                     "required": false,
                     "content": {
-                        "application/json": {
+                        "multipart/form-data": {
                             "schema": {
                                 "properties": {
+                                    "face_image": {
+                                        "description": "Face photo for verification (optional)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "latitude": {
+                                        "description": "Current GPS latitude",
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "longitude": {
+                                        "description": "Current GPS longitude",
+                                        "type": "number",
+                                        "format": "float"
+                                    },
                                     "notes": {
+                                        "description": "Optional notes",
                                         "type": "string"
                                     }
                                 },
@@ -175,6 +213,29 @@
                 ],
                 "summary": "Create a new department",
                 "operationId": "9659f7a7ecc5ed47ea92db52efa968e9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Department name",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Optional description",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Department created"
@@ -237,6 +298,29 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Department name",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Optional description",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Department updated"
@@ -306,6 +390,29 @@
                 ],
                 "summary": "Create a new designation",
                 "operationId": "86230d9e649e9fdabd6b0dd4756007a9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Designation name",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Optional description",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Designation created"
@@ -368,6 +475,29 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Designation name",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "description": "Optional description",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Designation updated"
@@ -434,6 +564,33 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "name": "department_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "designation_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "inactive",
+                                "terminated",
+                                "resigned"
+                            ]
+                        }
                     }
                 ],
                 "responses": {
@@ -453,6 +610,119 @@
                 ],
                 "summary": "Create a new employee",
                 "operationId": "a25d2c6c2d1b2092d1c175b51e1cfb9d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "description": "Existing User ID (optional)",
+                                        "type": "integer"
+                                    },
+                                    "first_name": {
+                                        "description": "First Name",
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "description": "Last Name",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "Email (required if user_id is null)",
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "description": "Password (required if user_id is null)",
+                                        "type": "string",
+                                        "format": "password"
+                                    },
+                                    "department_id": {
+                                        "description": "Department ID",
+                                        "type": "integer"
+                                    },
+                                    "designation_id": {
+                                        "description": "Designation ID",
+                                        "type": "integer"
+                                    },
+                                    "emp_code": {
+                                        "description": "Employee code",
+                                        "type": "string"
+                                    },
+                                    "joining_date": {
+                                        "description": "Joining date",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive",
+                                            "terminated",
+                                            "resigned"
+                                        ]
+                                    },
+                                    "nik": {
+                                        "description": "National ID number",
+                                        "type": "string"
+                                    },
+                                    "place_of_birth": {
+                                        "description": "Place of birth",
+                                        "type": "string"
+                                    },
+                                    "date_of_birth": {
+                                        "description": "Date of birth",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female"
+                                        ]
+                                    },
+                                    "marital_status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "single",
+                                            "married",
+                                            "divorced",
+                                            "widowed"
+                                        ]
+                                    },
+                                    "religion": {
+                                        "description": "Religion",
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "description": "Address",
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "description": "Phone number",
+                                        "type": "string"
+                                    },
+                                    "emergency_contact_name": {
+                                        "description": "Emergency contact name",
+                                        "type": "string"
+                                    },
+                                    "emergency_contact_phone": {
+                                        "description": "Emergency contact phone",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
                         "description": "Employee created"
@@ -515,6 +785,105 @@
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "user_id": {
+                                        "description": "Existing User ID",
+                                        "type": "integer"
+                                    },
+                                    "first_name": {
+                                        "description": "First Name",
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "description": "Last Name",
+                                        "type": "string"
+                                    },
+                                    "department_id": {
+                                        "description": "Department ID",
+                                        "type": "integer"
+                                    },
+                                    "designation_id": {
+                                        "description": "Designation ID",
+                                        "type": "integer"
+                                    },
+                                    "emp_code": {
+                                        "description": "Employee code",
+                                        "type": "string"
+                                    },
+                                    "joining_date": {
+                                        "description": "Joining date",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive",
+                                            "terminated",
+                                            "resigned"
+                                        ]
+                                    },
+                                    "nik": {
+                                        "description": "National ID number",
+                                        "type": "string"
+                                    },
+                                    "place_of_birth": {
+                                        "description": "Place of birth",
+                                        "type": "string"
+                                    },
+                                    "date_of_birth": {
+                                        "description": "Date of birth",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "enum": [
+                                            "male",
+                                            "female"
+                                        ]
+                                    },
+                                    "marital_status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "single",
+                                            "married",
+                                            "divorced",
+                                            "widowed"
+                                        ]
+                                    },
+                                    "religion": {
+                                        "description": "Religion",
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "description": "Address",
+                                        "type": "string"
+                                    },
+                                    "phone": {
+                                        "description": "Phone number",
+                                        "type": "string"
+                                    },
+                                    "emergency_contact_name": {
+                                        "description": "Emergency contact name",
+                                        "type": "string"
+                                    },
+                                    "emergency_contact_phone": {
+                                        "description": "Emergency contact phone",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Employee updated"
@@ -826,7 +1195,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "leave_type_id",
@@ -893,7 +1262,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "status"
@@ -976,7 +1345,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "name",
@@ -1056,7 +1425,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "name",
@@ -1154,7 +1523,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "properties": {
                                     "name": {
@@ -1370,7 +1739,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "name",
@@ -1420,7 +1789,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "payroll_period_id"
@@ -1599,7 +1968,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "status"
@@ -1777,7 +2146,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "notice_date",
@@ -1872,7 +2241,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "status"
@@ -1937,7 +2306,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "name",
@@ -2024,7 +2393,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "name",
@@ -2119,7 +2488,7 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
                                     "name",

@@ -247,6 +247,7 @@
                                     },
                                     "email": {
                                         "type": "string",
+                                        "format": "email",
                                         "example": "contact@acme.com"
                                     },
                                     "company_name": {
@@ -268,9 +269,47 @@
                                         "type": "string"
                                     },
                                     "website": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "url"
                                     },
                                     "phone": {
+                                        "type": "string"
+                                    },
+                                    "alt_phone": {
+                                        "type": "string"
+                                    },
+                                    "department": {
+                                        "type": "string"
+                                    },
+                                    "billing_address": {
+                                        "type": "string"
+                                    },
+                                    "shipping_address": {
+                                        "type": "string"
+                                    },
+                                    "city": {
+                                        "type": "string"
+                                    },
+                                    "province": {
+                                        "type": "string"
+                                    },
+                                    "postal_code": {
+                                        "type": "string"
+                                    },
+                                    "country": {
+                                        "type": "string"
+                                    },
+                                    "credit_limit": {
+                                        "type": "number"
+                                    },
+                                    "payment_terms": {
+                                        "type": "string"
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "maxLength": 3
+                                    },
+                                    "segment": {
                                         "type": "string"
                                     },
                                     "status": {
@@ -280,6 +319,9 @@
                                             "inactive",
                                             "blocked"
                                         ]
+                                    },
+                                    "notes": {
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -361,6 +403,67 @@
                                         "type": "string"
                                     },
                                     "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "company_name": {
+                                        "type": "string"
+                                    },
+                                    "customer_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "corporate",
+                                            "individual"
+                                        ]
+                                    },
+                                    "tax_id": {
+                                        "type": "string"
+                                    },
+                                    "industry": {
+                                        "type": "string"
+                                    },
+                                    "website": {
+                                        "type": "string",
+                                        "format": "url"
+                                    },
+                                    "phone": {
+                                        "type": "string"
+                                    },
+                                    "alt_phone": {
+                                        "type": "string"
+                                    },
+                                    "department": {
+                                        "type": "string"
+                                    },
+                                    "billing_address": {
+                                        "type": "string"
+                                    },
+                                    "shipping_address": {
+                                        "type": "string"
+                                    },
+                                    "city": {
+                                        "type": "string"
+                                    },
+                                    "province": {
+                                        "type": "string"
+                                    },
+                                    "postal_code": {
+                                        "type": "string"
+                                    },
+                                    "country": {
+                                        "type": "string"
+                                    },
+                                    "credit_limit": {
+                                        "type": "number"
+                                    },
+                                    "payment_terms": {
+                                        "type": "string"
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "maxLength": 3
+                                    },
+                                    "segment": {
                                         "type": "string"
                                     },
                                     "status": {
@@ -370,6 +473,9 @@
                                             "inactive",
                                             "blocked"
                                         ]
+                                    },
+                                    "notes": {
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -463,13 +569,16 @@
                                     },
                                     "email": {
                                         "type": "string",
+                                        "format": "email",
                                         "example": "alice@example.com"
                                     },
                                     "phone": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "08123456789"
                                     },
                                     "company": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Acme Corp"
                                     },
                                     "source": {
                                         "type": "string",
@@ -549,6 +658,22 @@
                             "schema": {
                                 "properties": {
                                     "lead_name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "type": "string"
+                                    },
+                                    "company": {
+                                        "type": "string"
+                                    },
+                                    "source": {
+                                        "type": "string"
+                                    },
+                                    "notes": {
                                         "type": "string"
                                     },
                                     "status": {
@@ -666,7 +791,7 @@
                                 ],
                                 "properties": {
                                     "customer_id": {
-                                        "description": "UUID or ID of customer",
+                                        "description": "UUID of customer",
                                         "type": "string"
                                     },
                                     "title": {
@@ -677,13 +802,14 @@
                                         "type": "string",
                                         "enum": [
                                             "new",
+                                            "contacted",
                                             "qualified",
                                             "proposal",
                                             "negotiation",
-                                            "closed_won",
-                                            "closed_lost"
+                                            "won",
+                                            "lost"
                                         ],
-                                        "example": "negotiation"
+                                        "example": "qualified"
                                     },
                                     "expected_value": {
                                         "type": "number"
@@ -693,7 +819,9 @@
                                         "format": "date"
                                     },
                                     "probability": {
-                                        "type": "integer"
+                                        "type": "integer",
+                                        "maximum": 100,
+                                        "minimum": 0
                                     },
                                     "notes": {
                                         "type": "string"
@@ -768,6 +896,10 @@
                         "application/x-www-form-urlencoded": {
                             "schema": {
                                 "properties": {
+                                    "customer_id": {
+                                        "description": "UUID of customer",
+                                        "type": "string"
+                                    },
                                     "title": {
                                         "type": "string"
                                     },
@@ -775,12 +907,28 @@
                                         "type": "string",
                                         "enum": [
                                             "new",
+                                            "contacted",
                                             "qualified",
                                             "proposal",
                                             "negotiation",
-                                            "closed_won",
-                                            "closed_lost"
+                                            "won",
+                                            "lost"
                                         ]
+                                    },
+                                    "expected_value": {
+                                        "type": "number"
+                                    },
+                                    "expected_closing_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "probability": {
+                                        "type": "integer",
+                                        "maximum": 100,
+                                        "minimum": 0
+                                    },
+                                    "notes": {
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -859,13 +1007,14 @@
                                         "type": "string",
                                         "enum": [
                                             "new",
+                                            "contacted",
                                             "qualified",
                                             "proposal",
                                             "negotiation",
-                                            "closed_won",
-                                            "closed_lost"
+                                            "won",
+                                            "lost"
                                         ],
-                                        "example": "closed_won"
+                                        "example": "won"
                                     }
                                 },
                                 "type": "object"

@@ -5,6 +5,7 @@ namespace App\Services\HRM;
 use App\Models\HRM\EmployeeDocument;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EmployeeDocumentService
 {
@@ -36,5 +37,21 @@ class EmployeeDocumentService
         }
 
         return $document->delete();
+    }
+    /**
+     * Find document by ID or UUID.
+     *
+     * @param string|int $id
+     * @return EmployeeDocument|null
+     */
+    public function findDocument(string|int $id): ?EmployeeDocument
+    {
+        if (is_numeric($id)) {
+            return EmployeeDocument::find($id);
+        }
+        if (Str::isUuid($id)) {
+            return EmployeeDocument::where('uuid', $id)->first();
+        }
+        return null;
     }
 }

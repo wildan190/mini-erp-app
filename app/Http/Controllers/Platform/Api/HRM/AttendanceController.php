@@ -48,25 +48,29 @@ class AttendanceController extends Controller
 
     #[OA\Post(
         path: "/api/platform/hrm/attendances/clock-in",
-        summary: "Clock In for the authenticated user (employee)",
+        summary: "Clock In with face recognition and geofencing",
         security: [["sanctum" => []]],
         tags: ["HRM Attendance"],
         requestBody: new OA\RequestBody(
             required: false,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "multipart/form-data",
                 schema: new OA\Schema(
                     properties: [
-                        new OA\Property(property: "location_lat", type: "string"),
-                        new OA\Property(property: "location_long", type: "string"),
-                        new OA\Property(property: "notes", type: "string")
+                        new OA\Property(property: "face_image", type: "string", format: "binary", description: "Face photo for verification (if required)"),
+                        new OA\Property(property: "office_location_id", type: "integer", description: "Office location ID for geofencing"),
+                        new OA\Property(property: "latitude", type: "number", format: "float", description: "Current GPS latitude"),
+                        new OA\Property(property: "longitude", type: "number", format: "float", description: "Current GPS longitude"),
+                        new OA\Property(property: "location_lat", type: "string", description: "Legacy location latitude"),
+                        new OA\Property(property: "location_long", type: "string", description: "Legacy location longitude"),
+                        new OA\Property(property: "notes", type: "string", description: "Optional notes")
                     ]
                 )
             )
         ),
         responses: [
-            new OA\Response(response: 201, description: "Clocked in successfully"),
-            new OA\Response(response: 400, description: "Already clocked in"),
+            new OA\Response(response: 201, description: "Clocked in successfully - verification pending"),
+            new OA\Response(response: 400, description: "Already clocked in or validation error"),
             new OA\Response(response: 404, description: "Employee record not found")
         ]
     )]
@@ -90,16 +94,19 @@ class AttendanceController extends Controller
 
     #[OA\Post(
         path: "/api/platform/hrm/attendances/clock-out",
-        summary: "Clock Out for the authenticated user (employee)",
+        summary: "Clock Out with optional face and location verification",
         security: [["sanctum" => []]],
         tags: ["HRM Attendance"],
         requestBody: new OA\RequestBody(
             required: false,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "multipart/form-data",
                 schema: new OA\Schema(
                     properties: [
-                        new OA\Property(property: "notes", type: "string")
+                        new OA\Property(property: "face_image", type: "string", format: "binary", description: "Face photo for verification (optional)"),
+                        new OA\Property(property: "latitude", type: "number", format: "float", description: "Current GPS latitude"),
+                        new OA\Property(property: "longitude", type: "number", format: "float", description: "Current GPS longitude"),
+                        new OA\Property(property: "notes", type: "string", description: "Optional notes")
                     ]
                 )
             )

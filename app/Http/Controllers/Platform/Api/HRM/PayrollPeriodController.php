@@ -46,7 +46,7 @@ class PayrollPeriodController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     required: ["name", "start_date", "end_date"],
                     properties: [
@@ -79,11 +79,11 @@ class PayrollPeriodController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     required: ["payroll_period_id"],
                     properties: [
-                        new OA\Property(property: "payroll_period_id", type: "integer")
+                        new OA\Property(property: "payroll_period_id", type: "string", format: "uuid")
                     ]
                 )
             )
@@ -96,7 +96,10 @@ class PayrollPeriodController extends Controller
     public function generate(GeneratePayrollRequest $request): JsonResponse
     {
         try {
-            $period = PayrollPeriod::findOrFail($request->payroll_period_id);
+            $period = $this->payrollService->findPayrollPeriod($request->payroll_period_id);
+            if (!$period) {
+                return response()->json(['message' => 'Payroll period not found'], 404);
+            }
             $count = $this->payrollService->generatePayroll($period);
             return response()->json([
                 'message' => "Payroll generated for $count employees.",

@@ -4,6 +4,7 @@ namespace App\Services\HRM;
 
 use App\Models\HRM\OfficeLocation;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 
 class OfficeLocationService
 {
@@ -56,5 +57,21 @@ class OfficeLocationService
     public function deleteOfficeLocation(OfficeLocation $officeLocation): bool
     {
         return $officeLocation->delete();
+    }
+    /**
+     * Find office location by ID or UUID.
+     *
+     * @param string|int $id
+     * @return OfficeLocation|null
+     */
+    public function findOfficeLocation(string|int $id): ?OfficeLocation
+    {
+        if (is_numeric($id)) {
+            return OfficeLocation::find($id);
+        }
+        if (Str::isUuid($id)) {
+            return OfficeLocation::where('uuid', $id)->first();
+        }
+        return null;
     }
 }

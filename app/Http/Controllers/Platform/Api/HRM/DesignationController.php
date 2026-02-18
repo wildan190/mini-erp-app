@@ -41,6 +41,19 @@ class DesignationController extends Controller
         summary: "Create a new designation",
         security: [["sanctum" => []]],
         tags: ["HRM Designations"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(
+                    required: ["name"],
+                    properties: [
+                        new OA\Property(property: "name", type: "string", description: "Designation name"),
+                        new OA\Property(property: "description", type: "string", description: "Optional description")
+                    ]
+                )
+            )
+        ),
         responses: [
             new OA\Response(response: 201, description: "Designation created"),
             new OA\Response(response: 422, description: "Validation error")
@@ -56,21 +69,24 @@ class DesignationController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/platform/hrm/designations/{id}",
+        path: "/api/platform/hrm/designations/{uuid}",
         summary: "Get designation details",
         security: [["sanctum" => []]],
         tags: ["HRM Designations"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Successful operation"),
             new OA\Response(response: 404, description: "Designation not found")
         ]
     )]
-    public function show($id): JsonResponse
+    public function show($uuid): JsonResponse
     {
-        $designation = \App\Models\HRM\Designation::findOrFail($id);
+        $designation = $this->designationService->findDesignation($uuid);
+        if (!$designation) {
+            return response()->json(['message' => 'Designation not found'], 404);
+        }
         return response()->json([
             'message' => 'Designation details',
             'data' => $designation
@@ -78,21 +94,37 @@ class DesignationController extends Controller
     }
 
     #[OA\Put(
-        path: "/api/platform/hrm/designations/{id}",
+        path: "/api/platform/hrm/designations/{uuid}",
         summary: "Update a designation",
         security: [["sanctum" => []]],
         tags: ["HRM Designations"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(
+                    required: ["name"],
+                    properties: [
+                        new OA\Property(property: "name", type: "string", description: "Designation name"),
+                        new OA\Property(property: "description", type: "string", description: "Optional description")
+                    ]
+                )
+            )
+        ),
         responses: [
             new OA\Response(response: 200, description: "Designation updated"),
             new OA\Response(response: 404, description: "Designation not found")
         ]
     )]
-    public function update(UpdateDesignationRequest $request, $id): JsonResponse
+    public function update(UpdateDesignationRequest $request, $uuid): JsonResponse
     {
-        $designation = \App\Models\HRM\Designation::findOrFail($id);
+        $designation = $this->designationService->findDesignation($uuid);
+        if (!$designation) {
+            return response()->json(['message' => 'Designation not found'], 404);
+        }
         $updatedDesignation = $this->designationService->updateDesignation($designation, $request->validated());
         return response()->json([
             'message' => 'Designation updated successfully',
@@ -101,21 +133,24 @@ class DesignationController extends Controller
     }
 
     #[OA\Delete(
-        path: "/api/platform/hrm/designations/{id}",
+        path: "/api/platform/hrm/designations/{uuid}",
         summary: "Delete a designation",
         security: [["sanctum" => []]],
         tags: ["HRM Designations"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Designation deleted"),
             new OA\Response(response: 404, description: "Designation not found")
         ]
     )]
-    public function destroy($id): JsonResponse
+    public function destroy($uuid): JsonResponse
     {
-        $designation = \App\Models\HRM\Designation::findOrFail($id);
+        $designation = $this->designationService->findDesignation($uuid);
+        if (!$designation) {
+            return response()->json(['message' => 'Designation not found'], 404);
+        }
         $this->designationService->deleteDesignation($designation);
         return response()->json([
             'message' => 'Designation deleted successfully'

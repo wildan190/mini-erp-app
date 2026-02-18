@@ -4,6 +4,7 @@ namespace App\Services\HRM;
 
 use App\Models\HRM\Department;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Str;
 
 class DepartmentService
 {
@@ -39,6 +40,23 @@ class DepartmentService
     {
         $department->update($data);
         return $department;
+    }
+
+    /**
+     * Find department by ID or UUID.
+     *
+     * @param string|int $id
+     * @return Department|null
+     */
+    public function findDepartment(string|int $id): ?Department
+    {
+        if (is_numeric($id)) {
+            return Department::find($id);
+        }
+        if (Str::isUuid($id)) {
+            return Department::where('uuid', $id)->first();
+        }
+        return null;
     }
 
     /**

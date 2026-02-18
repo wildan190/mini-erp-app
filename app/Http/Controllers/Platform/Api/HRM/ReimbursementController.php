@@ -92,21 +92,24 @@ class ReimbursementController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/platform/hrm/reimbursements/{id}",
+        path: "/api/platform/hrm/reimbursements/{uuid}",
         summary: "Get reimbursement details",
         security: [["sanctum" => []]],
         tags: ["HRM Reimbursements"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Successful operation"),
             new OA\Response(response: 404, description: "Not found")
         ]
     )]
-    public function show($id): JsonResponse
+    public function show($uuid): JsonResponse
     {
-        $reimbursement = Reimbursement::with(['employee.user', 'approver'])->findOrFail($id);
+        $reimbursement = $this->reimbursementService->findReimbursement($uuid);
+        if (!$reimbursement) {
+            return response()->json(['message' => 'Reimbursement not found'], 404);
+        }
         return response()->json([
             'message' => 'Reimbursement details',
             'data' => $reimbursement
@@ -114,17 +117,17 @@ class ReimbursementController extends Controller
     }
 
     #[OA\Put(
-        path: "/api/platform/hrm/reimbursements/{id}/status",
+        path: "/api/platform/hrm/reimbursements/{uuid}/status",
         summary: "Update reimbursement status",
         security: [["sanctum" => []]],
         tags: ["HRM Reimbursements"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     required: ["status"],
                     properties: [
@@ -139,9 +142,12 @@ class ReimbursementController extends Controller
             new OA\Response(response: 404, description: "Not found")
         ]
     )]
-    public function updateStatus(UpdateReimbursementStatusRequest $request, $id): JsonResponse
+    public function updateStatus(UpdateReimbursementStatusRequest $request, $uuid): JsonResponse
     {
-        $reimbursement = Reimbursement::findOrFail($id);
+        $reimbursement = $this->reimbursementService->findReimbursement($uuid);
+        if (!$reimbursement) {
+            return response()->json(['message' => 'Reimbursement not found'], 404);
+        }
         $status = $request->status;
         $reason = $request->reason;
 

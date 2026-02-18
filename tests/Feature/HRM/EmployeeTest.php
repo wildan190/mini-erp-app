@@ -88,4 +88,39 @@ class EmployeeTest extends TestCase
             ->assertJsonFragment(['emp_code' => $data['emp_code']])
             ->assertJsonFragment(['nik' => $data['nik']]);
     }
+
+    public function test_can_create_employee_with_new_user_account()
+    {
+        $admin = User::factory()->create();
+        $this->actingAs($admin, 'sanctum');
+
+        $email = 'newemployee' . uniqid() . '@example.com';
+        $data = [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => $email,
+            'password' => 'password123',
+            'emp_code' => 'EMP-NEW-' . uniqid(),
+            'status' => 'active',
+        ];
+
+        $response = $this->postJson('/api/platform/hrm/employees', $data);
+
+        $response->assertStatus(201);
+
+        // Verify User was created
+        $this->assertDatabaseHas('users', [
+            'email' => $email,
+            'name' => 'John Doe',
+        ]);
+
+        // Verify Employee was created and linked to the new User
+        $user = User::where('email', $email)->first();
+        $this->assertDatabaseHas('employees', [
+            'user_id' => $user->id,
+            'emp_code' => $data['emp_code'],
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+        ]);
+    }
 }

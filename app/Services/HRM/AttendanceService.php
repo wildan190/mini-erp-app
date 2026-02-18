@@ -15,10 +15,14 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class AttendanceService
 {
     protected FaceRecognitionService $faceRecognitionService;
+    protected EmployeeService $employeeService;
 
-    public function __construct(FaceRecognitionService $faceRecognitionService)
-    {
+    public function __construct(
+        FaceRecognitionService $faceRecognitionService,
+        EmployeeService $employeeService
+    ) {
         $this->faceRecognitionService = $faceRecognitionService;
+        $this->employeeService = $employeeService;
     }
     /**
      * Get attendances with filtering and pagination.
@@ -31,7 +35,12 @@ class AttendanceService
     {
         return Attendance::with(['employee.user', 'shift'])
             ->when(isset($filters['employee_id']), function (Builder $query) use ($filters) {
-                $query->where('employee_id', $filters['employee_id']);
+                $employeeId = $filters['employee_id'];
+                if (!is_numeric($employeeId)) {
+                    $employee = $this->employeeService->findEmployee($employeeId);
+                    $employeeId = $employee ? $employee->id : 0;
+                }
+                $query->where('employee_id', $employeeId);
             })
             ->when(isset($filters['date']), function (Builder $query) use ($filters) {
                 $query->whereDate('date', $filters['date']);

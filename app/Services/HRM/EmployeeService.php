@@ -5,6 +5,7 @@ namespace App\Services\HRM;
 use App\Models\HRM\Employee;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 
 class EmployeeService
 {
@@ -29,7 +30,18 @@ class EmployeeService
      */
     public function createEmployee(array $data): Employee
     {
-        return Employee::create($data);
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
+            if (empty($data['user_id'])) {
+                $user = \App\Models\User::create([
+                    'name' => trim($data['first_name'] . ' ' . ($data['last_name'] ?? '')),
+                    'email' => $data['email'],
+                    'password' => \Illuminate\Support\Facades\Hash::make($data['password']),
+                ]);
+                $data['user_id'] = $user->id;
+            }
+
+            return Employee::create($data);
+        });
     }
 
     /**
@@ -57,13 +69,20 @@ class EmployeeService
     }
 
     /**
-     * Find employee by ID.
+     * Find employee by ID or UUID.
      *
-     * @param int $id
+     * @param string|int $id
      * @return Employee|null
      */
-    public function findEmployee(int $id): ?Employee
+    public function findEmployee(string|int $id): ?Employee
     {
-        return Employee::with(['user', 'department', 'designation'])->find($id);
+        $query = Employee::with(['user', 'department', 'designation']);
+        if (is_numeric($id)) {
+            return $query->find($id);
+        }
+        if (Str::isUuid($id)) {
+            return $query->where('uuid', $id)->first();
+        }
+        return null;
     }
 }

@@ -61,9 +61,9 @@ class LeadTrackingController extends Controller
                     required: ["lead_name", "source"],
                     properties: [
                         new OA\Property(property: "lead_name", type: "string", example: "Alice Smith"),
-                        new OA\Property(property: "email", type: "string", example: "alice@example.com"),
-                        new OA\Property(property: "phone", type: "string"),
-                        new OA\Property(property: "company", type: "string"),
+                        new OA\Property(property: "email", type: "string", format: "email", example: "alice@example.com"),
+                        new OA\Property(property: "phone", type: "string", example: "08123456789"),
+                        new OA\Property(property: "company", type: "string", example: "Acme Corp"),
                         new OA\Property(property: "source", type: "string", example: "Website"),
                         new OA\Property(property: "notes", type: "string")
                     ]
@@ -99,6 +99,11 @@ class LeadTrackingController extends Controller
                 schema: new OA\Schema(
                     properties: [
                         new OA\Property(property: "lead_name", type: "string"),
+                        new OA\Property(property: "email", type: "string", format: "email"),
+                        new OA\Property(property: "phone", type: "string"),
+                        new OA\Property(property: "company", type: "string"),
+                        new OA\Property(property: "source", type: "string"),
+                        new OA\Property(property: "notes", type: "string"),
                         new OA\Property(property: "status", type: "string")
                     ]
                 )

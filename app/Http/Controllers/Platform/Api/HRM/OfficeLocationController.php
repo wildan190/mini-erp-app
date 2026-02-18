@@ -54,7 +54,7 @@ class OfficeLocationController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     required: ["name", "address", "latitude", "longitude"],
                     properties: [
@@ -84,21 +84,24 @@ class OfficeLocationController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/platform/hrm/office-locations/{id}",
+        path: "/api/platform/hrm/office-locations/{uuid}",
         summary: "Get office location details",
         security: [["sanctum" => []]],
         tags: ["HRM Office Locations"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Successful operation"),
             new OA\Response(response: 404, description: "Not found")
         ]
     )]
-    public function show($id): JsonResponse
+    public function show($uuid): JsonResponse
     {
-        $location = OfficeLocation::findOrFail($id);
+        $location = $this->officeLocationService->findOfficeLocation($uuid);
+        if (!$location) {
+            return response()->json(['message' => 'Office location not found'], 404);
+        }
         return response()->json([
             'message' => 'Office location details',
             'data' => $location
@@ -106,17 +109,17 @@ class OfficeLocationController extends Controller
     }
 
     #[OA\Put(
-        path: "/api/platform/hrm/office-locations/{id}",
+        path: "/api/platform/hrm/office-locations/{uuid}",
         summary: "Update office location",
         security: [["sanctum" => []]],
         tags: ["HRM Office Locations"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/json",
+                mediaType: "application/x-www-form-urlencoded",
                 schema: new OA\Schema(
                     properties: [
                         new OA\Property(property: "name", type: "string"),
@@ -134,9 +137,12 @@ class OfficeLocationController extends Controller
             new OA\Response(response: 404, description: "Not found")
         ]
     )]
-    public function update(UpdateOfficeLocationRequest $request, $id): JsonResponse
+    public function update(UpdateOfficeLocationRequest $request, $uuid): JsonResponse
     {
-        $location = OfficeLocation::findOrFail($id);
+        $location = $this->officeLocationService->findOfficeLocation($uuid);
+        if (!$location) {
+            return response()->json(['message' => 'Office location not found'], 404);
+        }
         $updatedLocation = $this->officeLocationService->updateOfficeLocation($location, $request->validated());
 
         return response()->json([
@@ -146,21 +152,24 @@ class OfficeLocationController extends Controller
     }
 
     #[OA\Delete(
-        path: "/api/platform/hrm/office-locations/{id}",
+        path: "/api/platform/hrm/office-locations/{uuid}",
         summary: "Delete office location",
         security: [["sanctum" => []]],
         tags: ["HRM Office Locations"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Office location deleted"),
             new OA\Response(response: 404, description: "Not found")
         ]
     )]
-    public function destroy($id): JsonResponse
+    public function destroy($uuid): JsonResponse
     {
-        $location = OfficeLocation::findOrFail($id);
+        $location = $this->officeLocationService->findOfficeLocation($uuid);
+        if (!$location) {
+            return response()->json(['message' => 'Office location not found'], 404);
+        }
         $this->officeLocationService->deleteOfficeLocation($location);
 
         return response()->json([

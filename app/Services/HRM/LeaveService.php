@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class LeaveService
 {
@@ -156,5 +157,38 @@ class LeaveService
             ->where('employee_id', $employeeId)
             ->where('year', $year)
             ->get();
+    }
+    /**
+     * Find leave request by ID or UUID.
+     *
+     * @param string|int $id
+     * @return LeaveRequest|null
+     */
+    public function findLeaveRequest(string|int $id): ?LeaveRequest
+    {
+        if (is_numeric($id)) {
+            return LeaveRequest::with(['employee.user', 'leaveType', 'approver'])->find($id);
+        }
+        if (Str::isUuid($id)) {
+            return LeaveRequest::with(['employee.user', 'leaveType', 'approver'])->where('uuid', $id)->first();
+        }
+        return null;
+    }
+
+    /**
+     * Find leave type by ID or UUID.
+     *
+     * @param string|int $id
+     * @return LeaveType|null
+     */
+    public function findLeaveType(string|int $id): ?LeaveType
+    {
+        if (is_numeric($id)) {
+            return LeaveType::find($id);
+        }
+        if (Str::isUuid($id)) {
+            return LeaveType::where('uuid', $id)->first();
+        }
+        return null;
     }
 }

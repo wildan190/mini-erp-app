@@ -14,27 +14,34 @@ use OpenApi\Attributes as OA;
 class EmployeeDocumentController extends Controller
 {
     protected EmployeeDocumentService $documentService;
+    protected \App\Services\HRM\EmployeeService $employeeService;
 
-    public function __construct(EmployeeDocumentService $documentService)
-    {
+    public function __construct(
+        EmployeeDocumentService $documentService,
+        \App\Services\HRM\EmployeeService $employeeService
+    ) {
         $this->documentService = $documentService;
+        $this->employeeService = $employeeService;
     }
 
     #[OA\Get(
-        path: "/api/platform/hrm/employees/{employeeId}/documents",
+        path: "/api/platform/hrm/employees/{employeeUuid}/documents",
         summary: "List all documents for an employee",
         security: [["sanctum" => []]],
         tags: ["HRM Employee Documents"],
         parameters: [
-            new OA\Parameter(name: "employeeId", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "employeeUuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Successful operation")
         ]
     )]
-    public function index($employeeId): JsonResponse
+    public function index($employeeUuid): JsonResponse
     {
-        $employee = Employee::findOrFail($employeeId);
+        $employee = $this->employeeService->findEmployee($employeeUuid);
+        if (!$employee) {
+            return response()->json(['message' => 'Employee not found'], 404);
+        }
         return response()->json([
             'message' => 'List of documents',
             'data' => $employee->documents
@@ -42,12 +49,12 @@ class EmployeeDocumentController extends Controller
     }
 
     #[OA\Post(
-        path: "/api/platform/hrm/employees/{employeeId}/documents",
+        path: "/api/platform/hrm/employees/{employeeUuid}/documents",
         summary: "Upload a new document for an employee",
         security: [["sanctum" => []]],
         tags: ["HRM Employee Documents"],
         parameters: [
-            new OA\Parameter(name: "employeeId", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "employeeUuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         requestBody: new OA\RequestBody(
             required: true,
@@ -69,9 +76,12 @@ class EmployeeDocumentController extends Controller
             new OA\Response(response: 422, description: "Validation error")
         ]
     )]
-    public function store(StoreEmployeeDocumentRequest $request, $employeeId): JsonResponse
+    public function store(StoreEmployeeDocumentRequest $request, $employeeUuid): JsonResponse
     {
-        $employee = Employee::findOrFail($employeeId);
+        $employee = $this->employeeService->findEmployee($employeeUuid);
+        if (!$employee) {
+            return response()->json(['message' => 'Employee not found'], 404);
+        }
         $data = $request->validated();
         $data['employee_id'] = $employee->id;
 
@@ -84,21 +94,24 @@ class EmployeeDocumentController extends Controller
     }
 
     #[OA\Delete(
-        path: "/api/platform/hrm/documents/{id}",
+        path: "/api/platform/hrm/documents/{uuid}",
         summary: "Delete a document",
         security: [["sanctum" => []]],
         tags: ["HRM Employee Documents"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Document deleted"),
             new OA\Response(response: 404, description: "Document not found")
         ]
     )]
-    public function destroy($id): JsonResponse
+    public function destroy($uuid): JsonResponse
     {
-        $document = EmployeeDocument::findOrFail($id);
+        $document = $this->documentService->findDocument($uuid);
+        if (!$document) {
+            return response()->json(['message' => 'Document not found'], 404);
+        }
         $this->documentService->deleteDocument($document);
 
         return response()->json([

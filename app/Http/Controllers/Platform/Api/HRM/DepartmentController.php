@@ -41,6 +41,19 @@ class DepartmentController extends Controller
         summary: "Create a new department",
         security: [["sanctum" => []]],
         tags: ["HRM Departments"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(
+                    required: ["name"],
+                    properties: [
+                        new OA\Property(property: "name", type: "string", description: "Department name"),
+                        new OA\Property(property: "description", type: "string", description: "Optional description")
+                    ]
+                )
+            )
+        ),
         responses: [
             new OA\Response(response: 201, description: "Department created"),
             new OA\Response(response: 422, description: "Validation error")
@@ -56,21 +69,24 @@ class DepartmentController extends Controller
     }
 
     #[OA\Get(
-        path: "/api/platform/hrm/departments/{id}",
+        path: "/api/platform/hrm/departments/{uuid}",
         summary: "Get department details",
         security: [["sanctum" => []]],
         tags: ["HRM Departments"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Successful operation"),
             new OA\Response(response: 404, description: "Department not found")
         ]
     )]
-    public function show($id): JsonResponse
+    public function show($uuid): JsonResponse
     {
-        $department = \App\Models\HRM\Department::findOrFail($id);
+        $department = $this->departmentService->findDepartment($uuid);
+        if (!$department) {
+            return response()->json(['message' => 'Department not found'], 404);
+        }
         return response()->json([
             'message' => 'Department details',
             'data' => $department
@@ -78,21 +94,37 @@ class DepartmentController extends Controller
     }
 
     #[OA\Put(
-        path: "/api/platform/hrm/departments/{id}",
+        path: "/api/platform/hrm/departments/{uuid}",
         summary: "Update a department",
         security: [["sanctum" => []]],
         tags: ["HRM Departments"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(
+                    required: ["name"],
+                    properties: [
+                        new OA\Property(property: "name", type: "string", description: "Department name"),
+                        new OA\Property(property: "description", type: "string", description: "Optional description")
+                    ]
+                )
+            )
+        ),
         responses: [
             new OA\Response(response: 200, description: "Department updated"),
             new OA\Response(response: 404, description: "Department not found")
         ]
     )]
-    public function update(UpdateDepartmentRequest $request, $id): JsonResponse
+    public function update(UpdateDepartmentRequest $request, $uuid): JsonResponse
     {
-        $department = \App\Models\HRM\Department::findOrFail($id);
+        $department = $this->departmentService->findDepartment($uuid);
+        if (!$department) {
+            return response()->json(['message' => 'Department not found'], 404);
+        }
         $updatedDepartment = $this->departmentService->updateDepartment($department, $request->validated());
         return response()->json([
             'message' => 'Department updated successfully',
@@ -101,21 +133,24 @@ class DepartmentController extends Controller
     }
 
     #[OA\Delete(
-        path: "/api/platform/hrm/departments/{id}",
+        path: "/api/platform/hrm/departments/{uuid}",
         summary: "Delete a department",
         security: [["sanctum" => []]],
         tags: ["HRM Departments"],
         parameters: [
-            new OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
             new OA\Response(response: 200, description: "Department deleted"),
             new OA\Response(response: 404, description: "Department not found")
         ]
     )]
-    public function destroy($id): JsonResponse
+    public function destroy($uuid): JsonResponse
     {
-        $department = \App\Models\HRM\Department::findOrFail($id);
+        $department = $this->departmentService->findDepartment($uuid);
+        if (!$department) {
+            return response()->json(['message' => 'Department not found'], 404);
+        }
         $this->departmentService->deleteDepartment($department);
         return response()->json([
             'message' => 'Department deleted successfully'
