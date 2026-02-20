@@ -15,7 +15,16 @@ class StoreEmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_uuid' => 'nullable|exists:users,uuid|unique:employees,user_uuid',
+            'user_uuid' => [
+                'nullable', 
+                'exists:users,uuid',
+                function ($attribute, $value, $fail) {
+                    $user = \App\Models\User::where('uuid', $value)->first();
+                    if ($user && \App\Models\HRM\Employee::where('user_id', $user->id)->exists()) {
+                        $fail('The user already has an employee profile.');
+                    }
+                }
+            ],
             'first_name' => 'required_without:user_uuid|string|max:255',
             'last_name' => 'required_without:user_uuid|string|max:255',
             'email' => 'required_without:user_uuid|nullable|email|max:255|unique:users,email',
