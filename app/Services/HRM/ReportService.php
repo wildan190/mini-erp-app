@@ -67,11 +67,11 @@ class ReportService
 
         $costsByMonth = Payroll::whereYear('created_at', $year)
             ->select(
-                DB::raw('strftime("%m", created_at) as month'),
+                DB::raw("to_char(created_at, 'MM') as month"),
                 DB::raw('SUM(net_salary) as total_net_salary')
             )
-            ->groupBy('month')
-            ->orderBy('month')
+            ->groupBy(DB::raw("to_char(created_at, 'MM')"))
+            ->orderBy(DB::raw("to_char(created_at, 'MM')"))
             ->get();
 
         $costsByDepartment = DB::table('payrolls')
