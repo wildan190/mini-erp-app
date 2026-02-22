@@ -64,7 +64,7 @@ class EmployeeService
                 $user = \App\Models\User::create([
                     'name' => trim($data['first_name'] . ' ' . ($data['last_name'] ?? '')),
                     'email' => $data['email'],
-                    'password' => \Illuminate\Support\Facades\Hash::make($data['password']),
+                    'password' => $data['password'],
                 ]);
                 $data['user_id'] = $user->id;
             }
