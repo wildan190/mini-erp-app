@@ -65,11 +65,16 @@ class AttendanceService
 
         // Check if already clocked in today
         $existingAttendance = Attendance::where('employee_id', $employee->id)
-            ->where('date', $today->toDateString())
+            ->whereDate('date', $today)
             ->first();
 
         if ($existingAttendance) {
             throw new \Exception('Employee already clocked in for today.');
+        }
+
+        // Validate face image requirement
+        if ($employee->requires_face_verification && empty($data['face_image'])) {
+            throw new \Exception('Face verification is required but no face image provided.');
         }
 
         // Store temporary face image for async verification
@@ -81,10 +86,21 @@ class AttendanceService
         // Get location data
         $officeLocationId = $data['office_location_id'] ?? null;
         if (isset($data['office_location_uuid'])) {
-            $officeLocationId = OfficeLocation::where('uuid', $data['office_location_uuid'])->value('id');
+            $officeLoc = OfficeLocation::where('uuid', $data['office_location_uuid'])->first();
+            $officeLocationId = $officeLoc?->id;
+        } else {
+            $officeLoc = OfficeLocation::find($officeLocationId);
         }
         $latitude = $data['latitude'] ?? null;
         $longitude = $data['longitude'] ?? null;
+
+        // Synchronous distance check
+        if ($officeLoc && $latitude && $longitude) {
+            $distance = $this->calculateDistance($latitude, $longitude, $officeLoc->latitude, $officeLoc->longitude);
+            if ($distance > $officeLoc->radius) {
+                throw new \Exception('You are outside the office radius.');
+            }
+        }
 
         // Determine initial status
         $shift = $employee->shift;
@@ -136,7 +152,7 @@ class AttendanceService
         $today = Carbon::today();
 
         $attendance = Attendance::where('employee_id', $employee->id)
-            ->where('date', $today->toDateString())
+            ->whereDate('date', $today)
             ->first();
 
         if (!$attendance) {
@@ -202,5 +218,24 @@ class AttendanceService
         }
 
         return 'present';
+    }
+
+    /**
+     * Calculate distance between two coordinate points in meters using Haversine formula
+     */
+    protected function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371000; // meters
+
+        $latDelta = deg2rad($lat2 - $lat1);
+        $lonDelta = deg2rad($lon2 - $lon1);
+
+        $a = sin($latDelta / 2) * sin($latDelta / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($lonDelta / 2) * sin($lonDelta / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return $earthRadius * $c;
     }
 }

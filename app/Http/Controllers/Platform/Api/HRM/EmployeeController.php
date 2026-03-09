@@ -211,29 +211,107 @@ class EmployeeController extends Controller
         ]);
     }
 
+    #[OA\Get(
+        path: "/api/platform/hrm/employees/{uuid}/face-status",
+        summary: "Get employee face enrollment status",
+        description: "Returns whether the employee has a face enrolled and whether face verification is required for clock-in.",
+        security: [["sanctum" => []]],
+        tags: ["HRM Face Recognition"],
+        parameters: [
+            new OA\Parameter(name: "uuid", in: "path", required: true, description: "Employee UUID", schema: new OA\Schema(type: "string", format: "uuid"))
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Face enrollment status",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "data", type: "object", properties: [
+                            new OA\Property(property: "has_face_enrolled", type: "boolean", example: true, description: "Whether the employee has a face enrolled"),
+                            new OA\Property(property: "requires_face_verification", type: "boolean", example: true, description: "Whether face verification is required at clock-in"),
+                            new OA\Property(property: "face_image_path", type: "string", nullable: true, example: "faces/employees/uuid.jpg")
+                        ])
+                    ]
+                )
+            ),
+            new OA\Response(response: 404, description: "Employee not found")
+        ]
+    )]
+    public function getFaceStatus($uuid): JsonResponse
+    {
+        $employee = $this->employeeService->findEmployee($uuid);
+
+        if (!$employee) {
+            return response()->json(['message' => 'Employee not found'], 404);
+        }
+
+        return response()->json([
+            'data' => [
+                'has_face_enrolled' => !empty($employee->face_encoding),
+                'requires_face_verification' => (bool) $employee->requires_face_verification,
+                'face_image_path' => $employee->face_image_path,
+            ]
+        ]);
+    }
+
     #[OA\Post(
         path: "/api/platform/hrm/employees/{uuid}/enroll-face",
         summary: "Enroll employee face for recognition",
+        description: "Upload a clear photo of the employee's face. The system will extract a 128-dimensional face embedding and store it. This embedding is used to verify identity at clock-in. Only one face must be visible in the image.",
         security: [["sanctum" => []]],
-        tags: ["HRM Employees"],
+        tags: ["HRM Face Recognition"],
         parameters: [
-            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, description: "Employee UUID", schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         requestBody: new OA\RequestBody(
             required: true,
+            description: "A clear photo of the employee's face (JPG/PNG, max 5MB). The face must be clearly visible and well-lit.",
             content: new OA\MediaType(
                 mediaType: "multipart/form-data",
                 schema: new OA\Schema(
                     required: ["face_image"],
                     properties: [
-                        new OA\Property(property: "face_image", type: "string", format: "binary")
+                        new OA\Property(
+                            property: "face_image",
+                            type: "string",
+                            format: "binary",
+                            description: "Face photo (JPG/PNG, max 5MB). Must contain exactly one clearly visible face."
+                        )
                     ]
                 )
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: "Face enrolled successfully"),
-            new OA\Response(response: 404, description: "Employee not found")
+            new OA\Response(
+                response: 201,
+                description: "Face enrolled successfully",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Face enrolled successfully"),
+                        new OA\Property(property: "data", type: "object", description: "Updated employee record")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "No face detected in the uploaded image",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "No face detected in the image. Please upload a clear photo with a single visible face.")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: "Face enrollment failed",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Failed to extract face encoding")
+                    ]
+                )
+            ),
+            new OA\Response(response: 404, description: "Employee not found"),
+            new OA\Response(response: 413, description: "Image file too large (max 5MB)")
         ]
     )]
     public function enrollFace(Request $request, $uuid): JsonResponse
@@ -250,24 +328,43 @@ class EmployeeController extends Controller
 
         $result = $this->faceRecognitionService->enrollFace($employee, $request->file('face_image'));
 
+        if (!$result['success']) {
+            // Distinguish between "no face in image" vs other errors
+            $message = $result['message'] ?? 'Failed to extract face encoding';
+            $noFaceErrors = ['no face', 'no faces', 'not detected', 'could not detect'];
+            $isNoFace = collect($noFaceErrors)->contains(fn($k) => str_contains(strtolower($message), $k));
+
+            return response()->json(['message' => $message], $isNoFace ? 422 : 400);
+        }
+
         $employee->update(['requires_face_verification' => true]);
+        $employee->refresh();
 
         return response()->json([
-            'message' => $result['message'],
+            'message' => 'Face enrolled successfully',
             'data' => $employee
-        ]);
+        ], 201);
     }
 
     #[OA\Delete(
         path: "/api/platform/hrm/employees/{uuid}/face-data",
         summary: "Remove employee face data",
+        description: "Deletes the stored face encoding and face image for the employee, and disables face verification requirement at clock-in.",
         security: [["sanctum" => []]],
-        tags: ["HRM Employees"],
+        tags: ["HRM Face Recognition"],
         parameters: [
-            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
+            new OA\Parameter(name: "uuid", in: "path", required: true, description: "Employee UUID", schema: new OA\Schema(type: "string", format: "uuid"))
         ],
         responses: [
-            new OA\Response(response: 200, description: "Face data removed"),
+            new OA\Response(
+                response: 200,
+                description: "Face data removed successfully",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Face data removed successfully")
+                    ]
+                )
+            ),
             new OA\Response(response: 404, description: "Employee not found")
         ]
     )]
