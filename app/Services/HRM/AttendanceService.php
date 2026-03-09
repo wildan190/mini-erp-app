@@ -77,6 +77,11 @@ class AttendanceService
             throw new \Exception('Face verification is required but no face image provided.');
         }
 
+        // Check if face is enrolled
+        if (empty($employee->face_encoding)) {
+            throw new \Exception('Anda belum mendaftarkan wajah. Silakan daftarkan wajah Anda terlebih dahulu melalui menu profil atau hubungi admin.');
+        }
+
         // Store temporary face image for async verification
         $tempFaceImagePath = null;
         if (isset($data['face_image']) && $data['face_image'] instanceof UploadedFile) {
