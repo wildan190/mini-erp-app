@@ -107,6 +107,9 @@ class AttendanceVerificationTest extends TestCase
         ]);
 
         // Location far away (> 100 meters)
+        // Enroll face first
+        $employee->update(['face_encoding' => 'test_encoding']);
+
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/platform/hrm/attendances/clock-in', [
                 'office_location_uuid' => $officeLocation->uuid,
@@ -128,6 +131,9 @@ class AttendanceVerificationTest extends TestCase
 
         $shift = Shift::factory()->create();
         $employee->update(['shift_id' => $shift->id]);
+
+        // Enroll face first (now required for all clock-ins)
+        $employee->update(['face_encoding' => 'test_encoding']);
 
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/platform/hrm/attendances/clock-in', [
@@ -192,6 +198,9 @@ class AttendanceVerificationTest extends TestCase
             'clock_in' => Carbon::now(),
         ]);
 
+        // Enroll face first
+        $employee->update(['face_encoding' => 'test_encoding']);
+
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/platform/hrm/attendances/clock-in');
 
@@ -213,6 +222,9 @@ class AttendanceVerificationTest extends TestCase
         ]);
 
         // Location within 50 meters (approximately)
+        // Enroll face first
+        $employee->update(['face_encoding' => 'test_encoding']);
+
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/platform/hrm/attendances/clock-in', [
                 'office_location_uuid' => $officeLocation->uuid,
