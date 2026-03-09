@@ -28,8 +28,6 @@ class AttendanceVerificationTest extends TestCase
         $user = User::factory()->create();
         $employee = Employee::factory()->create([
             'user_id' => $user->id,
-            'face_encoding' => 'test_encoding',
-            'face_image_path' => 'faces/enrolled/employee.jpg',
             'requires_face_verification' => true,
         ]);
 
@@ -42,12 +40,20 @@ class AttendanceVerificationTest extends TestCase
         $shift = Shift::factory()->create();
         $employee->update(['shift_id' => $shift->id]);
 
-        $faceImage = UploadedFile::fake()->image('current_face.jpg');
+        $imagePath = base_path('tests/facetestimg/test1.png');
+        $faceImage = new UploadedFile($imagePath, 'test1.png', 'image/png', null, true);
+
+        // First enroll face to get real encoding
+        $responseEnroll = $this->actingAs($user, 'sanctum')
+            ->postJson("/api/platform/hrm/employees/{$employee->id}/enroll-face", [
+                'face_image' => $faceImage,
+            ]);
+        $responseEnroll->assertStatus(201);
 
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/platform/hrm/attendances/clock-in', [
                 'face_image' => $faceImage,
-                'office_location_id' => $officeLocation->id,
+                'office_location_uuid' => $officeLocation->uuid,
                 'latitude' => -6.2088, // Same as office
                 'longitude' => 106.8456, // Same as office
                 'notes' => 'Clock in with verification',
@@ -103,7 +109,7 @@ class AttendanceVerificationTest extends TestCase
         // Location far away (> 100 meters)
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/platform/hrm/attendances/clock-in', [
-                'office_location_id' => $officeLocation->id,
+                'office_location_uuid' => $officeLocation->uuid,
                 'latitude' => -6.2200, // ~1.2 km away
                 'longitude' => 106.8600,
             ]);
@@ -209,7 +215,7 @@ class AttendanceVerificationTest extends TestCase
         // Location within 50 meters (approximately)
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/platform/hrm/attendances/clock-in', [
-                'office_location_id' => $officeLocation->id,
+                'office_location_uuid' => $officeLocation->uuid,
                 'latitude' => -6.20884, // Very close
                 'longitude' => 106.84565, // Very close
             ]);

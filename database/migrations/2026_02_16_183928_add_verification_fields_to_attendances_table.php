@@ -12,13 +12,13 @@ return new class extends Migration {
     {
         Schema::table('attendances', function (Blueprint $table) {
             $table->string('face_image_path')->nullable();
-            $table->enum('face_verification_status', ['verified', 'failed', 'skipped'])->default('skipped');
+            $table->string('face_verification_status')->default('skipped');
             $table->foreignId('office_location_id')->nullable()->constrained('office_locations')->nullOnDelete();
             $table->decimal('check_in_latitude', 10, 7)->nullable();
             $table->decimal('check_in_longitude', 10, 7)->nullable();
             $table->decimal('check_out_latitude', 10, 7)->nullable();
             $table->decimal('check_out_longitude', 10, 7)->nullable();
-            $table->enum('location_verification_status', ['within_radius', 'out_of_radius', 'skipped'])->default('skipped');
+            $table->string('location_verification_status')->default('skipped');
         });
     }
 

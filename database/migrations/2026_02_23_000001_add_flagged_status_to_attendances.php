@@ -11,10 +11,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        // Add 'flagged' to the status check constraint for PostgreSQL
-        DB::statement("ALTER TABLE attendances DROP CONSTRAINT IF EXISTS attendances_status_check");
-        DB::statement("ALTER TABLE attendances ALTER COLUMN status TYPE VARCHAR(255)");
-        DB::statement("ALTER TABLE attendances ADD CONSTRAINT attendances_status_check CHECK (status IN ('present', 'late', 'absent', 'half_day', 'leave', 'flagged'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            // Add 'flagged' to the status check constraint for PostgreSQL
+            DB::statement("ALTER TABLE attendances DROP CONSTRAINT IF EXISTS attendances_status_check");
+            DB::statement("ALTER TABLE attendances ALTER COLUMN status TYPE VARCHAR(255)");
+            DB::statement("ALTER TABLE attendances ADD CONSTRAINT attendances_status_check CHECK (status IN ('present', 'late', 'absent', 'half_day', 'leave', 'flagged'))");
+        }
     }
 
     /**
@@ -25,8 +27,10 @@ return new class extends Migration {
         // Remove 'flagged' (migrate to 'absent' if needed)
         DB::table('attendances')->where('status', 'flagged')->update(['status' => 'absent']);
 
-        DB::statement("ALTER TABLE attendances DROP CONSTRAINT IF EXISTS attendances_status_check");
-        DB::statement("ALTER TABLE attendances ALTER COLUMN status TYPE VARCHAR(255)");
-        DB::statement("ALTER TABLE attendances ADD CONSTRAINT attendances_status_check CHECK (status IN ('present', 'late', 'absent', 'half_day', 'leave'))");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE attendances DROP CONSTRAINT IF EXISTS attendances_status_check");
+            DB::statement("ALTER TABLE attendances ALTER COLUMN status TYPE VARCHAR(255)");
+            DB::statement("ALTER TABLE attendances ADD CONSTRAINT attendances_status_check CHECK (status IN ('present', 'late', 'absent', 'half_day', 'leave'))");
+        }
     }
 };

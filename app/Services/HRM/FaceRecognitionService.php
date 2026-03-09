@@ -5,6 +5,8 @@ namespace App\Services\HRM;
 use App\Models\HRM\Employee;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class FaceRecognitionService
 {
@@ -18,14 +20,31 @@ class FaceRecognitionService
      */
     public function enrollFace(Employee $employee, UploadedFile $faceImage): array
     {
-        // Store the face image
-        $path = $faceImage->store('faces/enrolled', 'public');
+        // Store the face image temporarily for processing
+        $tempPath = $faceImage->getRealPath();
 
-        // TODO: In production, integrate with face recognition library here
-        // For example:
-        // $faceEncoding = $this->generateFaceEncoding($faceImage);
-        // For now, we'll use a placeholder
-        $faceEncoding = base64_encode(file_get_contents($faceImage->getRealPath()));
+        // Execute python script to enroll face
+        $pythonCommand = base_path('venv/bin/python3');
+        $process = new Process([$pythonCommand, base_path('scripts/face_rec.py'), 'enroll', $tempPath]);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        $output = json_decode($process->getOutput(), true);
+
+        if (!$output || !isset($output['success']) || !$output['success']) {
+            return [
+                'success' => false,
+                'message' => $output['message'] ?? 'Failed to extract face encoding',
+            ];
+        }
+
+        $faceEncoding = json_encode($output['encoding']);
+
+        // Store the face image permanently
+        $path = $faceImage->store('faces/enrolled', 'public');
 
         // Update employee record
         $employee->update([
@@ -58,21 +77,35 @@ class FaceRecognitionService
             ];
         }
 
-        // TODO: In production, integrate with face recognition library here
-        // For example:
-        // $uploadedEncoding = $this->generateFaceEncoding($faceImage);
-        // $similarity = $this->compareFaceEncodings($employee->face_encoding, $uploadedEncoding);
-        // $verified = $similarity > 0.6; // 60% threshold
+        $tempPath = $faceImage->getRealPath();
 
-        // For MVP, we'll simulate verification (always pass for now)
-        // This should be replaced with actual face recognition in production
-        $confidence = 0.95; // Simulated confidence score
-        $verified = true;
+        // Execute python script to verify face
+        $pythonCommand = base_path('venv/bin/python3');
+        $process = new Process([$pythonCommand, base_path('scripts/face_rec.py'), 'verify', $tempPath, $employee->face_encoding]);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            return [
+                'verified' => false,
+                'confidence' => 0,
+                'message' => 'Process failed: ' . $process->getErrorOutput(),
+            ];
+        }
+
+        $output = json_decode($process->getOutput(), true);
+
+        if (!$output) {
+            return [
+                'verified' => false,
+                'confidence' => 0,
+                'message' => 'Invalid output from recognition service',
+            ];
+        }
 
         return [
-            'verified' => $verified,
-            'confidence' => $confidence,
-            'message' => $verified ? 'Face verified successfully' : 'Face verification failed',
+            'verified' => $output['verified'] ?? false,
+            'confidence' => $output['confidence'] ?? 0,
+            'message' => $output['message'] ?? 'Face verification completed',
         ];
     }
 
@@ -108,14 +141,4 @@ class FaceRecognitionService
         return $faceImage->store('faces/attendance', 'public');
     }
 
-    // TODO: Implement these methods when integrating with actual face recognition library
-    // private function generateFaceEncoding(UploadedFile $image): string
-    // {
-    //     // Integration with face-api.js, AWS Rekognition, Azure Face API, etc.
-    // }
-    //
-    // private function compareFaceEncodings(string $encoding1, string $encoding2): float
-    // {
-    //     // Calculate similarity score between two face encodings
-    // }
 }

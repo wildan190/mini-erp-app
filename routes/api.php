@@ -149,6 +149,7 @@ Route::prefix('platform/hrm')
         Route::resource('office-locations', \App\Http\Controllers\Platform\Api\HRM\OfficeLocationController::class)->except(['create', 'edit'])->parameters(['office-locations' => 'uuid']);
 
         // Employee Face Recognition
+        Route::get('/employees/{uuid}/face-status', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'getFaceStatus']);
         Route::post('/employees/{uuid}/enroll-face', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'enrollFace']);
         Route::delete('/employees/{uuid}/face-data', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'removeFace']);
     });

@@ -26,14 +26,15 @@ class FaceRecognitionTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $faceImage = UploadedFile::fake()->image('face.jpg', 800, 800);
+        $imagePath = base_path('tests/facetestimg/test1.png');
+        $faceImage = new UploadedFile($imagePath, 'test1.png', 'image/png', null, true);
 
         $response = $this->actingAs($user, 'sanctum')
             ->postJson("/api/platform/hrm/employees/{$employee->id}/enroll-face", [
                 'face_image' => $faceImage,
             ]);
 
-        $response->assertStatus(200)
+        $response->assertStatus(201)
             ->assertJson([
                 'message' => 'Face enrolled successfully',
             ]);
@@ -80,7 +81,7 @@ class FaceRecognitionTest extends TestCase
         // Test with non-image file
         $response = $this->actingAs($user, 'sanctum')
             ->postJson("/api/platform/hrm/employees/{$employee->id}/enroll-face", [
-                'face_image' => UploadedFile::fake()->create('document.pdf', 1000),
+                'face_image' => UploadedFile::fake()->create('document.pdf', 1000, 'application/pdf'),
             ]);
 
         $response->assertStatus(422);
