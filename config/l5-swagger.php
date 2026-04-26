@@ -205,6 +205,28 @@ return [
             ],
         ],
 
+        'documentations' => [
+
+            'crm' => [
+                'api' => [
+                    'title' => 'Mini ERP - CRM API Documentation',
+                ],
+            ],
+
+            'hrm' => [
+                'api' => [
+                    'title' => 'Mini ERP - HRM API Documentation',
+                ],
+            ],
+
+            'finance' => [
+                'api' => [
+                    'title' => 'Mini ERP - Finance API Documentation',
+                ],
+            ],
+
+        ],
+
         'paths' => [
             /*
              * Absolute path to location where parsed annotations will be stored
