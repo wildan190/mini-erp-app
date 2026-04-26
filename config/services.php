@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'python' => [
+        'executable' => env('PYTHON_EXECUTABLE', base_path('venv/bin/python3')),
+    ],
+
 ];

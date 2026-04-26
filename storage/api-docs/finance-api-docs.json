@@ -10,7 +10,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8001",
+            "url": "/",
             "description": "Primary API Server"
         }
     ],

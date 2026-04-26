@@ -24,7 +24,7 @@ class FaceRecognitionService
         $tempPath = $faceImage->getRealPath();
 
         // Execute python script to enroll face
-        $pythonCommand = base_path('venv/bin/python3');
+        $pythonCommand = config('services.python.executable');
         $process = new Process([$pythonCommand, base_path('scripts/face_rec.py'), 'enroll', $tempPath]);
         $process->run();
 
@@ -80,7 +80,7 @@ class FaceRecognitionService
         $tempPath = $faceImage->getRealPath();
 
         // Execute python script to verify face
-        $pythonCommand = base_path('venv/bin/python3');
+        $pythonCommand = config('services.python.executable');
         $process = new Process([$pythonCommand, base_path('scripts/face_rec.py'), 'verify', $tempPath, $employee->face_encoding]);
         $process->run();
 
