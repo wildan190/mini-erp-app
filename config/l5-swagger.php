@@ -198,6 +198,13 @@ return [
             'group_options' => [],
         ],
 
+        'servers' => [
+            [
+                'url' => 'https://portal-mpn.my.id',
+                'description' => 'Production Server'
+            ],
+        ],
+
         'paths' => [
             /*
              * Absolute path to location where parsed annotations will be stored
