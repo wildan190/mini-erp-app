@@ -65,13 +65,16 @@ class ReportService
     {
         $year = $year ?? now()->year;
 
+        $driver = DB::connection()->getDriverName();
+        $monthFormat = $driver === 'pgsql' ? "to_char(created_at, 'MM')" : "strftime('%m', created_at)";
+
         $costsByMonth = Payroll::whereYear('created_at', $year)
             ->select(
-                DB::raw("to_char(created_at, 'MM') as month"),
+                DB::raw("$monthFormat as month"),
                 DB::raw('SUM(net_salary) as total_net_salary')
             )
-            ->groupBy(DB::raw("to_char(created_at, 'MM')"))
-            ->orderBy(DB::raw("to_char(created_at, 'MM')"))
+            ->groupBy(DB::raw($monthFormat))
+            ->orderBy(DB::raw($monthFormat))
             ->get();
 
         $costsByDepartment = DB::table('payrolls')

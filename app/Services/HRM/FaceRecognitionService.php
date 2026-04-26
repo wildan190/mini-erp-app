@@ -28,16 +28,23 @@ class FaceRecognitionService
         $process = new Process([$pythonCommand, base_path('scripts/face_rec.py'), 'enroll', $tempPath]);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
         $output = json_decode($process->getOutput(), true);
 
-        if (!$output || !isset($output['success']) || !$output['success']) {
+        if (!$process->isSuccessful() || !$output || !isset($output['success']) || !$output['success']) {
+            $errorMessage = $output['message'] ?? 'Failed to extract face encoding';
+            $rawOutput = $process->getOutput();
+            $errorOutput = $process->getErrorOutput();
+            
+            \Illuminate\Support\Facades\Log::error('Face Recognition Error', [
+                'message' => $errorMessage,
+                'raw_output' => $rawOutput,
+                'error_output' => $errorOutput,
+                'command' => $process->getCommandLine()
+            ]);
+
             return [
                 'success' => false,
-                'message' => $output['message'] ?? 'Failed to extract face encoding',
+                'message' => $errorMessage . ($errorOutput ? ": " . $errorOutput : ""),
             ];
         }
 
@@ -84,21 +91,20 @@ class FaceRecognitionService
         $process = new Process([$pythonCommand, base_path('scripts/face_rec.py'), 'verify', $tempPath, $employee->face_encoding]);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            return [
-                'verified' => false,
-                'confidence' => 0,
-                'message' => 'Process failed: ' . $process->getErrorOutput(),
-            ];
-        }
-
         $output = json_decode($process->getOutput(), true);
 
-        if (!$output) {
+        if (!$process->isSuccessful() || !$output) {
+            $errorOutput = $process->getErrorOutput();
+            \Illuminate\Support\Facades\Log::error('Face Verification Error', [
+                'raw_output' => $process->getOutput(),
+                'error_output' => $errorOutput,
+                'command' => $process->getCommandLine()
+            ]);
+
             return [
                 'verified' => false,
                 'confidence' => 0,
-                'message' => 'Invalid output from recognition service',
+                'message' => 'Verification process failed' . ($errorOutput ? ": " . $errorOutput : ""),
             ];
         }
 

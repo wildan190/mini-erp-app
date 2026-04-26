@@ -47,7 +47,7 @@ class LeaveManagementTest extends TestCase
         $endDate = Carbon::tomorrow()->addDays(2)->format('Y-m-d');
 
         $response = $this->postJson('/api/platform/hrm/leave-requests', [
-            'leave_type_id' => $leaveType->id,
+            'leave_type_uuid' => $leaveType->uuid,
             'start_date' => $startDate,
             'end_date' => $endDate,
             'reason' => 'Feeling unwell',
@@ -77,7 +77,7 @@ class LeaveManagementTest extends TestCase
         $endDate = Carbon::tomorrow()->addDays(5)->format('Y-m-d'); // 6 days requested
 
         $response = $this->postJson('/api/platform/hrm/leave-requests', [
-            'leave_type_id' => $leaveType->id,
+            'leave_type_uuid' => $leaveType->uuid,
             'start_date' => $startDate,
             'end_date' => $endDate,
             'reason' => 'Long vacation',
