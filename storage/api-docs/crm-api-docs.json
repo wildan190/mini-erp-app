@@ -10,7 +10,11 @@
     },
     "servers": [
         {
+<<<<<<< HEAD
+            "url": "http://localhost:8001",
+=======
             "url": "https://portal-mpn.my.id",
+>>>>>>> b6f607ebcfed9b31dd24db7c0cf4d9894c251bb0
             "description": "Primary API Server"
         }
     ],
