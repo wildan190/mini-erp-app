@@ -12,7 +12,7 @@ use OpenApi\Attributes as OA;
     contact: new OA\Contact(email: "finance@example.com")
 )]
 #[OA\Server(
-    url: "http://localhost:8001",
+    url: L5_SWAGGER_CONST_HOST,
     description: "Primary API Server"
 )]
 #[OA\SecurityScheme(
