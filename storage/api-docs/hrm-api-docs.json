@@ -10,7 +10,7 @@
     },
     "servers": [
         {
-            "url": "http://localhost",
+            "url": "https://portal-mpn.my.id",
             "description": "Primary API Server"
         }
     ],
