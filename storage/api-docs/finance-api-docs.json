@@ -1,0 +1,313 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Mini ERP Finance AI API",
+        "description": "Finance and AI Analytics API for Mini ERP App - Includes FP&A, Supply Chain AI, and Cash Forecasting",
+        "contact": {
+            "email": "finance@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8001",
+            "description": "Primary API Server"
+        }
+    ],
+    "paths": {
+        "/api/platform/finance/ai/budget-variance/{account_uuid}": {
+            "get": {
+                "tags": [
+                    "Finance AI Analytics"
+                ],
+                "summary": "Predict Budget Variance (Regression)",
+                "operationId": "ee57f1754fa922a40b137ed71913cbb4",
+                "parameters": [
+                    {
+                        "name": "account_uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/finance/ai/suggest-account": {
+            "post": {
+                "tags": [
+                    "Finance AI Analytics"
+                ],
+                "summary": "Suggest GL Account from Description (KNN)",
+                "operationId": "aef6288e555c75bc3a825ed813253564",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/finance/fpa/revenue-analysis": {
+            "get": {
+                "tags": [
+                    "Finance FP&A"
+                ],
+                "summary": "Revenue Trend Analysis (Linear Regression)",
+                "operationId": "ef846b8efddc656832134fa7995d1a97",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/finance/dashboard": {
+            "get": {
+                "tags": [
+                    "Finance Analytics"
+                ],
+                "summary": "Get Finance Dashboard Summary",
+                "operationId": "0aa99826d00fb62af74d6d6fb28831bf",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/finance/forecasting/cash-forecast": {
+            "get": {
+                "tags": [
+                    "Finance Forecasting"
+                ],
+                "summary": "Cash Position Forecast",
+                "operationId": "e719c52e4dd93b6576d5d4a370892c1d",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/finance/ledger/accounts": {
+            "get": {
+                "tags": [
+                    "Finance Ledger"
+                ],
+                "summary": "List Chart of Accounts",
+                "operationId": "1f2c8bc77f6e834e6818c0f68ac1b1d7",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/finance/ledger/items": {
+            "get": {
+                "tags": [
+                    "Finance Ledger"
+                ],
+                "summary": "List General Ledger Items",
+                "operationId": "af6be48f2e10b82a27bb32bb45deea19",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/finance/reporting/profit-loss": {
+            "get": {
+                "tags": [
+                    "Finance Reporting"
+                ],
+                "summary": "Get Profit & Loss Report",
+                "operationId": "bb85583ae384392783fd15bc73eb9d39",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/finance/reporting/balance-sheet": {
+            "get": {
+                "tags": [
+                    "Finance Reporting"
+                ],
+                "summary": "Get Balance Sheet Report",
+                "operationId": "88367dff5282c32bbe52684a405034f9",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/finance/reporting/cash-flow": {
+            "get": {
+                "tags": [
+                    "Finance Reporting"
+                ],
+                "summary": "Get Cash Flow Statement",
+                "operationId": "e88f635a73126a44540384610b58a440",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/finance/supply-chain/risk-assessment": {
+            "get": {
+                "tags": [
+                    "Finance Supply Chain"
+                ],
+                "summary": "Inventory Risk Assessment (KNN)",
+                "operationId": "12ab9c4895c597af3ab5ba004cf44a7a",
+                "parameters": [
+                    {
+                        "name": "avg_daily_out",
+                        "in": "query",
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "lead_time_days",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Use a token from Sanctum auth",
+                "name": "Token Based",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Finance AI Analytics",
+            "description": "Predictive Enterprise Analytics"
+        },
+        {
+            "name": "Finance FP&A",
+            "description": "Financial Planning and Analysis with AI Linear Regression"
+        },
+        {
+            "name": "Finance Analytics",
+            "description": "AI-powered Finance and Analytics Endpoints"
+        },
+        {
+            "name": "Finance Forecasting",
+            "description": "Predictive Analytics for Cash Position"
+        },
+        {
+            "name": "Finance Ledger",
+            "description": "General Ledger and Chart of Accounts Management"
+        },
+        {
+            "name": "Finance Reporting",
+            "description": "Enterprise Financial Reports (IFRS)"
+        },
+        {
+            "name": "Finance Supply Chain",
+            "description": "Supply Chain Analytics with AI K-Nearest Neighbor"
+        }
+    ]
+}
