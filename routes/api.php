@@ -153,3 +153,32 @@ Route::prefix('platform/hrm')
         Route::post('/employees/{uuid}/enroll-face', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'enrollFace']);
         Route::delete('/employees/{uuid}/face-data', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'removeFace']);
     });
+
+Route::prefix('platform/finance')
+    ->middleware('auth:sanctum')
+    ->group(function () {
+        // Core Ledger
+        Route::get('/ledger/accounts', [\App\Http\Controllers\Platform\Api\Finance\GeneralLedgerController::class, 'accounts']);
+        Route::get('/ledger/items', [\App\Http\Controllers\Platform\Api\Finance\GeneralLedgerController::class, 'items']);
+        
+        // Financial Reporting
+        Route::get('/reporting/profit-loss', [\App\Http\Controllers\Platform\Api\Finance\ReportingController::class, 'profitAndLoss']);
+        Route::get('/reporting/balance-sheet', [\App\Http\Controllers\Platform\Api\Finance\ReportingController::class, 'balanceSheet']);
+        Route::get('/reporting/cash-flow', [\App\Http\Controllers\Platform\Api\Finance\ReportingController::class, 'cashFlow']);
+        
+        // AI Analytics
+        Route::get('/ai/budget-variance/{account_uuid}', [\App\Http\Controllers\Platform\Api\Finance\AIAnalyticsController::class, 'budgetVariance']);
+        Route::post('/ai/suggest-account', [\App\Http\Controllers\Platform\Api\Finance\AIAnalyticsController::class, 'suggestAccount']);
+
+        // FP&A
+        Route::get('/fpa/revenue-analysis', [\App\Http\Controllers\Platform\Api\Finance\FPAnalysisController::class, 'revenueAnalysis']);
+
+        // Forecasting
+        Route::get('/forecasting/cash-forecast', [\App\Http\Controllers\Platform\Api\Finance\ForecastingController::class, 'cashForecast']);
+
+        // Supply Chain AI
+        Route::get('/supply-chain/risk-assessment', [\App\Http\Controllers\Platform\Api\Finance\SupplyChainAIController::class, 'riskAssessment']);
+        
+        // Legacy / Original
+        Route::get('/dashboard', [\App\Http\Controllers\Platform\Api\Finance\FinanceDashboardController::class, 'index']);
+    });

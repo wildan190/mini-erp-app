@@ -949,17 +949,19 @@
                 ]
             }
         },
-        "/api/platform/hrm/employees/{uuid}/enroll-face": {
-            "post": {
+        "/api/platform/hrm/employees/{uuid}/face-status": {
+            "get": {
                 "tags": [
-                    "HRM Employees"
+                    "HRM Face Recognition"
                 ],
-                "summary": "Enroll employee face for recognition",
-                "operationId": "ad05c5d61ec2814ecf24d132b9dea46d",
+                "summary": "Get employee face enrollment status",
+                "description": "Returns whether the employee has a face enrolled and whether face verification is required for clock-in.",
+                "operationId": "efbcb13bd5350cf028d2a5e2efa0f07a",
                 "parameters": [
                     {
                         "name": "uuid",
                         "in": "path",
+                        "description": "Employee UUID",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -967,28 +969,38 @@
                         }
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "face_image"
-                                ],
-                                "properties": {
-                                    "face_image": {
-                                        "type": "string",
-                                        "format": "binary"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "Face enrolled successfully"
+                        "description": "Face enrollment status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "has_face_enrolled": {
+                                                    "description": "Whether the employee has a face enrolled",
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "requires_face_verification": {
+                                                    "description": "Whether face verification is required at clock-in",
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "face_image_path": {
+                                                    "type": "string",
+                                                    "example": "faces/employees/uuid.jpg",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Employee not found"
@@ -1001,17 +1013,127 @@
                 ]
             }
         },
+        "/api/platform/hrm/employees/{uuid}/enroll-face": {
+            "post": {
+                "tags": [
+                    "HRM Face Recognition"
+                ],
+                "summary": "Enroll employee face for recognition",
+                "description": "Upload a clear photo of the employee's face. The system will extract a 128-dimensional face embedding and store it. This embedding is used to verify identity at clock-in. Only one face must be visible in the image.",
+                "operationId": "ad05c5d61ec2814ecf24d132b9dea46d",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "Employee UUID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "A clear photo of the employee's face (JPG/PNG, max 5MB). The face must be clearly visible and well-lit.",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "face_image"
+                                ],
+                                "properties": {
+                                    "face_image": {
+                                        "description": "Face photo (JPG/PNG, max 5MB). Must contain exactly one clearly visible face.",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Face enrolled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Face enrolled successfully"
+                                        },
+                                        "data": {
+                                            "description": "Updated employee record",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "No face detected in the uploaded image",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No face detected in the image. Please upload a clear photo with a single visible face."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Face enrollment failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to extract face encoding"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Employee not found"
+                    },
+                    "413": {
+                        "description": "Image file too large (max 5MB)"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/platform/hrm/employees/{uuid}/face-data": {
             "delete": {
                 "tags": [
-                    "HRM Employees"
+                    "HRM Face Recognition"
                 ],
                 "summary": "Remove employee face data",
+                "description": "Deletes the stored face encoding and face image for the employee, and disables face verification requirement at clock-in.",
                 "operationId": "afdd2d7799c63a1fbe0bad771d3cfd26",
                 "parameters": [
                     {
                         "name": "uuid",
                         "in": "path",
+                        "description": "Employee UUID",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1021,7 +1143,20 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Face data removed"
+                        "description": "Face data removed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Face data removed successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Employee not found"
@@ -2683,6 +2818,10 @@
         {
             "name": "HRM Shifts",
             "description": "API Endpoints for Shift Management"
+        },
+        {
+            "name": "HRM Face Recognition",
+            "description": "HRM Face Recognition"
         }
     ]
 }
