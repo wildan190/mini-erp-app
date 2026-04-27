@@ -17,7 +17,16 @@ class SalaryComponentController extends Controller
         security: [["sanctum" => []]],
         tags: ["HRM Salary Components"],
         responses: [
-            new OA\Response(response: 200, description: "Successful operation")
+            new OA\Response(
+                response: 200,
+                description: "Successful operation",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string"),
+                        new OA\Property(property: "data", type: "array", items: new OA\Items(type: "object"))
+                    ]
+                )
+            )
         ]
     )]
     public function index(): JsonResponse
@@ -37,7 +46,7 @@ class SalaryComponentController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\MediaType(
-                mediaType: "application/x-www-form-urlencoded",
+                mediaType: "application/json",
                 schema: new OA\Schema(
                     required: ["name", "type", "value"],
                     properties: [
@@ -52,8 +61,26 @@ class SalaryComponentController extends Controller
             )
         ),
         responses: [
-            new OA\Response(response: 201, description: "Component created"),
-            new OA\Response(response: 422, description: "Validation error")
+            new OA\Response(
+                response: 201,
+                description: "Component created",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string"),
+                        new OA\Property(property: "data", type: "object")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Validation error",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string"),
+                        new OA\Property(property: "errors", type: "object")
+                    ]
+                )
+            )
         ]
     )]
     public function store(StoreSalaryComponentRequest $request): JsonResponse
