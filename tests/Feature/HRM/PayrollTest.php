@@ -80,7 +80,7 @@ class PayrollTest extends TestCase
 
         // Generate Payroll
         $response = $this->postJson('/api/platform/hrm/payroll-periods/generate', [
-            'payroll_period_id' => $period->id,
+            'payroll_period_uuid' => $period->uuid,
         ]);
 
         $response->assertStatus(200);
