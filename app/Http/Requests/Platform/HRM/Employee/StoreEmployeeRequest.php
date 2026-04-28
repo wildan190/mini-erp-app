@@ -44,6 +44,7 @@ class StoreEmployeeRequest extends FormRequest
             'phone' => 'nullable|string|max:20',
             'emergency_contact_name' => 'nullable|string|max:255',
             'emergency_contact_phone' => 'nullable|string|max:20',
+            'basic_salary' => 'nullable|numeric|min:0',
         ];
     }
 }
