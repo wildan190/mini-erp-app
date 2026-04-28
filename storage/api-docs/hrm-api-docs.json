@@ -1300,6 +1300,218 @@
                 ]
             }
         },
+        "/api/platform/hrm/employees/{uuid}/salary-components": {
+            "get": {
+                "tags": [
+                    "HRM Employee Salary Components"
+                ],
+                "summary": "List salary components assigned to an employee",
+                "operationId": "6c3443f4c6a67e5affcb4facc13bfcd7",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "404": {
+                        "description": "Employee not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "HRM Employee Salary Components"
+                ],
+                "summary": "Assign a salary component to an employee",
+                "operationId": "ea6e2dc194f97036b53f89bf3a5f2b18",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "salary_component_uuid"
+                                ],
+                                "properties": {
+                                    "salary_component_uuid": {
+                                        "description": "UUID of the salary component",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "custom_value": {
+                                        "description": "Override value (leave empty to use component default)",
+                                        "type": "number",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "salary_component_uuid"
+                                ],
+                                "properties": {
+                                    "salary_component_uuid": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "custom_value": {
+                                        "type": "number",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Component assigned"
+                    },
+                    "409": {
+                        "description": "Component already assigned"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Employee or component not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/platform/hrm/employees/{uuid}/salary-components/{componentUuid}": {
+            "put": {
+                "tags": [
+                    "HRM Employee Salary Components"
+                ],
+                "summary": "Update custom value of an assigned salary component",
+                "operationId": "327f8786bdeaac22b3e20510558392aa",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "componentUuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "properties": {
+                                    "custom_value": {
+                                        "description": "New override value (leave empty to use component default)",
+                                        "type": "number",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated successfully"
+                    },
+                    "404": {
+                        "description": "Assignment not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "HRM Employee Salary Components"
+                ],
+                "summary": "Remove a salary component from an employee",
+                "operationId": "febc4299723b9d06a779d7f181902822",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "componentUuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Removed successfully"
+                    },
+                    "404": {
+                        "description": "Assignment not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/platform/hrm/leave-requests": {
             "get": {
                 "tags": [
@@ -2502,6 +2714,40 @@
                 "requestBody": {
                     "required": true,
                     "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "type",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "earning",
+                                            "deduction"
+                                        ]
+                                    },
+                                    "is_taxable": {
+                                        "type": "boolean"
+                                    },
+                                    "is_fixed": {
+                                        "type": "boolean"
+                                    },
+                                    "value": {
+                                        "type": "number"
+                                    },
+                                    "percentage_of": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
                         "application/x-www-form-urlencoded": {
                             "schema": {
                                 "required": [
@@ -2826,6 +3072,10 @@
         {
             "name": "HRM Employee Documents",
             "description": "API Endpoints for Employee Document Management"
+        },
+        {
+            "name": "HRM Employee Salary Components",
+            "description": "API Endpoints for assigning salary components to employees"
         },
         {
             "name": "HRM Leave Requests",

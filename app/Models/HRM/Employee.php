@@ -99,4 +99,11 @@ class Employee extends Model
     {
         return $this->hasMany(Payroll::class);
     }
+
+    public function salaryComponents()
+    {
+        return $this->belongsToMany(SalaryComponent::class, 'employee_salary_components')
+                    ->withPivot('custom_value')
+                    ->withTimestamps();
+    }
 }
