@@ -14,6 +14,7 @@ class StoreResignationRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'employee_uuid' => 'nullable|exists:employees,uuid',
             'notice_date' => 'required|date',
             'resignation_date' => 'required|date|after_or_equal:notice_date',
             'reason' => 'required|string',

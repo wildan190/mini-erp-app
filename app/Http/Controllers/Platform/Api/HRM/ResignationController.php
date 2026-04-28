@@ -75,12 +75,16 @@ class ResignationController extends Controller
     public function store(StoreResignationRequest $request): JsonResponse
     {
         $data = $request->validated();
-
-        $employee = Employee::where('user_id', Auth::id())->first();
-        if (!$employee) {
-            return response()->json(['message' => 'Employee record not found.'], 404);
+        
+        if ($request->filled('employee_uuid')) {
+            $data['employee_id'] = Employee::where('uuid', $request->employee_uuid)->value('id');
+        } else {
+            $employee = Employee::where('user_id', Auth::id())->first();
+            if (!$employee) {
+                return response()->json(['message' => 'Employee record not found.'], 404);
+            }
+            $data['employee_id'] = $employee->id;
         }
-        $data['employee_id'] = $employee->id;
 
         $resignation = $this->resignationService->submitResignation($data);
 
