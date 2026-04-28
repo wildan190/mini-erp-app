@@ -6,7 +6,8 @@ use App\Models\HRM\Employee;
 use App\Models\HRM\Payroll;
 use App\Models\HRM\PayrollItem;
 use App\Models\HRM\PayrollPeriod;
-use App\Models\HRM\SalaryComponent;
+use App\Models\HRM\Attendance;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -80,24 +81,52 @@ class PayrollService
     public function calculateSalary(Employee $employee, PayrollPeriod $period): Payroll
     {
         return DB::transaction(function () use ($employee, $period) {
-            $basicSalary     = $employee->basic_salary;
-            $totalEarnings   = $basicSalary;
+            $basicSalary = $employee->basic_salary;
+            $totalEarnings = $basicSalary;
             $totalDeductions = 0;
 
+            // 1. Calculate Expected Work Days (Monday - Friday)
+            $expectedWorkDays = $this->countWorkDays($period->start_date, $period->end_date);
+
+            // 2. Count Actual Presence
+            $actualPresence = Attendance::where('employee_id', $employee->id)
+                ->whereBetween('date', [$period->start_date, $period->end_date])
+                ->whereIn('status', ['present', 'late'])
+                ->count();
+
+            $absenceDays = max(0, $expectedWorkDays - $actualPresence);
+
             $payroll = Payroll::create([
-                'employee_id'       => $employee->id,
+                'employee_id' => $employee->id,
                 'payroll_period_id' => $period->id,
-                'basic_salary'      => $basicSalary,
-                'status'            => 'draft',
+                'basic_salary' => $basicSalary,
+                'expected_work_days' => $expectedWorkDays,
+                'actual_presence' => $actualPresence,
+                'absence_days' => $absenceDays,
+                'status' => 'draft',
             ]);
 
             // Add Basic Salary Item
             PayrollItem::create([
                 'payroll_id' => $payroll->id,
-                'name'       => 'Basic Salary',
-                'amount'     => $basicSalary,
-                'type'       => 'earning',
+                'name' => 'Basic Salary',
+                'amount' => $basicSalary,
+                'type' => 'earning',
             ]);
+
+            // 3. Apply Absence Deduction
+            if ($absenceDays > 0 && $expectedWorkDays > 0) {
+                $deductionAmount = ($absenceDays / $expectedWorkDays) * $basicSalary;
+
+                PayrollItem::create([
+                    'payroll_id' => $payroll->id,
+                    'name' => "Absence Deduction ($absenceDays days)",
+                    'amount' => $deductionAmount,
+                    'type' => 'deduction',
+                ]);
+
+                $totalDeductions += $deductionAmount;
+            }
 
             // Use components assigned specifically to this employee.
             // custom_value on the pivot overrides the component's default value.
@@ -116,11 +145,11 @@ class PayrollService
 
                 if ($amount > 0) {
                     PayrollItem::create([
-                        'payroll_id'          => $payroll->id,
+                        'payroll_id' => $payroll->id,
                         'salary_component_id' => $component->id,
-                        'name'                => $component->name,
-                        'amount'              => $amount,
-                        'type'                => $component->type,
+                        'name' => $component->name,
+                        'amount' => $amount,
+                        'type' => $component->type,
                     ]);
 
                     if ($component->type === 'earning') {
@@ -134,13 +163,32 @@ class PayrollService
             $netSalary = $totalEarnings - $totalDeductions;
 
             $payroll->update([
-                'total_earnings'   => $totalEarnings,
+                'total_earnings' => $totalEarnings,
                 'total_deductions' => $totalDeductions,
-                'net_salary'       => $netSalary,
+                'net_salary' => $netSalary,
             ]);
 
             return $payroll;
         });
+    }
+
+    /**
+     * Count work days (Monday - Friday) between two dates.
+     */
+    private function countWorkDays($startDate, $endDate): int
+    {
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+        $workDays = 0;
+
+        while ($start <= $end) {
+            if (!$start->isWeekend()) { // isWeekend() checks for Sat & Sun by default
+                $workDays++;
+            }
+            $start->addDay();
+        }
+
+        return $workDays;
     }
 
     /**

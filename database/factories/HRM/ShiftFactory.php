@@ -17,7 +17,7 @@ class ShiftFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->randomElement(['Morning Shift', 'Day Shift', 'Night Shift', 'Evening Shift']),
+            'name' => $this->faker->unique()->randomElement(['Morning Shift', 'Day Shift', 'Night Shift', 'Evening Shift', 'General Shift', 'Special Shift']),
             'start_time' => '09:00:00',
             'end_time' => '17:00:00',
         ];
