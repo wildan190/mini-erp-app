@@ -11,6 +11,20 @@ class StoreSalaryComponentRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $merge = [];
+        if ($this->has('is_taxable')) {
+            $merge['is_taxable'] = filter_var($this->is_taxable, FILTER_VALIDATE_BOOLEAN);
+        }
+        if ($this->has('is_fixed')) {
+            $merge['is_fixed'] = filter_var($this->is_fixed, FILTER_VALIDATE_BOOLEAN);
+        }
+        if (!empty($merge)) {
+            $this->merge($merge);
+        }
+    }
+
     public function rules(): array
     {
         return [
