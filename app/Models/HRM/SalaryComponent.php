@@ -38,4 +38,11 @@ class SalaryComponent extends Model
         'is_active' => 'boolean',
         'value' => 'decimal:2',
     ];
+
+    public function employees()
+    {
+        return $this->belongsToMany(Employee::class, 'employee_salary_components')
+                    ->withPivot('custom_value')
+                    ->withTimestamps();
+    }
 }

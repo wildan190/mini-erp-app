@@ -91,6 +91,12 @@ Route::prefix('platform/hrm')
         Route::put('/employees/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'update']);
         Route::delete('/employees/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'destroy']);
 
+        // Employee Salary Components (per-employee assignment)
+        Route::get('/employees/{uuid}/salary-components', [\App\Http\Controllers\Platform\Api\HRM\EmployeeSalaryComponentController::class, 'index']);
+        Route::post('/employees/{uuid}/salary-components', [\App\Http\Controllers\Platform\Api\HRM\EmployeeSalaryComponentController::class, 'store']);
+        Route::put('/employees/{uuid}/salary-components/{componentUuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeSalaryComponentController::class, 'update']);
+        Route::delete('/employees/{uuid}/salary-components/{componentUuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeSalaryComponentController::class, 'destroy']);
+
         // Employee Documents
         Route::get('/employees/{employeeUuid}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'index']);
         Route::post('/employees/{employeeUuid}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'store']);

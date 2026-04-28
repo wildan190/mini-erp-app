@@ -80,43 +80,47 @@ class PayrollService
     public function calculateSalary(Employee $employee, PayrollPeriod $period): Payroll
     {
         return DB::transaction(function () use ($employee, $period) {
-            $basicSalary = $employee->basic_salary;
-            $totalEarnings = $basicSalary;
+            $basicSalary     = $employee->basic_salary;
+            $totalEarnings   = $basicSalary;
             $totalDeductions = 0;
 
             $payroll = Payroll::create([
-                'employee_id' => $employee->id,
+                'employee_id'       => $employee->id,
                 'payroll_period_id' => $period->id,
-                'basic_salary' => $basicSalary,
-                'status' => 'draft',
+                'basic_salary'      => $basicSalary,
+                'status'            => 'draft',
             ]);
 
             // Add Basic Salary Item
             PayrollItem::create([
                 'payroll_id' => $payroll->id,
-                'name' => 'Basic Salary',
-                'amount' => $basicSalary,
-                'type' => 'earning',
+                'name'       => 'Basic Salary',
+                'amount'     => $basicSalary,
+                'type'       => 'earning',
             ]);
 
-            $components = SalaryComponent::where('is_active', true)->get();
+            // Use components assigned specifically to this employee.
+            // custom_value on the pivot overrides the component's default value.
+            $components = $employee->salaryComponents()->where('is_active', true)->get();
 
             foreach ($components as $component) {
+                // Resolve effective value: pivot custom_value takes precedence
+                $effectiveValue = $component->pivot->custom_value ?? $component->value;
                 $amount = 0;
 
                 if ($component->is_fixed) {
-                    $amount = $component->value;
+                    $amount = $effectiveValue;
                 } elseif ($component->percentage_of === 'basic_salary') {
-                    $amount = ($basicSalary * $component->value) / 100;
+                    $amount = ($basicSalary * $effectiveValue) / 100;
                 }
 
                 if ($amount > 0) {
                     PayrollItem::create([
-                        'payroll_id' => $payroll->id,
+                        'payroll_id'          => $payroll->id,
                         'salary_component_id' => $component->id,
-                        'name' => $component->name,
-                        'amount' => $amount,
-                        'type' => $component->type,
+                        'name'                => $component->name,
+                        'amount'              => $amount,
+                        'type'                => $component->type,
                     ]);
 
                     if ($component->type === 'earning') {
@@ -130,9 +134,9 @@ class PayrollService
             $netSalary = $totalEarnings - $totalDeductions;
 
             $payroll->update([
-                'total_earnings' => $totalEarnings,
+                'total_earnings'   => $totalEarnings,
                 'total_deductions' => $totalDeductions,
-                'net_salary' => $netSalary,
+                'net_salary'       => $netSalary,
             ]);
 
             return $payroll;

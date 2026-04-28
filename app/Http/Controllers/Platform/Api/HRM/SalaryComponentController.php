@@ -45,20 +45,36 @@ class SalaryComponentController extends Controller
         tags: ["HRM Salary Components"],
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\MediaType(
-                mediaType: "application/x-www-form-urlencoded",
-                schema: new OA\Schema(
-                    required: ["name", "type", "value"],
-                    properties: [
-                        new OA\Property(property: "name", type: "string"),
-                        new OA\Property(property: "type", type: "string", enum: ["earning", "deduction"]),
-                        new OA\Property(property: "is_taxable", type: "boolean"),
-                        new OA\Property(property: "is_fixed", type: "boolean"),
-                        new OA\Property(property: "value", type: "number"),
-                        new OA\Property(property: "percentage_of", type: "string")
-                    ]
+            content: [
+                new OA\MediaType(
+                    mediaType: "application/json",
+                    schema: new OA\Schema(
+                        required: ["name", "type", "value"],
+                        properties: [
+                            new OA\Property(property: "name", type: "string"),
+                            new OA\Property(property: "type", type: "string", enum: ["earning", "deduction"]),
+                            new OA\Property(property: "is_taxable", type: "boolean"),
+                            new OA\Property(property: "is_fixed", type: "boolean"),
+                            new OA\Property(property: "value", type: "number"),
+                            new OA\Property(property: "percentage_of", type: "string")
+                        ]
+                    )
+                ),
+                new OA\MediaType(
+                    mediaType: "application/x-www-form-urlencoded",
+                    schema: new OA\Schema(
+                        required: ["name", "type", "value"],
+                        properties: [
+                            new OA\Property(property: "name", type: "string"),
+                            new OA\Property(property: "type", type: "string", enum: ["earning", "deduction"]),
+                            new OA\Property(property: "is_taxable", type: "boolean"),
+                            new OA\Property(property: "is_fixed", type: "boolean"),
+                            new OA\Property(property: "value", type: "number"),
+                            new OA\Property(property: "percentage_of", type: "string")
+                        ]
+                    )
                 )
-            )
+            ]
         ),
         responses: [
             new OA\Response(
