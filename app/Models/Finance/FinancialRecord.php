@@ -3,11 +3,12 @@
 namespace App\Models\Finance;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class FinancialRecord extends Model
 {
-    use HasUuids;
+    use HasFactory, HasUuids;
 
     protected $primaryKey = 'uuid';
     protected $keyType = 'string';

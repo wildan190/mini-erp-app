@@ -31,6 +31,9 @@ class Payroll extends Model
         'net_salary',
         'status',
         'payment_date',
+        'expected_work_days',
+        'actual_presence',
+        'absence_days',
     ];
 
     protected $casts = [
@@ -39,6 +42,9 @@ class Payroll extends Model
         'total_deductions' => 'decimal:2',
         'net_salary' => 'decimal:2',
         'payment_date' => 'date',
+        'expected_work_days' => 'integer',
+        'actual_presence' => 'integer',
+        'absence_days' => 'integer',
     ];
 
     public function employee()
