@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->decimal('total_earnings', 15, 2)->default(0);
             $table->decimal('total_deductions', 15, 2)->default(0);
             $table->decimal('net_salary', 15, 2)->default(0);
-            $table->enum('status', ['draft', 'paid'])->default('draft');
+            $table->enum('status', ['draft', 'approved', 'paid'])->default('draft');
             $table->date('payment_date')->nullable();
             $table->timestamps();
             $table->softDeletes();

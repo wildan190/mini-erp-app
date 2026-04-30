@@ -239,4 +239,17 @@ class PayrollService
         }
         return null;
     }
+
+    /**
+     * Batch approve payrolls.
+     *
+     * @param array $payrollUuids
+     * @return int
+     */
+    public function batchApprovePayrolls(array $payrollUuids): int
+    {
+        return Payroll::whereIn('uuid', $payrollUuids)
+            ->where('status', 'draft')
+            ->update(['status' => 'approved']);
+    }
 }
