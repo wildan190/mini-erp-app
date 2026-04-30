@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('ALTER TABLE payroll_periods DROP CONSTRAINT IF EXISTS payroll_periods_status_check');
-        DB::statement("ALTER TABLE payroll_periods ADD CONSTRAINT payroll_periods_status_check CHECK (status::text = ANY (ARRAY['draft'::character varying, 'processing'::character varying, 'closed'::character varying]::text[]))");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE payroll_periods DROP CONSTRAINT IF EXISTS payroll_periods_status_check');
+            DB::statement("ALTER TABLE payroll_periods ADD CONSTRAINT payroll_periods_status_check CHECK (status::text = ANY (ARRAY['draft'::character varying, 'processing'::character varying, 'closed'::character varying]::text[]))");
+        }
     }
 
     /**
@@ -20,7 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE payroll_periods DROP CONSTRAINT IF EXISTS payroll_periods_status_check');
-        DB::statement("ALTER TABLE payroll_periods ADD CONSTRAINT payroll_periods_status_check CHECK (status::text = ANY (ARRAY['draft'::character varying, 'closed'::character varying]::text[]))");
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE payroll_periods DROP CONSTRAINT IF EXISTS payroll_periods_status_check');
+            DB::statement("ALTER TABLE payroll_periods ADD CONSTRAINT payroll_periods_status_check CHECK (status::text = ANY (ARRAY['draft'::character varying, 'closed'::character varying]::text[]))");
+        }
     }
 };
