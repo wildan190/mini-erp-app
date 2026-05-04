@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Platform\Api\HRM;
 
 use App\Http\Controllers\Controller;
-use App\Models\HRM\Payroll;
 use App\Services\HRM\PayrollService;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
@@ -94,4 +93,60 @@ class PayrollController extends Controller
             'data' => $paidPayroll
         ]);
     }
+
+    #[OA\Get(
+        path: "/api/platform/hrm/payrolls/{uuid}/payslip",
+        summary: "Generate payslip PDF",
+        security: [["sanctum" => []]],
+        tags: ["HRM Payrolls"],
+        parameters: [
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Payslip PDF"),
+            new OA\Response(response: 404, description: "Payroll not found")
+        ]
+    )]
+    public function payslip($uuid)
+    {
+        $payroll = $this->payrollService->findPayroll($uuid);
+        if (!$payroll) {
+            return response()->json(['message' => 'Payroll not found'], 404);
+        }
+        return $this->payrollService->generatePayslipPdf($payroll);
+    }
+
+    #[OA\Post(
+        path: "/api/platform/hrm/payrolls/batch-pay",
+        summary: "Batch mark payrolls as paid",
+        security: [["sanctum" => []]],
+        tags: ["HRM Payrolls"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: "payroll_uuids", type: "array", items: new OA\Items(type: "string", format: "uuid"))
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: "Payrolls marked as paid"),
+            new OA\Response(response: 422, description: "Validation error")
+        ]
+    )]
+    public function batchPay(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $request->validate([
+            'payroll_uuids' => 'required|array',
+            'payroll_uuids.*' => 'required|exists:payrolls,uuid',
+        ]);
+
+        $count = $this->payrollService->batchPayPayrolls($request->payroll_uuids);
+
+        return response()->json([
+            'message' => "Successfully marked $count payrolls as paid.",
+        ]);
+    }
 }
+
+

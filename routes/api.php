@@ -133,6 +133,8 @@ Route::prefix('platform/hrm')
 
         Route::get('/payrolls', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'index']);
         Route::get('/payrolls/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'show']);
+        Route::get('/payrolls/{uuid}/payslip', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'payslip']);
+        Route::post('/payrolls/batch-pay', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'batchPay']);
         Route::post('/payrolls/{uuid}/pay', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'pay']);
 
         // Reimbursement

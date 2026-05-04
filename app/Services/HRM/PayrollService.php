@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class PayrollService
 {
@@ -252,4 +254,36 @@ class PayrollService
             ->where('status', 'draft')
             ->update(['status' => 'approved']);
     }
+
+    /**
+     * Batch pay payrolls.
+     *
+     * @param array $payrollUuids
+     * @return int
+     */
+    public function batchPayPayrolls(array $payrollUuids): int
+    {
+        return Payroll::whereIn('uuid', $payrollUuids)
+            ->where('status', '!=', 'paid')
+            ->update([
+                'status' => 'paid',
+                'payment_date' => now(),
+            ]);
+    }
+
+    /**
+     * Generate Payslip PDF.
+     *
+     * @param Payroll $payroll
+     * @return \Illuminate\Http\Response
+     */
+    public function generatePayslipPdf(Payroll $payroll)
+    {
+        $payroll->load(['employee.user', 'employee.department', 'employee.designation', 'payrollPeriod', 'items']);
+        
+        $pdf = Pdf::loadView('hrm.payslip', compact('payroll'));
+        
+        return $pdf->download("payslip-{$payroll->employee->user->name}-{$payroll->payrollPeriod->name}.pdf");
+    }
 }
+
