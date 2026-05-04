@@ -8,3 +8,7 @@ Route::get('/', function () {
 });
 
 Route::get('/crm/quotation/{id}/print', [QuotationController::class, 'print'])->name('quotation.print');
+
+Route::get('/login', function () {
+    return response()->json(['message' => 'Unauthenticated.'], 401);
+})->name('login');
