@@ -190,3 +190,65 @@ Route::prefix('platform/finance')
         // Legacy / Original
         Route::get('/dashboard', [\App\Http\Controllers\Platform\Api\Finance\FinanceDashboardController::class, 'index']);
     });
+
+Route::prefix('platform/purchasing')
+    ->middleware('auth:sanctum')
+    ->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Platform\Api\Purchasing\PurchasingDashboardController::class, 'index']);
+        
+        // Suppliers
+        Route::get('/suppliers', [\App\Http\Controllers\Platform\Api\Purchasing\SupplierController::class, 'index']);
+        Route::post('/suppliers', [\App\Http\Controllers\Platform\Api\Purchasing\SupplierController::class, 'store']);
+        Route::get('/suppliers/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\SupplierController::class, 'show']);
+        Route::put('/suppliers/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\SupplierController::class, 'update']);
+        Route::delete('/suppliers/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\SupplierController::class, 'destroy']);
+
+        // Purchase Requests
+        Route::get('/requests', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseRequestController::class, 'index']);
+        Route::post('/requests', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseRequestController::class, 'store']);
+        Route::get('/requests/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseRequestController::class, 'show']);
+        Route::put('/requests/{uuid}/status', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseRequestController::class, 'updateStatus']);
+
+        // Purchase Orders
+        Route::get('/orders', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseOrderController::class, 'index']);
+        Route::post('/orders', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseOrderController::class, 'store']);
+        Route::get('/orders/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseOrderController::class, 'show']);
+        Route::put('/orders/{uuid}/status', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseOrderController::class, 'updateStatus']);
+
+        // Goods Receipts
+        Route::get('/receipts', [\App\Http\Controllers\Platform\Api\Purchasing\GoodsReceiptController::class, 'index']);
+        Route::post('/receipts', [\App\Http\Controllers\Platform\Api\Purchasing\GoodsReceiptController::class, 'store']);
+        Route::get('/receipts/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\GoodsReceiptController::class, 'show']);
+
+        // Invoices
+        Route::get('/invoices', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseInvoiceController::class, 'index']);
+        Route::post('/invoices', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseInvoiceController::class, 'store']);
+        Route::get('/invoices/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseInvoiceController::class, 'show']);
+    });
+
+Route::prefix('platform/project')
+    ->middleware('auth:sanctum')
+    ->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'dashboard']);
+        Route::get('/resources', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'resources']);
+        Route::get('/financials', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'financials']);
+        
+        // Tasks
+        Route::get('/tasks', [\App\Http\Controllers\Api\Platform\Project\ProjectTaskController::class, 'index']);
+        Route::post('/tasks', [\App\Http\Controllers\Api\Platform\Project\ProjectTaskController::class, 'store']);
+        Route::put('/tasks/reorder', [\App\Http\Controllers\Api\Platform\Project\ProjectTaskController::class, 'reorder']);
+        Route::put('/tasks/{uuid}', [\App\Http\Controllers\Api\Platform\Project\ProjectTaskController::class, 'update']);
+
+        // Projects
+        Route::get('/', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'store']);
+        Route::get('/{uuid}', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'show']);
+        Route::put('/{uuid}', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'update']);
+
+        // Members
+        Route::post('/members', [\App\Http\Controllers\Api\Platform\Project\ProjectMemberController::class, 'store']);
+
+        // Costs
+        Route::post('/costs', [\App\Http\Controllers\Api\Platform\Project\ProjectCostController::class, 'store']);
+    });
+
