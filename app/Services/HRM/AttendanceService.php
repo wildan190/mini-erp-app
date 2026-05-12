@@ -39,7 +39,7 @@ class AttendanceService
                 $query->where('employee_id', $employee?->id ?? 0);
             })
             ->when(isset($filters['date']), function (Builder $query) use ($filters) {
-                $query->whereDate('date', $filters['date']);
+                $query->where('date', $filters['date']);
             })
             ->when(isset($filters['department_uuid']), function (Builder $query) use ($filters) {
                 $department = \App\Models\HRM\Department::where('uuid', $filters['department_uuid'])->first();
@@ -65,7 +65,7 @@ class AttendanceService
 
         // Check if already clocked in today
         $existingAttendance = Attendance::where('employee_id', $employee->id)
-            ->whereDate('date', $today)
+            ->where('date', $today->toDateString())
             ->first();
 
         if ($existingAttendance) {
@@ -157,7 +157,7 @@ class AttendanceService
         $today = Carbon::today();
 
         $attendance = Attendance::where('employee_id', $employee->id)
-            ->whereDate('date', $today)
+            ->where('date', $today->toDateString())
             ->first();
 
         if (!$attendance) {
