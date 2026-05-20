@@ -45,6 +45,8 @@ Route::prefix('platform/crm')
         Route::post('/customers', [CustomerDatabaseManagementController::class, 'store']);
         Route::put('/customers/{uuid}', [CustomerDatabaseManagementController::class, 'update']);
         Route::delete('/customers/{uuid}', [CustomerDatabaseManagementController::class, 'destroy']);
+        Route::get('/customers/{uuid}/interactions', [CustomerDatabaseManagementController::class, 'interactions']);
+        Route::get('/customers/{uuid}/orders', [CustomerDatabaseManagementController::class, 'orders']);
 
         // Prospect Management
         Route::get('/leads', [LeadTrackingController::class, 'index']);
