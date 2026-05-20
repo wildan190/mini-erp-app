@@ -31,7 +31,7 @@ class AttendanceVerificationCompleted extends Notification implements ShouldQueu
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database'];
     }
 
     /**
