@@ -9,9 +9,20 @@ use Illuminate\Support\Str;
 
 class QuotationService
 {
-    public function index()
+    public function index($customerId = null)
     {
-        return Quotation::with('customer', 'items')->latest()->paginate(10);
+        $query = Quotation::with('customer', 'items')->latest();
+        
+        if ($customerId) {
+            if (\Illuminate\Support\Str::isUuid($customerId)) {
+                $customerId = Customer::where('uuid', $customerId)->value('id');
+            }
+            if ($customerId) {
+                $query->where('customer_id', $customerId);
+            }
+        }
+        
+        return $query->paginate(10);
     }
 
     public function show($id): Quotation

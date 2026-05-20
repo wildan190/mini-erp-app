@@ -20,11 +20,11 @@ class QuotationController extends Controller
             new OA\Response(response: 200, description: "List of quotations")
         ]
     )]
-    public function index(QuotationService $service)
+    public function index(Request $request, QuotationService $service)
     {
         return response()->json([
             'message' => 'List quotation',
-            'data' => $service->index()
+            'data' => $service->index($request->get('customer_id'))
         ]);
     }
 

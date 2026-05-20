@@ -66,4 +66,14 @@ class Customer extends Model
     {
         return $this->hasMany(Quotation::class);
     }
+
+    public function interactions(): HasMany
+    {
+        return $this->hasMany(CustomerInteraction::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(SalesOrder::class);
+    }
 }

@@ -177,4 +177,46 @@ class CustomerDatabaseManagementController extends Controller
             'message' => 'Customer berhasil dihapus'
         ]);
     }
+
+    #[OA\Get(
+        path: "/api/platform/crm/customers/{uuid}/interactions",
+        summary: "Get customer interactions",
+        security: [["sanctum" => []]],
+        tags: ["Customers"],
+        parameters: [
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Successful operation")
+        ]
+    )]
+    public function interactions($id, CustomerService $service)
+    {
+        $customer = $service->show($id);
+        return response()->json([
+            'message' => 'Customer interactions',
+            'data' => $customer->interactions()->latest()->get()
+        ]);
+    }
+
+    #[OA\Get(
+        path: "/api/platform/crm/customers/{uuid}/orders",
+        summary: "Get customer orders",
+        security: [["sanctum" => []]],
+        tags: ["Customers"],
+        parameters: [
+            new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Successful operation")
+        ]
+    )]
+    public function orders($id, CustomerService $service)
+    {
+        $customer = $service->show($id);
+        return response()->json([
+            'message' => 'Customer orders',
+            'data' => $customer->orders()->latest()->get()
+        ]);
+    }
 }
