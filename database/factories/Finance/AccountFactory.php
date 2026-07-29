@@ -2,7 +2,7 @@
 
 namespace Database\Factories\Finance;
 
-use App\Models\Finance\Account;
+use App\Domain\Finance\Models\Account;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class AccountFactory extends Factory

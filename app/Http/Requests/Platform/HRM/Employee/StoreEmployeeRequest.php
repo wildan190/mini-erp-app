@@ -20,7 +20,7 @@ class StoreEmployeeRequest extends FormRequest
                 'exists:users,uuid',
                 function ($attribute, $value, $fail) {
                     $user = \App\Models\User::where('uuid', $value)->first();
-                    if ($user && \App\Models\HRM\Employee::where('user_id', $user->id)->exists()) {
+                    if ($user && \App\Domain\HRM\Models\Employee::where('user_id', $user->id)->exists()) {
                         $fail('The user already has an employee profile.');
                     }
                 }

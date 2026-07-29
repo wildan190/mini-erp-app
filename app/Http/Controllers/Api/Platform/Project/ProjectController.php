@@ -85,7 +85,7 @@ class ProjectController extends Controller
     public function resources()
     {
         $members = \App\Models\Project\ProjectMember::with(['project', 'employee'])->get();
-        $total_employees = \App\Models\HRM\Employee::count();
+        $total_employees = \App\Domain\HRM\Models\Employee::count();
         
         return response()->json([
             'status' => 'success',

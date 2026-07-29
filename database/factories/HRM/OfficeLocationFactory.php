@@ -2,13 +2,15 @@
 
 namespace Database\Factories\HRM;
 
+use App\Domain\HRM\Models\OfficeLocation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\HRM\OfficeLocation>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domain\HRM\Models\OfficeLocation>
  */
 class OfficeLocationFactory extends Factory
 {
+    protected $model = OfficeLocation::class;
     /**
      * Define the model's default state.
      *

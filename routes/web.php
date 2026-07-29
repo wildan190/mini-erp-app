@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Platform\Api\CRM\AutomationSalesForce\QuotationController;
+use App\Domain\CRM\Controllers\AutomationSalesForce\QuotationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {

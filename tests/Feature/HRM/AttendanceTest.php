@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\HRM;
 
-use App\Models\HRM\Employee;
-use App\Models\HRM\Shift;
+use App\Domain\HRM\Models\Employee;
+use App\Domain\HRM\Models\Shift;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,6 +23,7 @@ class AttendanceTest extends TestCase
             'emp_code' => 'EMP-ATT-' . uniqid(),
             'joining_date' => '2023-01-01',
             'status' => 'active',
+            'face_encoding' => json_encode(array_fill(0, 128, 0.1)),
         ]);
 
         $response = $this->postJson('/api/platform/hrm/attendances/clock-in', [
@@ -47,6 +48,7 @@ class AttendanceTest extends TestCase
             'user_id' => $user->id,
             'emp_code' => 'EMP-ATT-2-' . uniqid(),
             'status' => 'active',
+            'face_encoding' => json_encode(array_fill(0, 128, 0.1)),
         ]);
 
         $this->postJson('/api/platform/hrm/attendances/clock-in');
@@ -64,6 +66,7 @@ class AttendanceTest extends TestCase
             'user_id' => $user->id,
             'emp_code' => 'EMP-ATT-3-' . uniqid(),
             'status' => 'active',
+            'face_encoding' => json_encode(array_fill(0, 128, 0.1)),
         ]);
 
         // Clock in first

@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Finance\FinancialRecord;
-use App\Models\Finance\InventoryMovement;
+use App\Domain\Finance\Models\FinancialRecord;
+use App\Domain\Finance\Models\InventoryMovement;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Carbon\Carbon;

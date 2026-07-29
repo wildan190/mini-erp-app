@@ -2,7 +2,7 @@
 
 namespace Database\Factories\HRM;
 
-use App\Models\HRM\SalaryComponent;
+use App\Domain\HRM\Models\SalaryComponent;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SalaryComponentFactory extends Factory

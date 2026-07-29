@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\Platform\Api\CRM\AutomationSalesForce\QuotationController;
-use App\Http\Controllers\Platform\Api\CRM\Dashboard\CrmDashboardController;
-use App\Http\Controllers\Platform\Api\CRM\MasterData\CustomerDatabaseManagementController;
-use App\Http\Controllers\Platform\Api\CRM\ProspectManagement\LeadTrackingController;
-use App\Http\Controllers\Platform\Api\CRM\ProspectManagement\ProspectController;
-use App\Http\Controllers\Platform\Api\CRM\ProspectManagement\SalesPipeLineController;
+use App\Domain\CRM\Controllers\AutomationSalesForce\QuotationController;
+use App\Domain\CRM\Controllers\Dashboard\CrmDashboardController;
+use App\Domain\CRM\Controllers\MasterData\CustomerDatabaseManagementController;
+use App\Domain\CRM\Controllers\ProspectManagement\LeadTrackingController;
+use App\Domain\CRM\Controllers\ProspectManagement\ProspectController;
+use App\Domain\CRM\Controllers\ProspectManagement\SalesPipeLineController;
 use App\Http\Controllers\Platform\Api\Dashboard\PlatformDashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -73,184 +73,126 @@ Route::prefix('platform/hrm')
     ->middleware('auth:sanctum')
     ->group(function () {
         // Departments
-        Route::get('/departments', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'index']);
-        Route::get('/departments/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'show']);
-        Route::post('/departments', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'store']);
-        Route::put('/departments/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'update']);
-        Route::delete('/departments/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DepartmentController::class, 'destroy']);
+        Route::get('/departments', [\App\Domain\HRM\Controllers\DepartmentController::class, 'index']);
+        Route::get('/departments/{uuid}', [\App\Domain\HRM\Controllers\DepartmentController::class, 'show']);
+        Route::post('/departments', [\App\Domain\HRM\Controllers\DepartmentController::class, 'store']);
+        Route::put('/departments/{uuid}', [\App\Domain\HRM\Controllers\DepartmentController::class, 'update']);
+        Route::delete('/departments/{uuid}', [\App\Domain\HRM\Controllers\DepartmentController::class, 'destroy']);
 
         // Designations
-        Route::get('/designations', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'index']);
-        Route::get('/designations/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'show']);
-        Route::post('/designations', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'store']);
-        Route::put('/designations/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'update']);
-        Route::delete('/designations/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\DesignationController::class, 'destroy']);
+        Route::get('/designations', [\App\Domain\HRM\Controllers\DesignationController::class, 'index']);
+        Route::get('/designations/{uuid}', [\App\Domain\HRM\Controllers\DesignationController::class, 'show']);
+        Route::post('/designations', [\App\Domain\HRM\Controllers\DesignationController::class, 'store']);
+        Route::put('/designations/{uuid}', [\App\Domain\HRM\Controllers\DesignationController::class, 'update']);
+        Route::delete('/designations/{uuid}', [\App\Domain\HRM\Controllers\DesignationController::class, 'destroy']);
 
         // Employees
-        Route::get('/employees', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'index']);
-        Route::get('/employees/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'show']);
-        Route::post('/employees', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'store']);
-        Route::put('/employees/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'update']);
-        Route::delete('/employees/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'destroy']);
+        Route::get('/employees', [\App\Domain\HRM\Controllers\EmployeeController::class, 'index']);
+        Route::get('/employees/{uuid}', [\App\Domain\HRM\Controllers\EmployeeController::class, 'show']);
+        Route::post('/employees', [\App\Domain\HRM\Controllers\EmployeeController::class, 'store']);
+        Route::put('/employees/{uuid}', [\App\Domain\HRM\Controllers\EmployeeController::class, 'update']);
+        Route::delete('/employees/{uuid}', [\App\Domain\HRM\Controllers\EmployeeController::class, 'destroy']);
 
         // Employee Salary Components (per-employee assignment)
-        Route::get('/employees/{uuid}/salary-components', [\App\Http\Controllers\Platform\Api\HRM\EmployeeSalaryComponentController::class, 'index']);
-        Route::post('/employees/{uuid}/salary-components', [\App\Http\Controllers\Platform\Api\HRM\EmployeeSalaryComponentController::class, 'store']);
-        Route::put('/employees/{uuid}/salary-components/{componentUuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeSalaryComponentController::class, 'update']);
-        Route::delete('/employees/{uuid}/salary-components/{componentUuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeSalaryComponentController::class, 'destroy']);
+        Route::get('/employees/{uuid}/salary-components', [\App\Domain\HRM\Controllers\EmployeeSalaryComponentController::class, 'index']);
+        Route::post('/employees/{uuid}/salary-components', [\App\Domain\HRM\Controllers\EmployeeSalaryComponentController::class, 'store']);
+        Route::put('/employees/{uuid}/salary-components/{componentUuid}', [\App\Domain\HRM\Controllers\EmployeeSalaryComponentController::class, 'update']);
+        Route::delete('/employees/{uuid}/salary-components/{componentUuid}', [\App\Domain\HRM\Controllers\EmployeeSalaryComponentController::class, 'destroy']);
 
         // Employee Documents
-        Route::get('/employees/{employeeUuid}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'index']);
-        Route::post('/employees/{employeeUuid}/documents', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'store']);
-        Route::delete('/documents/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\EmployeeDocumentController::class, 'destroy']);
+        Route::get('/employees/{employeeUuid}/documents', [\App\Domain\HRM\Controllers\EmployeeDocumentController::class, 'index']);
+        Route::post('/employees/{employeeUuid}/documents', [\App\Domain\HRM\Controllers\EmployeeDocumentController::class, 'store']);
+        Route::delete('/documents/{uuid}', [\App\Domain\HRM\Controllers\EmployeeDocumentController::class, 'destroy']);
 
         // Shifts
-        Route::get('/shifts', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'index']);
-        Route::post('/shifts', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'store']);
-        Route::get('/shifts/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'show']);
-        Route::put('/shifts/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'update']);
-        Route::delete('/shifts/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\ShiftController::class, 'destroy']);
+        Route::get('/shifts', [\App\Domain\HRM\Controllers\ShiftController::class, 'index']);
+        Route::post('/shifts', [\App\Domain\HRM\Controllers\ShiftController::class, 'store']);
+        Route::get('/shifts/{uuid}', [\App\Domain\HRM\Controllers\ShiftController::class, 'show']);
+        Route::put('/shifts/{uuid}', [\App\Domain\HRM\Controllers\ShiftController::class, 'update']);
+        Route::delete('/shifts/{uuid}', [\App\Domain\HRM\Controllers\ShiftController::class, 'destroy']);
 
         // Attendance
-        Route::get('/attendances', [\App\Http\Controllers\Platform\Api\HRM\AttendanceController::class, 'index']);
-        Route::post('/attendances/clock-in', [\App\Http\Controllers\Platform\Api\HRM\AttendanceController::class, 'clockIn']);
-        Route::post('/attendances/clock-out', [\App\Http\Controllers\Platform\Api\HRM\AttendanceController::class, 'clockOut']);
+        Route::get('/attendances', [\App\Domain\HRM\Controllers\AttendanceController::class, 'index']);
+        Route::post('/attendances/clock-in', [\App\Domain\HRM\Controllers\AttendanceController::class, 'clockIn']);
+        Route::post('/attendances/clock-out', [\App\Domain\HRM\Controllers\AttendanceController::class, 'clockOut']);
 
         // Leave Management
-        Route::get('/leave-types', [\App\Http\Controllers\Platform\Api\HRM\LeaveTypeController::class, 'index']);
-        Route::post('/leave-types', [\App\Http\Controllers\Platform\Api\HRM\LeaveTypeController::class, 'store']); // Admin only ideally
+        Route::get('/leave-types', [\App\Domain\HRM\Controllers\LeaveTypeController::class, 'index']);
+        Route::post('/leave-types', [\App\Domain\HRM\Controllers\LeaveTypeController::class, 'store']); // Admin only ideally
     
-        Route::get('/leave-requests', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'index']);
-        Route::post('/leave-requests', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'store']);
-        Route::put('/leave-requests/{uuid}/status', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'updateStatus']); // Manager only ideally
-        Route::get('/leave-balances/my-balance', [\App\Http\Controllers\Platform\Api\HRM\LeaveRequestController::class, 'myBalance']);
+        Route::get('/leave-requests', [\App\Domain\HRM\Controllers\LeaveRequestController::class, 'index']);
+        Route::post('/leave-requests', [\App\Domain\HRM\Controllers\LeaveRequestController::class, 'store']);
+        Route::put('/leave-requests/{uuid}/status', [\App\Domain\HRM\Controllers\LeaveRequestController::class, 'updateStatus']); // Manager only ideally
+        Route::get('/leave-balances/my-balance', [\App\Domain\HRM\Controllers\LeaveRequestController::class, 'myBalance']);
 
         // Payroll
-        Route::get('/salary-components', [\App\Http\Controllers\Platform\Api\HRM\SalaryComponentController::class, 'index']);
-        Route::post('/salary-components', [\App\Http\Controllers\Platform\Api\HRM\SalaryComponentController::class, 'store']);
+        Route::get('/salary-components', [\App\Domain\HRM\Controllers\SalaryComponentController::class, 'index']);
+        Route::post('/salary-components', [\App\Domain\HRM\Controllers\SalaryComponentController::class, 'store']);
 
-        Route::get('/payroll-periods', [\App\Http\Controllers\Platform\Api\HRM\PayrollPeriodController::class, 'index']);
-        Route::post('/payroll-periods', [\App\Http\Controllers\Platform\Api\HRM\PayrollPeriodController::class, 'store']);
-        Route::post('/payroll-periods/generate', [\App\Http\Controllers\Platform\Api\HRM\PayrollPeriodController::class, 'generate']);
+        Route::get('/payroll-periods', [\App\Domain\HRM\Controllers\PayrollPeriodController::class, 'index']);
+        Route::post('/payroll-periods', [\App\Domain\HRM\Controllers\PayrollPeriodController::class, 'store']);
+        Route::post('/payroll-periods/generate', [\App\Domain\HRM\Controllers\PayrollPeriodController::class, 'generate']);
 
-        Route::get('/payrolls', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'index']);
-        Route::get('/payrolls/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'show']);
-        Route::get('/payrolls/{uuid}/payslip', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'payslip']);
-        Route::post('/payrolls/batch-pay', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'batchPay']);
-        Route::post('/payrolls/{uuid}/pay', [\App\Http\Controllers\Platform\Api\HRM\PayrollController::class, 'pay']);
+        Route::get('/payrolls', [\App\Domain\HRM\Controllers\PayrollController::class, 'index']);
+        Route::get('/payrolls/{uuid}', [\App\Domain\HRM\Controllers\PayrollController::class, 'show']);
+        Route::get('/payrolls/{uuid}/payslip', [\App\Domain\HRM\Controllers\PayrollController::class, 'payslip']);
+        Route::post('/payrolls/batch-pay', [\App\Domain\HRM\Controllers\PayrollController::class, 'batchPay']);
+        Route::post('/payrolls/{uuid}/pay', [\App\Domain\HRM\Controllers\PayrollController::class, 'pay']);
 
         // Reimbursement
-        Route::get('/reimbursements/my-claims', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'myClaims']);
-        Route::get('/reimbursements', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'index']);
-        Route::post('/reimbursements', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'store']);
-        Route::get('/reimbursements/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'show']);
-        Route::put('/reimbursements/{uuid}/status', [\App\Http\Controllers\Platform\Api\HRM\ReimbursementController::class, 'updateStatus']);
+        Route::get('/reimbursements/my-claims', [\App\Domain\HRM\Controllers\ReimbursementController::class, 'myClaims']);
+        Route::get('/reimbursements', [\App\Domain\HRM\Controllers\ReimbursementController::class, 'index']);
+        Route::post('/reimbursements', [\App\Domain\HRM\Controllers\ReimbursementController::class, 'store']);
+        Route::get('/reimbursements/{uuid}', [\App\Domain\HRM\Controllers\ReimbursementController::class, 'show']);
+        Route::put('/reimbursements/{uuid}/status', [\App\Domain\HRM\Controllers\ReimbursementController::class, 'updateStatus']);
 
         // Resignation
-        Route::get('/resignations', [\App\Http\Controllers\Platform\Api\HRM\ResignationController::class, 'index']);
-        Route::post('/resignations', [\App\Http\Controllers\Platform\Api\HRM\ResignationController::class, 'store']);
-        Route::get('/resignations/{uuid}', [\App\Http\Controllers\Platform\Api\HRM\ResignationController::class, 'show']);
-        Route::put('/resignations/{uuid}/status', [\App\Http\Controllers\Platform\Api\HRM\ResignationController::class, 'updateStatus']);
+        Route::get('/resignations', [\App\Domain\HRM\Controllers\ResignationController::class, 'index']);
+        Route::post('/resignations', [\App\Domain\HRM\Controllers\ResignationController::class, 'store']);
+        Route::get('/resignations/{uuid}', [\App\Domain\HRM\Controllers\ResignationController::class, 'show']);
+        Route::put('/resignations/{uuid}/status', [\App\Domain\HRM\Controllers\ResignationController::class, 'updateStatus']);
         // Reports
-        Route::get('/reports/turnover', [\App\Http\Controllers\Platform\Api\HRM\ReportController::class, 'turnover']);
-        Route::get('/reports/labor-cost', [\App\Http\Controllers\Platform\Api\HRM\ReportController::class, 'laborCost']);
+        Route::get('/reports/turnover', [\App\Domain\HRM\Controllers\ReportController::class, 'turnover']);
+        Route::get('/reports/labor-cost', [\App\Domain\HRM\Controllers\ReportController::class, 'laborCost']);
 
         // Office Locations
-        Route::resource('office-locations', \App\Http\Controllers\Platform\Api\HRM\OfficeLocationController::class)->except(['create', 'edit'])->parameters(['office-locations' => 'uuid']);
+        Route::resource('office-locations', \App\Domain\HRM\Controllers\OfficeLocationController::class)->except(['create', 'edit'])->parameters(['office-locations' => 'uuid']);
 
         // Employee Face Recognition
-        Route::get('/employees/{uuid}/face-status', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'getFaceStatus']);
-        Route::post('/employees/{uuid}/enroll-face', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'enrollFace']);
-        Route::delete('/employees/{uuid}/face-data', [\App\Http\Controllers\Platform\Api\HRM\EmployeeController::class, 'removeFace']);
+        Route::get('/employees/{uuid}/face-status', [\App\Domain\HRM\Controllers\EmployeeController::class, 'getFaceStatus']);
+        Route::post('/employees/{uuid}/enroll-face', [\App\Domain\HRM\Controllers\EmployeeController::class, 'enrollFace']);
+        Route::delete('/employees/{uuid}/face-data', [\App\Domain\HRM\Controllers\EmployeeController::class, 'removeFace']);
     });
 
 Route::prefix('platform/finance')
     ->middleware('auth:sanctum')
     ->group(function () {
         // Core Ledger
-        Route::get('/ledger/accounts', [\App\Http\Controllers\Platform\Api\Finance\GeneralLedgerController::class, 'accounts']);
-        Route::get('/ledger/items', [\App\Http\Controllers\Platform\Api\Finance\GeneralLedgerController::class, 'items']);
+        Route::get('/ledger/accounts', [\App\Domain\Finance\Controllers\GeneralLedgerController::class, 'accounts']);
+        Route::get('/ledger/items', [\App\Domain\Finance\Controllers\GeneralLedgerController::class, 'items']);
         
         // Financial Reporting
-        Route::get('/reporting/profit-loss', [\App\Http\Controllers\Platform\Api\Finance\ReportingController::class, 'profitAndLoss']);
-        Route::get('/reporting/balance-sheet', [\App\Http\Controllers\Platform\Api\Finance\ReportingController::class, 'balanceSheet']);
-        Route::get('/reporting/cash-flow', [\App\Http\Controllers\Platform\Api\Finance\ReportingController::class, 'cashFlow']);
+        Route::get('/reporting/profit-loss', [\App\Domain\Finance\Controllers\ReportingController::class, 'profitAndLoss']);
+        Route::get('/reporting/balance-sheet', [\App\Domain\Finance\Controllers\ReportingController::class, 'balanceSheet']);
+        Route::get('/reporting/cash-flow', [\App\Domain\Finance\Controllers\ReportingController::class, 'cashFlow']);
         
         // AI Analytics
-        Route::get('/ai/budget-variance/{account_uuid}', [\App\Http\Controllers\Platform\Api\Finance\AIAnalyticsController::class, 'budgetVariance']);
-        Route::post('/ai/suggest-account', [\App\Http\Controllers\Platform\Api\Finance\AIAnalyticsController::class, 'suggestAccount']);
+        Route::get('/ai/budget-variance/{account_uuid}', [\App\Domain\Finance\Controllers\AIAnalyticsController::class, 'budgetVariance']);
+        Route::post('/ai/suggest-account', [\App\Domain\Finance\Controllers\AIAnalyticsController::class, 'suggestAccount']);
 
         // FP&A
-        Route::get('/fpa/revenue-analysis', [\App\Http\Controllers\Platform\Api\Finance\FPAnalysisController::class, 'revenueAnalysis']);
+        Route::get('/fpa/revenue-analysis', [\App\Domain\Finance\Controllers\FPAnalysisController::class, 'revenueAnalysis']);
 
         // Forecasting
-        Route::get('/forecasting/cash-forecast', [\App\Http\Controllers\Platform\Api\Finance\ForecastingController::class, 'cashForecast']);
+        Route::get('/forecasting/cash-forecast', [\App\Domain\Finance\Controllers\ForecastingController::class, 'cashForecast']);
 
         // Supply Chain AI
-        Route::get('/supply-chain/risk-assessment', [\App\Http\Controllers\Platform\Api\Finance\SupplyChainAIController::class, 'riskAssessment']);
+        Route::get('/supply-chain/risk-assessment', [\App\Domain\Finance\Controllers\SupplyChainAIController::class, 'riskAssessment']);
         
         // Legacy / Original
-        Route::get('/dashboard', [\App\Http\Controllers\Platform\Api\Finance\FinanceDashboardController::class, 'index']);
+        Route::get('/dashboard', [\App\Domain\Finance\Controllers\FinanceDashboardController::class, 'index']);
     });
 
-Route::prefix('platform/purchasing')
-    ->middleware('auth:sanctum')
-    ->group(function () {
-        Route::get('/dashboard', [\App\Http\Controllers\Platform\Api\Purchasing\PurchasingDashboardController::class, 'index']);
-        
-        // Suppliers
-        Route::get('/suppliers', [\App\Http\Controllers\Platform\Api\Purchasing\SupplierController::class, 'index']);
-        Route::post('/suppliers', [\App\Http\Controllers\Platform\Api\Purchasing\SupplierController::class, 'store']);
-        Route::get('/suppliers/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\SupplierController::class, 'show']);
-        Route::put('/suppliers/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\SupplierController::class, 'update']);
-        Route::delete('/suppliers/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\SupplierController::class, 'destroy']);
-
-        // Purchase Requests
-        Route::get('/requests', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseRequestController::class, 'index']);
-        Route::post('/requests', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseRequestController::class, 'store']);
-        Route::get('/requests/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseRequestController::class, 'show']);
-        Route::put('/requests/{uuid}/status', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseRequestController::class, 'updateStatus']);
-
-        // Purchase Orders
-        Route::get('/orders', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseOrderController::class, 'index']);
-        Route::post('/orders', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseOrderController::class, 'store']);
-        Route::get('/orders/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseOrderController::class, 'show']);
-        Route::put('/orders/{uuid}/status', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseOrderController::class, 'updateStatus']);
-
-        // Goods Receipts
-        Route::get('/receipts', [\App\Http\Controllers\Platform\Api\Purchasing\GoodsReceiptController::class, 'index']);
-        Route::post('/receipts', [\App\Http\Controllers\Platform\Api\Purchasing\GoodsReceiptController::class, 'store']);
-        Route::get('/receipts/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\GoodsReceiptController::class, 'show']);
-
-        // Invoices
-        Route::get('/invoices', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseInvoiceController::class, 'index']);
-        Route::post('/invoices', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseInvoiceController::class, 'store']);
-        Route::get('/invoices/{uuid}', [\App\Http\Controllers\Platform\Api\Purchasing\PurchaseInvoiceController::class, 'show']);
-    });
-
-Route::prefix('platform/project')
-    ->middleware('auth:sanctum')
-    ->group(function () {
-        Route::get('/dashboard', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'dashboard']);
-        Route::get('/resources', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'resources']);
-        Route::get('/financials', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'financials']);
-        
-        // Tasks
-        Route::get('/tasks', [\App\Http\Controllers\Api\Platform\Project\ProjectTaskController::class, 'index']);
-        Route::post('/tasks', [\App\Http\Controllers\Api\Platform\Project\ProjectTaskController::class, 'store']);
-        Route::put('/tasks/reorder', [\App\Http\Controllers\Api\Platform\Project\ProjectTaskController::class, 'reorder']);
-        Route::put('/tasks/{uuid}', [\App\Http\Controllers\Api\Platform\Project\ProjectTaskController::class, 'update']);
-
-        // Projects
-        Route::get('/', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'index']);
-        Route::post('/', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'store']);
-        Route::get('/{uuid}', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'show']);
-        Route::put('/{uuid}', [\App\Http\Controllers\Api\Platform\Project\ProjectController::class, 'update']);
-
-        // Members
-        Route::post('/members', [\App\Http\Controllers\Api\Platform\Project\ProjectMemberController::class, 'store']);
-
-        // Costs
-        Route::post('/costs', [\App\Http\Controllers\Api\Platform\Project\ProjectCostController::class, 'store']);
-    });
+// Purchasing routes are now in routes/api/purchasing.php (loaded via bootstrap/app.php)
+// Project routes are now in routes/api/project.php (loaded via bootstrap/app.php)
 

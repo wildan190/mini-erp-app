@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\HRM;
 
-use App\Models\HRM\Employee;
-use App\Models\HRM\PayrollPeriod;
-use App\Models\HRM\SalaryComponent;
+use App\Domain\HRM\Models\Employee;
+use App\Domain\HRM\Models\PayrollPeriod;
+use App\Domain\HRM\Models\SalaryComponent;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -85,7 +85,7 @@ class PayrollTest extends TestCase
         $end = Carbon::parse($period->end_date);
         while ($start <= $end) {
             if (!$start->isWeekend()) {
-                \App\Models\HRM\Attendance::create([
+                \App\Domain\HRM\Models\Attendance::create([
                     'employee_id' => $employee->id,
                     'date' => $start->format('Y-m-d'),
                     'clock_in' => '08:00:00',
@@ -148,7 +148,7 @@ class PayrollTest extends TestCase
             'payroll_period_uuid' => $period->uuid,
         ]);
 
-        $payroll = \App\Models\HRM\Payroll::where('employee_id', $employee->id)->first();
+        $payroll = \App\Domain\HRM\Models\Payroll::where('employee_id', $employee->id)->first();
 
         // Get Payslip
         $response = $this->getJson("/api/platform/hrm/payrolls/{$payroll->uuid}/payslip");
@@ -170,7 +170,7 @@ class PayrollTest extends TestCase
 
         $this->postJson('/api/platform/hrm/payroll-periods/generate', ['payroll_period_uuid' => $period->uuid]);
 
-        $payrolls = \App\Models\HRM\Payroll::whereIn('employee_id', [$e1->id, $e2->id])->get();
+        $payrolls = \App\Domain\HRM\Models\Payroll::whereIn('employee_id', [$e1->id, $e2->id])->get();
         $uuids = $payrolls->pluck('uuid')->toArray();
 
         $response = $this->postJson('/api/platform/hrm/payrolls/batch-pay', [

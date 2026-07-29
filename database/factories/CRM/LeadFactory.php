@@ -2,7 +2,7 @@
 
 namespace Database\Factories\CRM;
 
-use App\Models\CRM\Lead;
+use App\Domain\CRM\Models\Lead;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LeadFactory extends Factory

@@ -2,9 +2,9 @@
 
 namespace Database\Factories\HRM;
 
-use App\Models\HRM\LeaveRequest;
-use App\Models\HRM\Employee;
-use App\Models\HRM\LeaveType;
+use App\Domain\HRM\Models\LeaveRequest;
+use App\Domain\HRM\Models\Employee;
+use App\Domain\HRM\Models\LeaveType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class LeaveRequestFactory extends Factory

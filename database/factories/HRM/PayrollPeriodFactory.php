@@ -2,7 +2,7 @@
 
 namespace Database\Factories\HRM;
 
-use App\Models\HRM\PayrollPeriod;
+use App\Domain\HRM\Models\PayrollPeriod;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Carbon\Carbon;
 
