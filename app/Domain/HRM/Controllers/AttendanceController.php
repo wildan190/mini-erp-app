@@ -37,7 +37,7 @@ class AttendanceController extends Controller
     )]
     public function index(): JsonResponse
     {
-        $filters = request()->only(['employee_uuid', 'date', 'department_uuid']);
+        $filters = request()->only(['search', 'employee_uuid', 'date', 'department_uuid']);
         $perPage = request()->input('per_page', 15);
         $attendances = $this->attendanceService->getAttendances($filters, $perPage);
         return response()->json([

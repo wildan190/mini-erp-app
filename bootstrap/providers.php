@@ -6,4 +6,5 @@ return [
     App\Providers\HorizonServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
     L5Swagger\L5SwaggerServiceProvider::class,
+    Opcodes\LogViewer\LogViewerServiceProvider::class,
 ];
