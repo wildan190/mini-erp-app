@@ -2,7 +2,7 @@
 
 namespace Database\Factories\HRM;
 
-use App\Models\HRM\Designation;
+use App\Domain\HRM\Models\Designation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class DesignationFactory extends Factory

@@ -2,9 +2,9 @@
 
 namespace App\Services\AI;
 
-use App\Models\Finance\Account;
-use App\Models\Finance\Budget;
-use App\Models\Finance\JournalItem;
+use App\Domain\Finance\Models\Account;
+use App\Domain\Finance\Models\Budget;
+use App\Domain\Finance\Models\JournalItem;
 use Illuminate\Support\Facades\DB;
 
 class FinanceAIService

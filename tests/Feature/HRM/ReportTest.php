@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\HRM;
 
-use App\Models\HRM\Department;
-use App\Models\HRM\Employee;
-use App\Models\HRM\Payroll;
+use App\Domain\HRM\Models\Department;
+use App\Domain\HRM\Models\Employee;
+use App\Domain\HRM\Models\Payroll;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -45,7 +45,7 @@ class ReportTest extends TestCase
             'last_name' => 'Doe',
         ]);
 
-        $period = \App\Models\HRM\PayrollPeriod::create([
+        $period = \App\Domain\HRM\Models\PayrollPeriod::create([
             'name' => 'Jan 2026',
             'start_date' => '2026-01-01',
             'end_date' => '2026-01-31',

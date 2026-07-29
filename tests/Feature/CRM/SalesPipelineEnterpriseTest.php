@@ -3,9 +3,9 @@
 namespace Tests\Feature\CRM;
 
 use App\Models\User;
-use App\Models\CRM\Prospect;
-use App\Models\CRM\Customer;
-use App\Models\CRM\SalesPipeline;
+use App\Domain\CRM\Models\Prospect;
+use App\Domain\CRM\Models\Customer;
+use App\Domain\CRM\Models\SalesPipeline;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Laravel\Sanctum\Sanctum;

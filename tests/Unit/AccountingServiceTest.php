@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Services\Finance\AccountingService;
+use App\Domain\Finance\Services\AccountingService;
 use Tests\TestCase;
 
 class AccountingServiceTest extends TestCase

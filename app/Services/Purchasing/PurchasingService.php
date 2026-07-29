@@ -6,8 +6,8 @@ use App\Models\Purchasing\PurchaseRequest;
 use App\Models\Purchasing\PurchaseOrder;
 use App\Models\Purchasing\GoodsReceipt;
 use App\Models\Purchasing\PurchaseInvoice;
-use App\Services\Finance\AccountingService;
-use App\Models\Finance\Account;
+use App\Domain\Finance\Services\AccountingService;
+use App\Domain\Finance\Models\Account;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 

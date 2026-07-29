@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Finance\Account;
-use App\Models\Finance\AnalyticalAccount;
-use App\Models\Finance\Budget;
-use App\Models\Finance\JournalEntry;
-use App\Models\Finance\JournalItem;
-use App\Services\Finance\AccountingService;
+use App\Domain\Finance\Models\Account;
+use App\Domain\Finance\Models\AnalyticalAccount;
+use App\Domain\Finance\Models\Budget;
+use App\Domain\Finance\Models\JournalEntry;
+use App\Domain\Finance\Models\JournalItem;
+use App\Domain\Finance\Services\AccountingService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 

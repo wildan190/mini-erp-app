@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\HRM;
 
-use App\Models\HRM\Employee;
-use App\Models\HRM\LeaveType;
+use App\Domain\HRM\Models\Employee;
+use App\Domain\HRM\Models\LeaveType;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -100,7 +100,7 @@ class LeaveManagementTest extends TestCase
 
         $leaveType = LeaveType::create(['name' => 'Annual Leave', 'days_allowed' => 12]);
         // Ensure balance exists
-        $leaveBalance = \App\Models\HRM\LeaveBalance::create([
+        $leaveBalance = \App\Domain\HRM\Models\LeaveBalance::create([
             'employee_id' => $employee->id,
             'leave_type_id' => $leaveType->id,
             'year' => now()->year,
@@ -108,7 +108,7 @@ class LeaveManagementTest extends TestCase
             'remaining_days' => 12,
         ]);
 
-        $leaveRequest = \App\Models\HRM\LeaveRequest::create([
+        $leaveRequest = \App\Domain\HRM\Models\LeaveRequest::create([
             'employee_id' => $employee->id,
             'leave_type_id' => $leaveType->id,
             'start_date' => Carbon::tomorrow(),

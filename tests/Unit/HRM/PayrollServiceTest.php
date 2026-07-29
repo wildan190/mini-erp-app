@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\HRM;
 
-use App\Models\HRM\Employee;
-use App\Models\HRM\Payroll;
-use App\Models\HRM\PayrollPeriod;
-use App\Services\HRM\PayrollService;
+use App\Domain\HRM\Models\Employee;
+use App\Domain\HRM\Models\Payroll;
+use App\Domain\HRM\Models\PayrollPeriod;
+use App\Domain\HRM\Services\PayrollService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

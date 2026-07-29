@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\HRM;
 
-use App\Models\HRM\Shift;
+use App\Domain\HRM\Models\Shift;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

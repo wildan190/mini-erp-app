@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\HRM;
 
-use App\Models\HRM\Employee;
-use App\Models\HRM\Resignation;
+use App\Domain\HRM\Models\Employee;
+use App\Domain\HRM\Models\Resignation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

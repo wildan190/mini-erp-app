@@ -2,7 +2,7 @@
 
 namespace App\Notifications\HRM;
 
-use App\Models\HRM\Attendance;
+use App\Domain\HRM\Models\Attendance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;

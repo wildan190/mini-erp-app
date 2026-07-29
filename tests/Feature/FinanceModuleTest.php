@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use App\Models\Finance\Account;
+use App\Domain\Finance\Models\Account;
 use Database\Seeders\EnterpriseFinanceSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

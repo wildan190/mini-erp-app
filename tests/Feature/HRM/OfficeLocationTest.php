@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\HRM;
 
-use App\Models\HRM\Employee;
-use App\Models\HRM\OfficeLocation;
+use App\Domain\HRM\Models\Employee;
+use App\Domain\HRM\Models\OfficeLocation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;

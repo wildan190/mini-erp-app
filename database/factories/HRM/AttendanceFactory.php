@@ -2,13 +2,15 @@
 
 namespace Database\Factories\HRM;
 
+use App\Domain\HRM\Models\Attendance;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\HRM\Attendance>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domain\HRM\Models\Attendance>
  */
 class AttendanceFactory extends Factory
 {
+    protected $model = Attendance::class;
     /**
      * Define the model's default state.
      *
@@ -21,8 +23,8 @@ class AttendanceFactory extends Factory
         $clockOut = (clone $clockIn)->addHours(rand(8, 10));
 
         return [
-            'employee_id' => \App\Models\HRM\Employee::factory(),
-            'shift_id' => \App\Models\HRM\Shift::inRandomOrder()->first()?->id ?? \App\Models\HRM\Shift::factory(),
+            'employee_id' => \App\Domain\HRM\Models\Employee::factory(),
+            'shift_id' => \App\Domain\HRM\Models\Shift::inRandomOrder()->first()?->id ?? \App\Domain\HRM\Models\Shift::factory(),
             'date' => $clockIn->toDateString(),
             'clock_in' => $clockIn,
             'clock_out' => $clockOut,

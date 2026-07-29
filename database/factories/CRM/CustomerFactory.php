@@ -2,7 +2,7 @@
 
 namespace Database\Factories\CRM;
 
-use App\Models\CRM\Customer;
+use App\Domain\CRM\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CustomerFactory extends Factory

@@ -1,0 +1,170 @@
+name: mini-erp
+
+services:
+  gateway:
+    image: nginx:alpine
+    container_name: mini-erp-gateway
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "8000:80"
+    volumes:
+      - ./docker/gateway/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - hrm-service
+      - crm-service
+      - finance-service
+      - purchasing-service
+      - project-service
+
+  hrm-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mini-erp-hrm-service
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env.docker
+    volumes:
+      - .:/app
+      - /app/vendor
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+
+  crm-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mini-erp-crm-service
+    restart: unless-stopped
+    ports:
+      - "8002:8000"
+    env_file:
+      - .env.docker
+    volumes:
+      - .:/app
+      - /app/vendor
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+
+  finance-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mini-erp-finance-service
+    restart: unless-stopped
+    ports:
+      - "8003:8000"
+    env_file:
+      - .env.docker
+    volumes:
+      - .:/app
+      - /app/vendor
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+
+  purchasing-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mini-erp-purchasing-service
+    restart: unless-stopped
+    ports:
+      - "8004:8000"
+    env_file:
+      - .env.docker
+    volumes:
+      - .:/app
+      - /app/vendor
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+
+  project-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mini-erp-project-service
+    restart: unless-stopped
+    ports:
+      - "8005:8000"
+    env_file:
+      - .env.docker
+    volumes:
+      - .:/app
+      - /app/vendor
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+
+  horizon:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mini-erp-horizon
+    restart: unless-stopped
+    command: php artisan horizon
+    env_file:
+      - .env.docker
+    volumes:
+      - .:/app
+      - /app/vendor
+    depends_on:
+      - hrm-service
+      - redis
+      - postgres
+
+  face-api:
+    build:
+      context: ./docker/face-service
+      dockerfile: Dockerfile
+    container_name: mini-erp-face-api
+    restart: unless-stopped
+    ports:
+      - "5005:5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: mini-erp-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: db-mini-erp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: manchester
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: mini-erp-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

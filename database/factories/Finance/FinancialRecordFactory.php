@@ -2,8 +2,8 @@
 
 namespace Database\Factories\Finance;
 
-use App\Models\Finance\FinancialRecord;
-use App\Models\Finance\Account;
+use App\Domain\Finance\Models\FinancialRecord;
+use App\Domain\Finance\Models\Account;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FinancialRecordFactory extends Factory

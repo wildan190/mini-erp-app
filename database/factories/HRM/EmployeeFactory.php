@@ -2,7 +2,7 @@
 
 namespace Database\Factories\HRM;
 
-use App\Models\HRM\Employee;
+use App\Domain\HRM\Models\Employee;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

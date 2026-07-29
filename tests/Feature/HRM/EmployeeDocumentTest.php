@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\HRM;
 
-use App\Models\HRM\Department;
-use App\Models\HRM\Designation;
-use App\Models\HRM\Employee;
+use App\Domain\HRM\Models\Department;
+use App\Domain\HRM\Models\Designation;
+use App\Domain\HRM\Models\Employee;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
