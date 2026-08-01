@@ -28,8 +28,12 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - .:/app
-      - /app/vendor
+      - ./app:/app/app
+      - ./config:/app/config
+      - ./database:/app/database
+      - ./resources:/app/resources
+      - ./routes:/app/routes
+      - ./storage:/app/storage
     depends_on:
       postgres:
         condition: service_started
@@ -47,8 +51,12 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - .:/app
-      - /app/vendor
+      - ./app:/app/app
+      - ./config:/app/config
+      - ./database:/app/database
+      - ./resources:/app/resources
+      - ./routes:/app/routes
+      - ./storage:/app/storage
     depends_on:
       postgres:
         condition: service_started
@@ -66,8 +74,12 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - .:/app
-      - /app/vendor
+      - ./app:/app/app
+      - ./config:/app/config
+      - ./database:/app/database
+      - ./resources:/app/resources
+      - ./routes:/app/routes
+      - ./storage:/app/storage
     depends_on:
       postgres:
         condition: service_started
@@ -85,8 +97,12 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - .:/app
-      - /app/vendor
+      - ./app:/app/app
+      - ./config:/app/config
+      - ./database:/app/database
+      - ./resources:/app/resources
+      - ./routes:/app/routes
+      - ./storage:/app/storage
     depends_on:
       postgres:
         condition: service_started
@@ -104,8 +120,12 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - .:/app
-      - /app/vendor
+      - ./app:/app/app
+      - ./config:/app/config
+      - ./database:/app/database
+      - ./resources:/app/resources
+      - ./routes:/app/routes
+      - ./storage:/app/storage
     depends_on:
       postgres:
         condition: service_started
@@ -122,8 +142,12 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - .:/app
-      - /app/vendor
+      - ./app:/app/app
+      - ./config:/app/config
+      - ./database:/app/database
+      - ./resources:/app/resources
+      - ./routes:/app/routes
+      - ./storage:/app/storage
     depends_on:
       - hrm-service
       - redis

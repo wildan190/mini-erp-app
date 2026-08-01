@@ -34,10 +34,10 @@ fi
 
 cd /app
 
-if [ ! -d "/app/vendor/laravel/octane" ]; then
-    echo "Installing Composer dependencies..."
-    composer install --no-interaction --prefer-dist --optimize-autoloader
-fi
+# vendor/ is baked into the image at build time — no composer install needed at runtime.
+# Re-run package discovery to ensure all service providers are registered correctly.
+echo "Running package discovery..."
+php artisan package:discover --ansi
 
 # Ensure storage link exists
 php artisan storage:link --force || true

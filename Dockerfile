@@ -46,8 +46,18 @@ RUN printf "\n" | pecl install swoole \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy application files
+# Copy only dependency manifests first for better layer caching
+COPY composer.json composer.lock /app/
+
+# Install Composer dependencies (baked into the image)
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts \
+    && md5sum /app/composer.lock | awk '{print $1}' > /app/vendor/.composer_lock_hash
+
+# Copy the rest of the application files
 COPY . /app
+
+# Run post-install scripts now that full app code is present
+RUN composer run-script post-autoload-dump --no-interaction || true
 
 # Ensure correct permissions for storage and bootstrap/cache
 RUN mkdir -p storage bootstrap/cache /var/log/supervisor \
