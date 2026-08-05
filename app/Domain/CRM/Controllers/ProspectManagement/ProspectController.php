@@ -3,8 +3,8 @@
 namespace App\Domain\CRM\Controllers\ProspectManagement;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\CRM\ProspectManagement\ProspectRequest;
-use App\Http\Requests\Platform\CRM\ProspectManagement\ProspectStatusRequest;
+use App\Domain\CRM\Requests\ProspectManagement\ProspectRequest;
+use App\Domain\CRM\Requests\ProspectManagement\ProspectStatusRequest;
 use App\Domain\CRM\Models\Prospect;
 use App\Domain\CRM\Services\ProspectService;
 use OpenApi\Attributes as OA;

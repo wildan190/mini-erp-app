@@ -11,7 +11,10 @@ use App\Domain\Finance\Controllers\AIAnalyticsController;
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->prefix('platform/finance')->group(function () {
+Route::middleware('auth:platform')->prefix('platform/finance')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [\App\Domain\Finance\Controllers\FinanceDashboardController::class, 'index']);
+
     // Core Ledger
     Route::get('/ledger/accounts', [GeneralLedgerController::class, 'accounts']);
     Route::get('/ledger/items', [GeneralLedgerController::class, 'items']);
@@ -24,4 +27,13 @@ Route::middleware('auth:sanctum')->prefix('platform/finance')->group(function ()
     // AI Analytics
     Route::get('/ai/budget-variance/{account_uuid}', [AIAnalyticsController::class, 'budgetVariance']);
     Route::post('/ai/suggest-account', [AIAnalyticsController::class, 'suggestAccount']);
+
+    // FP&A
+    Route::get('/fpa/revenue-analysis', [\App\Domain\Finance\Controllers\FPAnalysisController::class, 'revenueAnalysis']);
+
+    // Forecasting
+    Route::get('/forecasting/cash-forecast', [\App\Domain\Finance\Controllers\ForecastingController::class, 'cashForecast']);
+
+    // Supply Chain AI
+    Route::get('/supply-chain/risk-assessment', [\App\Domain\Finance\Controllers\SupplyChainAIController::class, 'riskAssessment']);
 });

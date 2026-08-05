@@ -55,18 +55,23 @@ class PayrollService
             throw new \Exception('Payroll period is closed.');
         }
 
-        $employees = Employee::where('status', 'active')->get();
         $count = 0;
 
-        foreach ($employees as $employee) {
-            // Check if payroll already exists for this period
-            if (Payroll::where('employee_id', $employee->id)->where('payroll_period_id', $period->id)->exists()) {
-                continue;
-            }
+        // Use chunk() instead of get() — avoids loading all employees into memory at once.
+        // For large orgs this is the difference between 50MB and 500MB peak RAM.
+        Employee::where('status', 'active')->chunk(50, function ($employees) use ($period, &$count) {
+            foreach ($employees as $employee) {
+                if (Payroll::where('employee_id', $employee->id)
+                    ->where('payroll_period_id', $period->id)
+                    ->exists()
+                ) {
+                    continue;
+                }
 
-            $this->calculateSalary($employee, $period);
-            $count++;
-        }
+                $this->calculateSalary($employee, $period);
+                $count++;
+            }
+        });
 
         $period->update(['status' => 'processing']);
 

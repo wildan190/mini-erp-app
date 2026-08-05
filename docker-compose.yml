@@ -1,6 +1,47 @@
 name: mini-erp
 
+# ---------------------------------------------------------------
+# Container layout
+#
+#   gateway          :  32MB  — Nginx reverse proxy
+#   core-service     : 256MB  — Laravel center: landing page, Swagger,
+#                               Telescope, /api/platform/dashboard
+#   auth-service     : 224MB  — login / register / logout (Passport)
+#   hrm-service      : 256MB  — /api/platform/hrm/*
+#   crm-service      : 256MB  — /api/platform/crm/*
+#   finance-service  : 256MB  — /api/platform/finance/*
+#   purchasing-service: 256MB — /api/platform/purchasing/*
+#   project-service  : 256MB  — /api/platform/project/*
+#   horizon          : 192MB  — queue worker (standalone)
+#   face-api         : 256MB  — Python face-recognition service
+#   postgres         : 128MB  — shared database
+#   redis            :  48MB  — cache + queue broker
+# ---------------------------------------------------------------
+
+# Shared base for all Laravel services
+x-app-base: &app-base
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  env_file:
+    - .env.docker
+  volumes:
+    - ./app:/app/app
+    - ./config:/app/config
+    - ./database:/app/database
+    - ./resources:/app/resources
+    - ./routes:/app/routes
+    - ./storage:/app/storage
+  depends_on:
+    postgres:
+      condition: service_started
+    redis:
+      condition: service_started
+
 services:
+
+  # ── Nginx Gateway ─────────────────────────────────────────────────────────
   gateway:
     image: nginx:alpine
     container_name: mini-erp-gateway
@@ -10,149 +51,132 @@ services:
       - "8000:80"
     volumes:
       - ./docker/gateway/default.conf:/etc/nginx/conf.d/default.conf:ro
+    deploy:
+      resources:
+        limits:
+          memory: 32M
+          cpus: "0.25"
     depends_on:
+      - core-service
+      - auth-service
       - hrm-service
       - crm-service
       - finance-service
       - purchasing-service
       - project-service
 
+  # ── Core Service ──────────────────────────────────────────────────────────
+  # The central Laravel base. Owns:
+  #   • Landing page & welcome view  (GET /)
+  #   • Swagger / OpenAPI docs       (GET /api/documentation)
+  #   • Telescope UI                 (GET /telescope)
+  #   • Horizon UI                   (GET /horizon)
+  #   • Platform dashboard           (GET /api/platform/dashboard)
+  #   • Health check                 (GET /up)
+  # -------------------------------------------------------------------------
+  core-service:
+    <<: *app-base
+    container_name: mini-erp-core-service
+    ports:
+      - "8007:8000"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.75"
+
+  # ── Auth Service ──────────────────────────────────────────────────────────
+  # Owns all authentication endpoints:
+  #   • POST /api/platform/login
+  #   • POST /api/platform/register
+  #   • POST /api/platform/logout
+  # -------------------------------------------------------------------------
+  auth-service:
+    <<: *app-base
+    container_name: mini-erp-auth-service
+    ports:
+      - "8006:8000"
+    deploy:
+      resources:
+        limits:
+          memory: 224M
+          cpus: "0.50"
+
+  # ── Domain Services ───────────────────────────────────────────────────────
   hrm-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    <<: *app-base
     container_name: mini-erp-hrm-service
-    restart: unless-stopped
     ports:
       - "8001:8000"
-    env_file:
-      - .env.docker
-    volumes:
-      - ./app:/app/app
-      - ./config:/app/config
-      - ./database:/app/database
-      - ./resources:/app/resources
-      - ./routes:/app/routes
-      - ./storage:/app/storage
-    depends_on:
-      postgres:
-        condition: service_started
-      redis:
-        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.75"
 
   crm-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    <<: *app-base
     container_name: mini-erp-crm-service
-    restart: unless-stopped
     ports:
       - "8002:8000"
-    env_file:
-      - .env.docker
-    volumes:
-      - ./app:/app/app
-      - ./config:/app/config
-      - ./database:/app/database
-      - ./resources:/app/resources
-      - ./routes:/app/routes
-      - ./storage:/app/storage
-    depends_on:
-      postgres:
-        condition: service_started
-      redis:
-        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.75"
 
   finance-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    <<: *app-base
     container_name: mini-erp-finance-service
-    restart: unless-stopped
     ports:
       - "8003:8000"
-    env_file:
-      - .env.docker
-    volumes:
-      - ./app:/app/app
-      - ./config:/app/config
-      - ./database:/app/database
-      - ./resources:/app/resources
-      - ./routes:/app/routes
-      - ./storage:/app/storage
-    depends_on:
-      postgres:
-        condition: service_started
-      redis:
-        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.75"
 
   purchasing-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    <<: *app-base
     container_name: mini-erp-purchasing-service
-    restart: unless-stopped
     ports:
       - "8004:8000"
-    env_file:
-      - .env.docker
-    volumes:
-      - ./app:/app/app
-      - ./config:/app/config
-      - ./database:/app/database
-      - ./resources:/app/resources
-      - ./routes:/app/routes
-      - ./storage:/app/storage
-    depends_on:
-      postgres:
-        condition: service_started
-      redis:
-        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.75"
 
   project-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    <<: *app-base
     container_name: mini-erp-project-service
-    restart: unless-stopped
     ports:
       - "8005:8000"
-    env_file:
-      - .env.docker
-    volumes:
-      - ./app:/app/app
-      - ./config:/app/config
-      - ./database:/app/database
-      - ./resources:/app/resources
-      - ./routes:/app/routes
-      - ./storage:/app/storage
-    depends_on:
-      postgres:
-        condition: service_started
-      redis:
-        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.75"
 
+  # ── Horizon (standalone queue worker) ─────────────────────────────────────
+  # Runs php artisan horizon only — no HTTP server.
+  # All domain services dispatch jobs to Redis; Horizon processes them here.
+  # -------------------------------------------------------------------------
   horizon:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    <<: *app-base
     container_name: mini-erp-horizon
-    restart: unless-stopped
     command: php artisan horizon
-    env_file:
-      - .env.docker
-    volumes:
-      - ./app:/app/app
-      - ./config:/app/config
-      - ./database:/app/database
-      - ./resources:/app/resources
-      - ./routes:/app/routes
-      - ./storage:/app/storage
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+          cpus: "0.50"
     depends_on:
-      - hrm-service
+      - core-service
       - redis
       - postgres
 
+  # ── Supporting Services ───────────────────────────────────────────────────
   face-api:
     build:
       context: ./docker/face-service
@@ -161,6 +185,11 @@ services:
     restart: unless-stopped
     ports:
       - "5005:5000"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.50"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 10s
@@ -175,8 +204,23 @@ services:
       POSTGRES_DB: db-mini-erp
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: manchester
+    command: >
+      postgres
+        -c shared_buffers=32MB
+        -c work_mem=4MB
+        -c maintenance_work_mem=32MB
+        -c effective_cache_size=64MB
+        -c max_connections=50
+        -c wal_buffers=4MB
+        -c checkpoint_completion_target=0.9
+        -c random_page_cost=1.1
     ports:
       - "5432:5432"
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.50"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -184,8 +228,14 @@ services:
     image: redis:7-alpine
     container_name: mini-erp-redis
     restart: unless-stopped
+    command: redis-server --maxmemory 32mb --maxmemory-policy allkeys-lru --save ""
     ports:
       - "6379:6379"
+    deploy:
+      resources:
+        limits:
+          memory: 48M
+          cpus: "0.25"
     volumes:
       - redis_data:/data
 

@@ -3,7 +3,7 @@
 namespace App\Domain\CRM\Controllers\MasterData;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\CRM\MasterData\CustomerRequest;
+use App\Domain\CRM\Requests\MasterData\CustomerRequest;
 use App\Domain\CRM\Services\CustomerService;
 use OpenApi\Attributes as OA;
 

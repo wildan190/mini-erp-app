@@ -14,7 +14,7 @@ use App\Domain\Purchasing\Controllers\PurchasingDashboardController;
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->prefix('platform/purchasing')->group(function () {
+Route::middleware('auth:platform')->prefix('platform/purchasing')->group(function () {
     // Dashboard
     Route::get('/dashboard', [PurchasingDashboardController::class, 'index']);
 

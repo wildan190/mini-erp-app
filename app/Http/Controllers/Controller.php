@@ -15,13 +15,13 @@ use OpenApi\Attributes as OA;
     description: "Primary API Server"
 )]
 #[OA\SecurityScheme(
-    securityScheme: "sanctum",
+    securityScheme: "passport",
     type: "http",
     name: "Token Based",
     in: "header",
     scheme: "bearer",
     bearerFormat: "JWT",
-    description: "Use a token from Sanctum auth"
+    description: "Use a token from Passport auth"
 )]
 abstract class Controller
 {

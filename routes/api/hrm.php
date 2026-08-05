@@ -24,7 +24,7 @@ use App\Domain\HRM\Controllers\ShiftController;
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->prefix('platform/hrm')->group(function () {
+Route::middleware('auth:platform')->prefix('platform/hrm')->group(function () {
     // Attendance API
     Route::get('/attendances', [AttendanceController::class, 'index']);
     Route::post('/attendances/clock-in', [AttendanceController::class, 'clockIn']);
