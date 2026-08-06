@@ -32,6 +32,9 @@ class Project extends Model
             if (!$model->uuid) {
                 $model->uuid = (string) Str::uuid();
             }
+            if (empty($model->code)) {
+                $model->code = 'PRJ-' . strtoupper(Str::random(6));
+            }
         });
     }
 

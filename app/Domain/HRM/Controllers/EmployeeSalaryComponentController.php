@@ -3,7 +3,7 @@
 namespace App\Domain\HRM\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\Payroll\AssignSalaryComponentRequest;
+use App\Domain\HRM\Requests\Payroll\AssignSalaryComponentRequest;
 use App\Domain\HRM\Models\Employee;
 use App\Domain\HRM\Models\SalaryComponent;
 use Illuminate\Http\JsonResponse;

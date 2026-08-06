@@ -3,7 +3,7 @@
 namespace App\Domain\CRM\Controllers\ProspectManagement;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\CRM\ProspectManagement\SalesPipeLineRequest;
+use App\Domain\CRM\Requests\ProspectManagement\SalesPipeLineRequest;
 use App\Domain\CRM\Services\SalesPipelineService;
 use OpenApi\Attributes as OA;
 

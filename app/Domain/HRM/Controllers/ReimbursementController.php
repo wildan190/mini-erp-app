@@ -3,8 +3,8 @@
 namespace App\Domain\HRM\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\Reimbursement\StoreReimbursementRequest;
-use App\Http\Requests\Platform\HRM\Reimbursement\UpdateReimbursementStatusRequest;
+use App\Domain\HRM\Requests\Reimbursement\StoreReimbursementRequest;
+use App\Domain\HRM\Requests\Reimbursement\UpdateReimbursementStatusRequest;
 use App\Domain\HRM\Models\Employee;
 use App\Domain\HRM\Models\Reimbursement;
 use App\Domain\HRM\Services\ReimbursementService;

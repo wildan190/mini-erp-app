@@ -3,8 +3,8 @@
 namespace App\Domain\HRM\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\Designation\StoreDesignationRequest;
-use App\Http\Requests\Platform\HRM\Designation\UpdateDesignationRequest;
+use App\Domain\HRM\Requests\Designation\StoreDesignationRequest;
+use App\Domain\HRM\Requests\Designation\UpdateDesignationRequest;
 use App\Domain\HRM\Services\DesignationService;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;

@@ -77,11 +77,12 @@ return [
         ],
 
         RequestHandled::class => [
-            //
+            \App\Octane\Listeners\WarnHighMemoryUsage::class,
         ],
 
         RequestTerminated::class => [
-            // FlushUploadedFiles::class,
+            FlushUploadedFiles::class,
+            \App\Octane\Listeners\FlushPassportState::class,
         ],
 
         TaskReceived::class => [
@@ -105,8 +106,8 @@ return [
         OperationTerminated::class => [
             FlushOnce::class,
             FlushTemporaryContainerInstances::class,
-            // DisconnectFromDatabases::class,
-            // CollectGarbage::class,
+            DisconnectFromDatabases::class,
+            CollectGarbage::class,
         ],
 
         WorkerErrorOccurred::class => [
@@ -132,10 +133,15 @@ return [
 
     'warm' => [
         ...Octane::defaultServicesToWarm(),
+        // Warm Passport's token repository so the first request after worker boot
+        // does not pay the cost of resolving and binding these services.
+        Laravel\Passport\PassportServiceProvider::class,
     ],
 
     'flush' => [
-        //
+        // Re-resolve Passport's resource server on each request so the RSA public
+        // key binding stays fresh across long-lived Swoole workers.
+        League\OAuth2\Server\ResourceServer::class,
     ],
 
     /*
@@ -206,7 +212,10 @@ return [
     |
     */
 
-    'garbage' => 50,
+    // Trigger Octane's built-in GC listener when a worker exceeds this many MB.
+    // Lower value = more frequent GC passes = more stable long-term RAM footprint.
+    // 50MB (default) is too high for workers that are recycled every 500 requests anyway.
+    'garbage' => 25,
 
     /*
     |--------------------------------------------------------------------------

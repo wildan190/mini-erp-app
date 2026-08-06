@@ -3,8 +3,8 @@
 namespace App\Domain\HRM\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\Payroll\GeneratePayrollRequest;
-use App\Http\Requests\Platform\HRM\Payroll\StorePayrollPeriodRequest;
+use App\Domain\HRM\Requests\Payroll\GeneratePayrollRequest;
+use App\Domain\HRM\Requests\Payroll\StorePayrollPeriodRequest;
 use App\Domain\HRM\Models\PayrollPeriod;
 use App\Domain\HRM\Services\PayrollService;
 use Illuminate\Http\JsonResponse;

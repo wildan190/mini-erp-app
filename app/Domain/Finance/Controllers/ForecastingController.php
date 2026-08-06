@@ -4,7 +4,7 @@ namespace App\Domain\Finance\Controllers;
 
 use App\Domain\Finance\Models\FinancialRecord;
 use App\Domain\Finance\Models\CashForecast;
-use App\Services\AI\FinanceAIService;
+use App\Domain\Finance\Services\FinanceAIService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use OpenApi\Attributes as OA;

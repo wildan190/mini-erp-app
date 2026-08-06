@@ -4,8 +4,8 @@ namespace App\Domain\HRM\Controllers;
 
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\Employee\StoreEmployeeRequest;
-use App\Http\Requests\Platform\HRM\Employee\UpdateEmployeeRequest;
+use App\Domain\HRM\Requests\Employee\StoreEmployeeRequest;
+use App\Domain\HRM\Requests\Employee\UpdateEmployeeRequest;
 use App\Domain\HRM\Services\EmployeeService;
 use App\Domain\HRM\Services\FaceRecognitionService;
 use Illuminate\Http\JsonResponse;

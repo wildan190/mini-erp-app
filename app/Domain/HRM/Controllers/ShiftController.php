@@ -3,8 +3,8 @@
 namespace App\Domain\HRM\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\Shift\StoreShiftRequest;
-use App\Http\Requests\Platform\HRM\Shift\UpdateShiftRequest;
+use App\Domain\HRM\Requests\Shift\StoreShiftRequest;
+use App\Domain\HRM\Requests\Shift\UpdateShiftRequest;
 use App\Domain\HRM\Models\Shift;
 use App\Domain\HRM\Services\ShiftService;
 use Illuminate\Http\JsonResponse;

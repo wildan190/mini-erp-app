@@ -3,8 +3,8 @@
 namespace App\Domain\HRM\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\OfficeLocation\StoreOfficeLocationRequest;
-use App\Http\Requests\Platform\HRM\OfficeLocation\UpdateOfficeLocationRequest;
+use App\Domain\HRM\Requests\OfficeLocation\StoreOfficeLocationRequest;
+use App\Domain\HRM\Requests\OfficeLocation\UpdateOfficeLocationRequest;
 use App\Domain\HRM\Models\OfficeLocation;
 use App\Domain\HRM\Services\OfficeLocationService;
 use Illuminate\Http\JsonResponse;

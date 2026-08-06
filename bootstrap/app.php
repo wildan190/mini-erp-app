@@ -9,6 +9,13 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
         then: function () {
+            // Core platform routes: auth, dashboard
+            // Served by core-service container.
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/api/core.php'));
+
+            // Domain service routes — each served by their own container.
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api/hrm.php'));
@@ -28,6 +35,10 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api/project.php'));
+
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/api/inventory.php'));
         },
         commands: __DIR__.'/../routes/console.php',
         health: '/up',

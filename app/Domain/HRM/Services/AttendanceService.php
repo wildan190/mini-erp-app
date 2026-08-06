@@ -41,14 +41,20 @@ class AttendanceService implements HRMServiceInterface
     public function getAttendances(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         return Attendance::with(['employee.user', 'shift'])
-            ->when(isset($filters['employee_uuid']), function (Builder $query) use ($filters) {
+            ->when(!empty($filters['search']), function (Builder $query) use ($filters) {
+                $search = $filters['search'];
+                $query->whereHas('employee.user', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
+            })
+            ->when(!empty($filters['employee_uuid']), function (Builder $query) use ($filters) {
                 $employee = Employee::where('uuid', $filters['employee_uuid'])->first();
                 $query->where('employee_id', $employee?->id ?? 0);
             })
-            ->when(isset($filters['date']), function (Builder $query) use ($filters) {
+            ->when(!empty($filters['date']), function (Builder $query) use ($filters) {
                 $query->where('date', $filters['date']);
             })
-            ->when(isset($filters['department_uuid']), function (Builder $query) use ($filters) {
+            ->when(!empty($filters['department_uuid']), function (Builder $query) use ($filters) {
                 $department = \App\Domain\HRM\Models\Department::where('uuid', $filters['department_uuid'])->first();
                 $query->whereHas('employee', function ($q) use ($department) {
                     $q->where('department_id', $department?->id ?? 0);

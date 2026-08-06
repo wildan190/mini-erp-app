@@ -3,7 +3,7 @@
 namespace App\Domain\Finance\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Services\AI\FinanceAIService;
+use App\Domain\Finance\Services\FinanceAIService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;

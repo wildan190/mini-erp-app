@@ -3,7 +3,7 @@
 namespace App\Domain\CRM\Controllers\AutomationSalesForce;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\CRM\AutomationSalesForce\QuotationRequest;
+use App\Domain\CRM\Requests\AutomationSalesForce\QuotationRequest;
 use App\Domain\CRM\Services\QuotationService;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
