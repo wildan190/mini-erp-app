@@ -3,8 +3,8 @@
 namespace App\Domain\HRM\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\Leave\StoreLeaveRequestRequest;
-use App\Http\Requests\Platform\HRM\Leave\UpdateLeaveStatusRequest;
+use App\Domain\HRM\Requests\Leave\StoreLeaveRequestRequest;
+use App\Domain\HRM\Requests\Leave\UpdateLeaveStatusRequest;
 use App\Domain\HRM\Models\LeaveRequest;
 use App\Domain\HRM\Services\LeaveService;
 use Illuminate\Http\JsonResponse;

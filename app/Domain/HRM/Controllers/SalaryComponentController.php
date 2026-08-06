@@ -3,7 +3,7 @@
 namespace App\Domain\HRM\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\Payroll\StoreSalaryComponentRequest;
+use App\Domain\HRM\Requests\Payroll\StoreSalaryComponentRequest;
 use App\Domain\HRM\Models\SalaryComponent;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;

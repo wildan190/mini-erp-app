@@ -6,6 +6,7 @@ use App\Domain\HRM\Controllers\DepartmentController;
 use App\Domain\HRM\Controllers\DesignationController;
 use App\Domain\HRM\Controllers\EmployeeController;
 use App\Domain\HRM\Controllers\EmployeeDocumentController;
+use App\Domain\HRM\Controllers\EmployeeSalaryComponentController;
 use App\Domain\HRM\Controllers\FaceRecognitionController;
 use App\Domain\HRM\Controllers\LeaveRequestController;
 use App\Domain\HRM\Controllers\LeaveTypeController;
@@ -51,11 +52,20 @@ Route::middleware('auth:platform')->prefix('platform/hrm')->group(function () {
     // Employee Management API
     Route::get('/employees', [EmployeeController::class, 'index']);
     Route::post('/employees', [EmployeeController::class, 'store']);
+    Route::get('/employees/{employee}', [EmployeeController::class, 'show']);
     Route::put('/employees/{employee}', [EmployeeController::class, 'update']);
+    Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy']);
+    Route::get('/employees/{employee}/face-status', [EmployeeController::class, 'getFaceStatus']);
 
     // Document Management API
     Route::get('/employees/{employeeUuid}/documents', [EmployeeDocumentController::class, 'index']);
     Route::post('/employees/{employeeUuid}/documents', [EmployeeDocumentController::class, 'store']);
+
+    // Employee Salary Components API
+    Route::get('/employees/{uuid}/salary-components', [EmployeeSalaryComponentController::class, 'index']);
+    Route::post('/employees/{uuid}/salary-components', [EmployeeSalaryComponentController::class, 'store']);
+    Route::put('/employees/{uuid}/salary-components/{componentUuid}', [EmployeeSalaryComponentController::class, 'update']);
+    Route::delete('/employees/{uuid}/salary-components/{componentUuid}', [EmployeeSalaryComponentController::class, 'destroy']);
 
     // Leave Management API
     Route::get('/leave-types', [LeaveTypeController::class, 'index']);

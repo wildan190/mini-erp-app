@@ -3,8 +3,8 @@
 namespace App\Domain\HRM\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\Attendance\ClockInRequest;
-use App\Http\Requests\Platform\HRM\Attendance\ClockOutRequest;
+use App\Domain\HRM\Requests\Attendance\ClockInRequest;
+use App\Domain\HRM\Requests\Attendance\ClockOutRequest;
 use App\Domain\HRM\Models\Employee;
 use App\Domain\HRM\Services\AttendanceService;
 use Illuminate\Http\JsonResponse;

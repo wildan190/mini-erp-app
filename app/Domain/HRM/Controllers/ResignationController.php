@@ -3,8 +3,8 @@
 namespace App\Domain\HRM\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\Resignation\StoreResignationRequest;
-use App\Http\Requests\Platform\HRM\Resignation\UpdateResignationStatusRequest;
+use App\Domain\HRM\Requests\Resignation\StoreResignationRequest;
+use App\Domain\HRM\Requests\Resignation\UpdateResignationStatusRequest;
 use App\Domain\HRM\Models\Employee;
 use App\Domain\HRM\Models\Resignation;
 use App\Domain\HRM\Services\ResignationService;

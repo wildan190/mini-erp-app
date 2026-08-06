@@ -21,7 +21,9 @@ Route::middleware('auth:platform')
         // ── Dashboard ─────────────────────────────────────────────────────
         Route::get('/dashboard', [ProjectController::class, 'dashboard']);
 
-        // ── Projects CRUD ─────────────────────────────────────────────────
+        // ── Projects CRUD (supports both / and /projects) ─────────────────
+        Route::get('/',                  [ProjectController::class, 'index']);
+        Route::post('/',                 [ProjectController::class, 'store']);
         Route::get('/projects',          [ProjectController::class, 'index']);
         Route::post('/projects',         [ProjectController::class, 'store']);
         Route::get('/projects/{uuid}',   [ProjectController::class, 'show']);
@@ -35,10 +37,14 @@ Route::middleware('auth:platform')
         // ── Tasks (standalone endpoints) ──────────────────────────────────
         Route::get('/tasks',                       [ProjectTaskController::class, 'index']);
         Route::post('/tasks',                      [ProjectTaskController::class, 'store']);
+        Route::put('/tasks/reorder',               [ProjectTaskController::class, 'reorder']);
         Route::patch('/tasks/{uuid}/reorder',      [ProjectTaskController::class, 'reorder']);
+        Route::put('/tasks/{uuid}',                [ProjectTaskController::class, 'update']);
+        Route::patch('/tasks/{uuid}',              [ProjectTaskController::class, 'update']);
 
-        // ── Members ───────────────────────────────────────────────────────
+        // ── Members & Resources ───────────────────────────────────────────
         Route::get('/members',                     [ProjectMemberController::class, 'index']);
+        Route::get('/resources',                   [ProjectMemberController::class, 'index']);
         Route::post('/projects/{uuid}/members',    [ProjectController::class,       'storeMember']);
         Route::post('/members',                    [ProjectMemberController::class, 'store']);
         Route::delete('/members/{uuid}',           [ProjectMemberController::class, 'destroy']);
@@ -46,9 +52,14 @@ Route::middleware('auth:platform')
         // ── Timesheets ────────────────────────────────────────────────────
         Route::post('/projects/{uuid}/timesheets', [ProjectController::class, 'storeTimesheet']);
 
-        // ── Costs ─────────────────────────────────────────────────────────
+        // ── Costs & Financials ────────────────────────────────────────────
+        Route::get('/financials',                  [ProjectController::class,     'dashboard']);
         Route::get('/projects/{uuid}/costs',       [ProjectController::class,     'costs']);
         Route::post('/projects/{uuid}/costs',      [ProjectController::class,     'storeCost']);
         Route::post('/costs',                      [ProjectCostController::class, 'store']);
         Route::delete('/costs/{uuid}',             [ProjectCostController::class, 'destroy']);
+
+        // ── Single Project by UUID alias ──────────────────────────────────
+        Route::get('/{uuid}',                      [ProjectController::class, 'show']);
+        Route::put('/{uuid}',                      [ProjectController::class, 'update']);
     });

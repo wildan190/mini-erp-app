@@ -3,8 +3,8 @@
 namespace App\Domain\HRM\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Platform\HRM\Department\StoreDepartmentRequest;
-use App\Http\Requests\Platform\HRM\Department\UpdateDepartmentRequest;
+use App\Domain\HRM\Requests\Department\StoreDepartmentRequest;
+use App\Domain\HRM\Requests\Department\UpdateDepartmentRequest;
 use App\Domain\HRM\Services\DepartmentService;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
