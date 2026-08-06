@@ -5,13 +5,8 @@ namespace App\Domain\Project\Controllers;
 use App\Http\Controllers\Controller;
 use App\Domain\Project\Models\Project;
 use App\Domain\Project\Models\ProjectTask;
-use App\Domain\Project\Models\ProjectMember;
-use App\Domain\Project\Models\ProjectTimesheet;
-use App\Domain\Project\Models\ProjectCost;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: "Project Management", description: "Full project lifecycle management: projects, tasks, timesheets, costs")]
@@ -37,8 +32,12 @@ class ProjectController extends Controller
             ->with(['tasks' => fn($q) => $q->limit(5)])
             ->orderBy('created_at', 'desc');
 
-        if ($request->filled('status'))   { $query->where('status', $request->status); }
-        if ($request->filled('priority')) { $query->where('priority', $request->priority); }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('priority')) {
+            $query->where('priority', $request->priority);
+        }
 
         return response()->json(['message' => 'List of projects', 'data' => $query->paginate($request->input('per_page', 15))]);
     }
@@ -73,19 +72,22 @@ class ProjectController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name'        => 'required|string|max:255',
-            'code'        => 'nullable|string|max:50',
+            'name' => 'required|string|max:255',
+            'code' => 'nullable|string|max:50',
             'client_name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'start_date'  => 'nullable|date',
-            'end_date'    => 'nullable|date|after_or_equal:start_date',
-            'status'      => 'nullable|in:planning,active,on_hold,completed,cancelled',
-            'priority'    => 'nullable|in:low,medium,high',
-            'value'       => 'nullable|numeric|min:0',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'status' => 'nullable|in:planning,active,on_hold,completed,cancelled',
+            'priority' => 'nullable|in:low,medium,high',
+            'value' => 'nullable|numeric|min:0',
         ]);
 
-        $validated['status']   = $validated['status'] ?? 'planning';
+        $validated['status'] = $validated['status'] ?? 'planning';
         $validated['priority'] = $validated['priority'] ?? 'medium';
+        if (empty($validated['code'])) {
+            $validated['code'] = 'PRJ-' . strtoupper(\Illuminate\Support\Str::random(6));
+        }
 
         $project = Project::create($validated);
         return response()->json(['message' => 'Project created successfully', 'data' => $project], 201);
@@ -128,16 +130,16 @@ class ProjectController extends Controller
     )]
     public function update(Request $request, string $uuid): JsonResponse
     {
-        $project   = Project::where('uuid', $uuid)->firstOrFail();
+        $project = Project::where('uuid', $uuid)->firstOrFail();
         $validated = $request->validate([
-            'name'        => 'sometimes|required|string|max:255',
+            'name' => 'sometimes|required|string|max:255',
             'client_name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'start_date'  => 'nullable|date',
-            'end_date'    => 'nullable|date',
-            'status'      => 'nullable|in:planning,active,on_hold,completed,cancelled',
-            'priority'    => 'nullable|in:low,medium,high',
-            'value'       => 'nullable|numeric|min:0',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+            'status' => 'nullable|in:planning,active,on_hold,completed,cancelled',
+            'priority' => 'nullable|in:low,medium,high',
+            'value' => 'nullable|numeric|min:0',
         ]);
         $project->update($validated);
         return response()->json(['message' => 'Project updated successfully', 'data' => $project]);
@@ -159,8 +161,10 @@ class ProjectController extends Controller
     public function tasks(Request $request, string $uuid): JsonResponse
     {
         $project = Project::where('uuid', $uuid)->firstOrFail();
-        $query   = $project->tasks()->with('subtasks')->whereNull('parent_task_uuid');
-        if ($request->filled('status')) { $query->where('status', $request->status); }
+        $query = $project->tasks()->with('subtasks')->whereNull('parent_task_uuid');
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
         return response()->json(['message' => 'List of tasks', 'data' => $query->orderBy('order')->get()]);
     }
 
@@ -190,16 +194,16 @@ class ProjectController extends Controller
     )]
     public function storeTask(Request $request, string $uuid): JsonResponse
     {
-        $project   = Project::where('uuid', $uuid)->firstOrFail();
+        $project = Project::where('uuid', $uuid)->firstOrFail();
         $validated = $request->validate([
-            'name'                    => 'required|string|max:255',
-            'description'             => 'nullable|string',
-            'assigned_employee_uuid'  => 'nullable|string',
-            'parent_task_uuid'        => 'nullable|string|exists:project_tasks,uuid',
-            'start_date'              => 'nullable|date',
-            'due_date'                => 'nullable|date',
-            'is_milestone'            => 'nullable|boolean',
-            'status'                  => 'nullable|in:todo,in_progress,review,done',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'assigned_employee_uuid' => 'nullable|string',
+            'parent_task_uuid' => 'nullable|string|exists:project_tasks,uuid',
+            'start_date' => 'nullable|date',
+            'due_date' => 'nullable|date',
+            'is_milestone' => 'nullable|boolean',
+            'status' => 'nullable|in:todo,in_progress,review,done',
         ]);
 
         $task = $project->tasks()->create(array_merge($validated, [
@@ -227,13 +231,13 @@ class ProjectController extends Controller
     )]
     public function updateTask(Request $request, string $taskUuid): JsonResponse
     {
-        $task      = ProjectTask::where('uuid', $taskUuid)->firstOrFail();
+        $task = ProjectTask::where('uuid', $taskUuid)->firstOrFail();
         $validated = $request->validate([
-            'status'              => 'nullable|in:todo,in_progress,review,done',
+            'status' => 'nullable|in:todo,in_progress,review,done',
             'progress_percentage' => 'nullable|integer|min:0|max:100',
-            'name'                => 'sometimes|required|string|max:255',
-            'description'         => 'nullable|string',
-            'due_date'            => 'nullable|date',
+            'name' => 'sometimes|required|string|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
         ]);
         $task->update($validated);
         return response()->json(['message' => 'Task updated successfully', 'data' => $task]);
@@ -262,10 +266,10 @@ class ProjectController extends Controller
     )]
     public function storeMember(Request $request, string $uuid): JsonResponse
     {
-        $project   = Project::where('uuid', $uuid)->firstOrFail();
+        $project = Project::where('uuid', $uuid)->firstOrFail();
         $validated = $request->validate([
-            'employee_uuid'         => 'required|string',
-            'role'                  => 'nullable|string|max:100',
+            'employee_uuid' => 'required|string',
+            'role' => 'nullable|string|max:100',
             'allocation_percentage' => 'nullable|integer|min:1|max:100',
         ]);
 
@@ -302,13 +306,13 @@ class ProjectController extends Controller
     )]
     public function storeTimesheet(Request $request, string $uuid): JsonResponse
     {
-        $project   = Project::where('uuid', $uuid)->firstOrFail();
+        $project = Project::where('uuid', $uuid)->firstOrFail();
         $validated = $request->validate([
             'employee_uuid' => 'required|string',
-            'task_uuid'     => 'nullable|string|exists:project_tasks,uuid',
-            'date'          => 'required|date',
-            'hours'         => 'required|numeric|min:0.25|max:24',
-            'notes'         => 'nullable|string',
+            'task_uuid' => 'nullable|string|exists:project_tasks,uuid',
+            'date' => 'required|date',
+            'hours' => 'required|numeric|min:0.25|max:24',
+            'notes' => 'nullable|string',
         ]);
 
         $timesheet = $project->timesheets()->create(array_merge($validated, ['status' => 'pending']));
@@ -328,11 +332,11 @@ class ProjectController extends Controller
     public function costs(string $uuid): JsonResponse
     {
         $project = Project::where('uuid', $uuid)->firstOrFail();
-        $costs   = $project->costs()->orderBy('date', 'desc')->get();
-        $total   = $costs->sum('amount');
+        $costs = $project->costs()->orderBy('date', 'desc')->get();
+        $total = $costs->sum('amount');
         return response()->json([
             'message' => 'Project costs',
-            'data'    => ['total' => $total, 'items' => $costs]
+            'data' => ['total' => $total, 'items' => $costs]
         ]);
     }
 
@@ -359,12 +363,12 @@ class ProjectController extends Controller
     )]
     public function storeCost(Request $request, string $uuid): JsonResponse
     {
-        $project   = Project::where('uuid', $uuid)->firstOrFail();
+        $project = Project::where('uuid', $uuid)->firstOrFail();
         $validated = $request->validate([
-            'type'           => 'required|in:labor,material,operational,other',
-            'description'    => 'required|string',
-            'amount'         => 'required|numeric|min:0',
-            'date'           => 'required|date',
+            'type' => 'required|in:labor,material,operational,other',
+            'description' => 'required|string',
+            'amount' => 'required|numeric|min:0',
+            'date' => 'required|date',
             'reference_uuid' => 'nullable|string',
         ]);
 
@@ -384,13 +388,13 @@ class ProjectController extends Controller
     public function dashboard(): JsonResponse
     {
         $stats = [
-            'total_projects'     => Project::count(),
-            'active_projects'    => Project::where('status', 'active')->count(),
+            'total_projects' => Project::count(),
+            'active_projects' => Project::where('status', 'active')->count(),
             'completed_projects' => Project::where('status', 'completed')->count(),
-            'overdue_tasks'      => ProjectTask::where('status', '!=', 'done')
-                                       ->whereNotNull('due_date')
-                                       ->where('due_date', '<', now()->toDateString())
-                                       ->count(),
+            'overdue_tasks' => ProjectTask::where('status', '!=', 'done')
+                ->whereNotNull('due_date')
+                ->where('due_date', '<', now()->toDateString())
+                ->count(),
         ];
 
         $active_projects = Project::where('status', 'active')
@@ -401,7 +405,7 @@ class ProjectController extends Controller
 
         return response()->json([
             'message' => 'Project management dashboard',
-            'data'    => compact('stats', 'active_projects'),
+            'data' => compact('stats', 'active_projects'),
         ]);
     }
 }
