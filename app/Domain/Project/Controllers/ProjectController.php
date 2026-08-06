@@ -403,9 +403,18 @@ class ProjectController extends Controller
             ->limit(5)
             ->get();
 
+        $recent_projects = Project::withCount('tasks')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         return response()->json([
             'message' => 'Project management dashboard',
-            'data' => compact('stats', 'active_projects'),
+            'data' => [
+                'stats' => $stats,
+                'active_projects' => $active_projects,
+                'recent_projects' => $recent_projects,
+            ],
         ]);
     }
 }
