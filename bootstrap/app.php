@@ -35,6 +35,10 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api/project.php'));
+
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/api/inventory.php'));
         },
         commands: __DIR__.'/../routes/console.php',
         health: '/up',

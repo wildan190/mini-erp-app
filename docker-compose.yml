@@ -12,6 +12,7 @@ name: mini-erp
 #   finance-service  : 256MB  — /api/platform/finance/*
 #   purchasing-service: 256MB — /api/platform/purchasing/*
 #   project-service  : 256MB  — /api/platform/project/*
+#   inventory-service: 256MB  — /api/platform/inventory/*
 #   horizon          : 192MB  — queue worker (standalone)
 #   face-api         : 256MB  — Python face-recognition service
 #   postgres         : 128MB  — shared database
@@ -64,6 +65,7 @@ services:
       - finance-service
       - purchasing-service
       - project-service
+      - inventory-service
 
   # ── Core Service ──────────────────────────────────────────────────────────
   # The central Laravel base. Owns:
@@ -152,6 +154,17 @@ services:
     container_name: mini-erp-project-service
     ports:
       - "8005:8000"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.75"
+
+  inventory-service:
+    <<: *app-base
+    container_name: mini-erp-inventory-service
+    ports:
+      - "8008:8000"
     deploy:
       resources:
         limits:

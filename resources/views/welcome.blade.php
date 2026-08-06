@@ -635,7 +635,6 @@
                             <span class="service-tag">Port 8004</span>
                         </div>
                     </div>
-                    <!-- Project -->
                     <div class="service-badge" id="svc-project">
                         <div class="service-info">
                             <div class="svc-dot-wrap">
@@ -649,6 +648,38 @@
                         <div style="display:flex;align-items:center;gap:8px;">
                             <span class="svc-status-label" id="label-project">Checking...</span>
                             <span class="service-tag">Port 8005</span>
+                        </div>
+                    </div>
+                    <!-- Auth -->
+                    <div class="service-badge" id="svc-auth">
+                        <div class="service-info">
+                            <div class="svc-dot-wrap">
+                                <span class="svc-dot svc-checking" id="dot-auth" title="Checking..."></span>
+                            </div>
+                            <div>
+                                <div class="service-name">mini-erp-auth-service</div>
+                                <div class="service-desc">Authentication — Laravel Passport (OAuth2)</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="svc-status-label" id="label-auth">Checking...</span>
+                            <span class="service-tag">Port 8006</span>
+                        </div>
+                    </div>
+                    <!-- Inventory -->
+                    <div class="service-badge" id="svc-inventory">
+                        <div class="service-info">
+                            <div class="svc-dot-wrap">
+                                <span class="svc-dot svc-checking" id="dot-inventory" title="Checking..."></span>
+                            </div>
+                            <div>
+                                <div class="service-name">mini-erp-inventory-service</div>
+                                <div class="service-desc">Inventory &amp; Warehouse Management — Laravel Octane</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="svc-status-label" id="label-inventory">Checking...</span>
+                            <span class="service-tag">Port 8008</span>
                         </div>
                     </div>
                     <!-- Horizon -->
@@ -693,7 +724,7 @@
         <div class="guide-box">
             <h3>📖 Panduan Lengkap Build & Perintah Per-Service (Seluruh 5 Domain)</h3>
             <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
-                Setiap domain microservice (<strong>HRM, CRM, Finance, Purchasing, Project</strong>) memiliki konteks eksekusi terpisah. Anda dapat me-rebuild, mengeksekusi artisan, atau menangani error secara terisolasi untuk service tertentu tanpa risiko mempengaruhi service lainnya.
+                Setiap domain microservice (<strong>HRM, CRM, Finance, Purchasing, Project, Inventory, dan Auth</strong>) memiliki konteks eksekusi terpisah. Anda dapat me-rebuild, mengeksekusi artisan, atau menangani error secara terisolasi untuk service tertentu tanpa risiko mempengaruhi service lainnya.
             </p>
 
             <!-- Step 1: Rebuild Per Service -->
@@ -704,15 +735,21 @@
                 </div>
                 <div class="code-block">
                     <span class="code-comment"># Rebuild HRM Service:</span><br>
-                    <span class="code-cmd">docker-compose up -d --build hrm-service</span><br><br>
+                    <span class="code-cmd">docker compose up -d --build hrm-service</span><br><br>
                     <span class="code-comment"># Rebuild CRM Service:</span><br>
-                    <span class="code-cmd">docker-compose up -d --build crm-service</span><br><br>
+                    <span class="code-cmd">docker compose up -d --build crm-service</span><br><br>
                     <span class="code-comment"># Rebuild Finance Service:</span><br>
-                    <span class="code-cmd">docker-compose up -d --build finance-service</span><br><br>
+                    <span class="code-cmd">docker compose up -d --build finance-service</span><br><br>
                     <span class="code-comment"># Rebuild Purchasing Service:</span><br>
-                    <span class="code-cmd">docker-compose up -d --build purchasing-service</span><br><br>
+                    <span class="code-cmd">docker compose up -d --build purchasing-service</span><br><br>
                     <span class="code-comment"># Rebuild Project Management Service:</span><br>
-                    <span class="code-cmd">docker-compose up -d --build project-service</span>
+                    <span class="code-cmd">docker compose up -d --build project-service</span><br><br>
+                    <span class="code-comment"># Rebuild Inventory &amp; Warehouse Service:</span><br>
+                    <span class="code-cmd">docker compose up -d --build inventory-service</span><br><br>
+                    <span class="code-comment"># Rebuild Auth Service (login / register / logout / Passport):</span><br>
+                    <span class="code-cmd">docker compose up -d --build auth-service</span><br><br>
+                    <span class="code-comment"># Rebuild Gateway (Nginx) — setelah ubah default.conf:</span><br>
+                    <span class="code-cmd">docker compose up -d --build gateway</span>
                 </div>
             </div>
 
@@ -723,21 +760,29 @@
                     Gunakan `docker exec` untuk menjalankan perintah artisan hanya di dalam container service yang bersangkutan:
                 </div>
                 <div class="code-block">
-                    <span class="code-comment"># HRM: Run Migration / Route Clear / Swagger Gen:</span><br>
+                    <span class="code-comment"># HRM: Run Migration / Swagger Gen:</span><br>
                     <span class="code-cmd">docker exec mini-erp-hrm-service php artisan migrate</span><br>
                     <span class="code-cmd">docker exec mini-erp-hrm-service php artisan l5-swagger:generate</span><br><br>
-                    <span class="code-comment"># CRM: Run Migration / Route Clear / Swagger Gen:</span><br>
+                    <span class="code-comment"># CRM: Run Migration / Swagger Gen:</span><br>
                     <span class="code-cmd">docker exec mini-erp-crm-service php artisan migrate</span><br>
                     <span class="code-cmd">docker exec mini-erp-crm-service php artisan l5-swagger:generate</span><br><br>
-                    <span class="code-comment"># Finance: Run Migration / Route Clear / Swagger Gen:</span><br>
+                    <span class="code-comment"># Finance: Run Migration / Swagger Gen:</span><br>
                     <span class="code-cmd">docker exec mini-erp-finance-service php artisan migrate</span><br>
                     <span class="code-cmd">docker exec mini-erp-finance-service php artisan l5-swagger:generate</span><br><br>
-                    <span class="code-comment"># Purchasing: Run Migration / Route Clear / Swagger Gen:</span><br>
+                    <span class="code-comment"># Purchasing: Run Migration / Swagger Gen:</span><br>
                     <span class="code-cmd">docker exec mini-erp-purchasing-service php artisan migrate</span><br>
                     <span class="code-cmd">docker exec mini-erp-purchasing-service php artisan l5-swagger:generate</span><br><br>
-                    <span class="code-comment"># Project: Run Migration / Route Clear / Swagger Gen:</span><br>
+                    <span class="code-comment"># Project: Run Migration / Swagger Gen:</span><br>
                     <span class="code-cmd">docker exec mini-erp-project-service php artisan migrate</span><br>
-                    <span class="code-cmd">docker exec mini-erp-project-service php artisan l5-swagger:generate</span>
+                    <span class="code-cmd">docker exec mini-erp-project-service php artisan l5-swagger:generate</span><br><br>
+                    <span class="code-comment"># Inventory: Run Migration / Cache Clear:</span><br>
+                    <span class="code-cmd">docker exec mini-erp-inventory-service php artisan migrate</span><br>
+                    <span class="code-cmd">docker exec mini-erp-inventory-service php artisan route:clear</span><br>
+                    <span class="code-cmd">docker exec mini-erp-inventory-service php artisan cache:clear</span><br><br>
+                    <span class="code-comment"># Auth: Regenerate Passport Keys / Clear Cache:</span><br>
+                    <span class="code-cmd">docker exec mini-erp-auth-service php artisan passport:install --force</span><br>
+                    <span class="code-cmd">docker exec mini-erp-auth-service php artisan route:clear</span><br>
+                    <span class="code-cmd">docker exec mini-erp-auth-service php artisan cache:clear</span>
                 </div>
             </div>
 
@@ -852,6 +897,8 @@
             { id: 'finance', url: 'http://' + window.location.hostname + ':8003/up', name: 'Finance' },
             { id: 'purchasing', url: 'http://' + window.location.hostname + ':8004/up', name: 'Purchasing' },
             { id: 'project', url: 'http://' + window.location.hostname + ':8005/up', name: 'Project' },
+            { id: 'auth', url: 'http://' + window.location.hostname + ':8006/up', name: 'Auth' },
+            { id: 'inventory', url: 'http://' + window.location.hostname + ':8008/up', name: 'Inventory' },
             { id: 'faceapi', url: 'http://' + window.location.hostname + ':5005/docs', name: 'Face API' }
         ];
 
