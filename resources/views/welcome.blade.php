@@ -674,12 +674,28 @@
                             </div>
                             <div>
                                 <div class="service-name">mini-erp-inventory-service</div>
-                                <div class="service-desc">Inventory &amp; Warehouse Management — Laravel Octane</div>
+                                <div class="service-desc">Inventory &amp; Warehouse Management — Laravel Octane (Swoole)</div>
                             </div>
                         </div>
                         <div style="display:flex;align-items:center;gap:8px;">
                             <span class="svc-status-label" id="label-inventory">Checking...</span>
                             <span class="service-tag">Port 8008</span>
+                        </div>
+                    </div>
+                    <!-- System Administration -->
+                    <div class="service-badge" id="svc-system">
+                        <div class="service-info">
+                            <div class="svc-dot-wrap">
+                                <span class="svc-dot svc-checking" id="dot-system" title="Checking..."></span>
+                            </div>
+                            <div>
+                                <div class="service-name">mini-erp-system-service</div>
+                                <div class="service-desc">System Administration — Dynamic RBAC &amp; Approval Engine</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <span class="svc-status-label" id="label-system">Checking...</span>
+                            <span class="service-tag">Port 8009</span>
                         </div>
                     </div>
                     <!-- Horizon -->
@@ -722,9 +738,9 @@
 
         <!-- Comprehensive Build, Maintenance & Architecture Guide -->
         <div class="guide-box">
-            <h3>📖 Panduan Lengkap Build & Perintah Per-Service (Seluruh 5 Domain)</h3>
+            <h3>📖 Panduan Lengkap Build &amp; Perintah Per-Service (Seluruh Domain Microservices)</h3>
             <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
-                Setiap domain microservice (<strong>HRM, CRM, Finance, Purchasing, Project, Inventory, dan Auth</strong>) memiliki konteks eksekusi terpisah. Anda dapat me-rebuild, mengeksekusi artisan, atau menangani error secara terisolasi untuk service tertentu tanpa risiko mempengaruhi service lainnya.
+                Setiap domain microservice (<strong>HRM, CRM, Finance, Purchasing, Project, Inventory, System RBAC &amp; Approval, dan Auth</strong>) memiliki konteks eksekusi terpisah. Anda dapat me-rebuild, mengeksekusi artisan, atau menangani error secara terisolasi untuk service tertentu tanpa risiko mempengaruhi service lainnya.
             </p>
 
             <!-- Step 1: Rebuild Per Service -->
@@ -746,6 +762,8 @@
                     <span class="code-cmd">docker compose up -d --build project-service</span><br><br>
                     <span class="code-comment"># Rebuild Inventory &amp; Warehouse Service:</span><br>
                     <span class="code-cmd">docker compose up -d --build inventory-service</span><br><br>
+                    <span class="code-comment"># Rebuild System Service (RBAC &amp; Approvals):</span><br>
+                    <span class="code-cmd">docker compose up -d --build system-service</span><br><br>
                     <span class="code-comment"># Rebuild Auth Service (login / register / logout / Passport):</span><br>
                     <span class="code-cmd">docker compose up -d --build auth-service</span><br><br>
                     <span class="code-comment"># Rebuild Gateway (Nginx) — setelah ubah default.conf:</span><br>
@@ -779,6 +797,11 @@
                     <span class="code-cmd">docker exec mini-erp-inventory-service php artisan migrate</span><br>
                     <span class="code-cmd">docker exec mini-erp-inventory-service php artisan route:clear</span><br>
                     <span class="code-cmd">docker exec mini-erp-inventory-service php artisan cache:clear</span><br><br>
+                    <span class="code-comment"># System Administration (RBAC &amp; Approval Engine):</span><br>
+                    <span class="code-cmd">docker exec mini-erp-system-service php artisan migrate</span><br>
+                    <span class="code-cmd">docker exec mini-erp-system-service php artisan db:seed --class=RolePermissionSeeder</span><br>
+                    <span class="code-cmd">docker exec mini-erp-system-service php artisan db:seed --class=ApprovalChainSeeder</span><br>
+                    <span class="code-cmd">docker exec mini-erp-system-service php artisan route:clear</span><br><br>
                     <span class="code-comment"># Auth: Regenerate Passport Keys / Clear Cache:</span><br>
                     <span class="code-cmd">docker exec mini-erp-auth-service php artisan passport:install --force</span><br>
                     <span class="code-cmd">docker exec mini-erp-auth-service php artisan route:clear</span><br>
@@ -899,6 +922,7 @@
             { id: 'project', url: 'http://' + window.location.hostname + ':8005/up', name: 'Project' },
             { id: 'auth', url: 'http://' + window.location.hostname + ':8006/up', name: 'Auth' },
             { id: 'inventory', url: 'http://' + window.location.hostname + ':8008/up', name: 'Inventory' },
+            { id: 'system', url: 'http://' + window.location.hostname + ':8009/up', name: 'System' },
             { id: 'faceapi', url: 'http://' + window.location.hostname + ':5005/docs', name: 'Face API' }
         ];
 

@@ -8,7 +8,7 @@ use App\Domain\Core\Controllers\Dashboard\PlatformDashboardController;
 | Core Platform Routes  —  routes/api/core.php
 |--------------------------------------------------------------------------
 | Served exclusively by the core-service container.
-| Owns the platform dashboard (cross-domain summary).
+| Owns the platform dashboard (cross-domain summary), Telescope, Horizon, Landing.
 */
 
 Route::prefix('platform')

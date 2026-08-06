@@ -33,7 +33,13 @@ class MasterDataSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Create Default Admin User
+        // 0. Seed RBAC Roles & Approval Chains
+        $this->call([
+            RolePermissionSeeder::class,
+            ApprovalChainSeeder::class,
+        ]);
+
+        // 1. Create Default Admin User & Assign Super Admin Role
         $admin = User::updateOrCreate(
             ['email' => 'admin@erp.com'],
             [
@@ -42,6 +48,7 @@ class MasterDataSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+        $admin->assignRole('super-admin');
 
         // 2. HRM Domain Seeding
         $departments  = Department::factory(5)->create();
