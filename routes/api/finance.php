@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Domain\Finance\Controllers\GeneralLedgerController;
 use App\Domain\Finance\Controllers\ReportingController;
 use App\Domain\Finance\Controllers\AIAnalyticsController;
+use App\Domain\Finance\Controllers\AccountPayableController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,4 +37,27 @@ Route::middleware('auth:platform')->prefix('platform/finance')->group(function (
 
     // Supply Chain AI
     Route::get('/supply-chain/risk-assessment', [\App\Domain\Finance\Controllers\SupplyChainAIController::class, 'riskAssessment']);
+
+    // ── Account Payable ─────────────────────────────────────────────────────
+    Route::get('/ap/dashboard', [AccountPayableController::class, 'dashboard']);
+    Route::get('/ap/iris/balance', [AccountPayableController::class, 'irisBalance']);
+
+    // Vendors
+    Route::get('/ap/vendors', [AccountPayableController::class, 'indexVendors']);
+    Route::post('/ap/vendors', [AccountPayableController::class, 'storeVendor']);
+
+    // Bills
+    Route::get('/ap/bills', [AccountPayableController::class, 'indexBills']);
+    Route::post('/ap/bills', [AccountPayableController::class, 'storeBill']);
+    Route::get('/ap/bills/{uuid}', [AccountPayableController::class, 'showBill']);
+    Route::post('/ap/bills/{uuid}/approve', [AccountPayableController::class, 'approveBill']);
+    Route::post('/ap/bills/{uuid}/pay', [AccountPayableController::class, 'payBill']);
+
+    // Payments
+    Route::post('/ap/payments/{paymentUuid}/reconcile', [AccountPayableController::class, 'reconcilePayment']);
+
+    // ── Finance Settings ─────────────────────────────────────────────────────
+    Route::get('/settings/midtrans', [\App\Domain\Finance\Controllers\FinanceSettingsController::class, 'getMidtransSettings']);
+    Route::post('/settings/midtrans', [\App\Domain\Finance\Controllers\FinanceSettingsController::class, 'saveMidtransSettings']);
+    Route::post('/settings/midtrans/test', [\App\Domain\Finance\Controllers\FinanceSettingsController::class, 'testMidtransConnection']);
 });

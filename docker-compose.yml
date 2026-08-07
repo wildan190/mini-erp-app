@@ -73,7 +73,6 @@ services:
   # The central Laravel base. Owns:
   #   • Landing page & welcome view  (GET /)
   #   • Swagger / OpenAPI docs       (GET /api/documentation)
-  #   • Telescope UI                 (GET /telescope)
   #   • Horizon UI                   (GET /horizon)
   #   • Platform dashboard           (GET /api/platform/dashboard)
   #   • Health check                 (GET /up)
