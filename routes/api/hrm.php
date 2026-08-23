@@ -73,6 +73,7 @@ Route::middleware('auth:platform')->prefix('platform/hrm')->group(function () {
     Route::get('/leave-requests', [LeaveRequestController::class, 'index']);
     Route::post('/leave-requests', [LeaveRequestController::class, 'store']);
     Route::put('/leave-requests/{uuid}/status', [LeaveRequestController::class, 'updateStatus']);
+    Route::get('/leave-balances/my-balance', [LeaveRequestController::class, 'myBalance']);
 
     // Payroll API
     Route::get('/salary-components', [SalaryComponentController::class, 'index']);

@@ -50,6 +50,14 @@ class EmployeeService
             });
         }
 
+        $today = now()->toDateString();
+        $query->with(['leaveRequests' => function ($lq) use ($today) {
+            $lq->where('status', 'approved')
+               ->whereDate('start_date', '<=', $today)
+               ->whereDate('end_date', '>=', $today)
+               ->with('leaveType');
+        }]);
+
         return $query->latest()->paginate($perPage);
     }
 

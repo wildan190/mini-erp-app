@@ -16,7 +16,7 @@ class LeaveManagementTest extends TestCase
     public function test_can_create_leave_type()
     {
         $user = User::factory()->create();
-        $this->actingAs($user, 'sanctum');
+        $this->actingAs($user, 'platform');
 
         $data = [
             'name' => 'Annual Leave ' . uniqid(),
@@ -33,7 +33,7 @@ class LeaveManagementTest extends TestCase
     public function test_can_apply_for_leave()
     {
         $user = User::factory()->create();
-        $this->actingAs($user, 'sanctum');
+        $this->actingAs($user, 'platform');
 
         $employee = Employee::create([
             'user_id' => $user->id,
@@ -63,7 +63,7 @@ class LeaveManagementTest extends TestCase
     public function test_cannot_apply_if_balance_insufficient()
     {
         $user = User::factory()->create();
-        $this->actingAs($user, 'sanctum');
+        $this->actingAs($user, 'platform');
 
         $employee = Employee::create([
             'user_id' => $user->id,
@@ -90,7 +90,7 @@ class LeaveManagementTest extends TestCase
     public function test_can_approve_leave_request()
     {
         $user = User::factory()->create();
-        $this->actingAs($user, 'sanctum');
+        $this->actingAs($user, 'platform');
 
         $employee = Employee::create([
             'user_id' => $user->id,
@@ -132,5 +132,31 @@ class LeaveManagementTest extends TestCase
             'employee_id' => $employee->id,
             'remaining_days' => 10, // 12 - 2 days
         ]);
+    }
+
+    public function test_can_get_my_leave_balance()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'platform');
+
+        $employee = Employee::create([
+            'user_id' => $user->id,
+            'emp_code' => 'EMP-LEAVE-BAL-' . uniqid(),
+            'status' => 'active',
+        ]);
+
+        $leaveType = LeaveType::create(['name' => 'Annual Leave', 'days_allowed' => 12]);
+        \App\Domain\HRM\Models\LeaveBalance::create([
+            'employee_id' => $employee->id,
+            'leave_type_id' => $leaveType->id,
+            'year' => now()->year,
+            'total_days' => 12,
+            'remaining_days' => 12,
+        ]);
+
+        $response = $this->getJson('/api/platform/hrm/leave-balances/my-balance');
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['message' => 'Your leave balance']);
     }
 }

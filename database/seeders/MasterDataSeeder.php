@@ -37,6 +37,7 @@ class MasterDataSeeder extends Seeder
         $this->call([
             RolePermissionSeeder::class,
             ApprovalChainSeeder::class,
+            LeaveTypeSeeder::class,
         ]);
 
         // Ensure Passport Personal Access Client exists

@@ -24,6 +24,13 @@ class PassportAuthTest extends TestCase
             'password' => Hash::make('password123'),
         ]);
 
+        \Illuminate\Support\Facades\Artisan::call('passport:client', [
+            '--personal' => true,
+            '--name' => 'MiniERP Personal Access Client',
+            '--provider' => 'users',
+            '--no-interaction' => true,
+        ]);
+
         $response = $this->postJson('/api/platform/login', [
             'email' => $user->email,
             'password' => 'password123',
