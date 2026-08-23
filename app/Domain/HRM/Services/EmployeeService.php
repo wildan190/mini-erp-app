@@ -17,7 +17,7 @@ class EmployeeService
      */
     public function getAllEmployees(int $perPage = 15, array $filters = []): LengthAwarePaginator
     {
-        $query = Employee::with(['user', 'department', 'designation']);
+        $query = Employee::with(['user.roles', 'department', 'designation']);
 
         if (isset($filters['department_uuid'])) {
             $departmentId = \App\Domain\HRM\Models\Department::where('uuid', $filters['department_uuid'])->value('id');
@@ -129,7 +129,7 @@ class EmployeeService
      */
     public function findEmployee(string|int $id): ?Employee
     {
-        $query = Employee::with(['user', 'department', 'designation']);
+        $query = Employee::with(['user.roles', 'department', 'designation']);
         if (is_numeric($id)) {
             return $query->find($id);
         }

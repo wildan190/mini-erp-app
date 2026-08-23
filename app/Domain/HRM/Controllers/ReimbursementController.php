@@ -177,10 +177,17 @@ class ReimbursementController extends Controller
     {
         $employee = Employee::where('user_id', Auth::id())->first();
         if (!$employee) {
-            return response()->json(['message' => 'Employee record not found.'], 404);
+            // Return empty pagination data so frontend table doesn't crash with 404 for admins / non-employee accounts
+            $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15, 1);
+            return response()->json([
+                'message' => 'User does not have an employee profile yet.',
+                'data' => $emptyPaginator
+            ]);
         }
 
-        $claims = $this->reimbursementService->getReimbursements(['employee_id' => $employee->id]);
+        $perPage = request()->input('per_page', 15);
+        $filters = array_merge(request()->only(['status']), ['employee_id' => $employee->id]);
+        $claims = $this->reimbursementService->getReimbursements($filters, $perPage);
 
         return response()->json([
             'message' => 'My reimbursement claims',
