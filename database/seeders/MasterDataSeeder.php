@@ -39,6 +39,22 @@ class MasterDataSeeder extends Seeder
             ApprovalChainSeeder::class,
         ]);
 
+        // Ensure Passport Personal Access Client exists
+        if (\Illuminate\Support\Facades\Schema::hasTable('oauth_clients')) {
+            $hasPersonalClient = \Illuminate\Support\Facades\DB::table('oauth_clients')
+                ->where('grant_types', 'like', '%personal_access%')
+                ->exists();
+
+            if (!$hasPersonalClient) {
+                \Illuminate\Support\Facades\Artisan::call('passport:client', [
+                    '--personal' => true,
+                    '--name' => 'MiniERP Personal Access Client',
+                    '--provider' => 'users',
+                    '--no-interaction' => true,
+                ]);
+            }
+        }
+
         // 1. Create Default Admin User & Assign Super Admin Role
         $admin = User::updateOrCreate(
             ['email' => 'admin@erp.com'],

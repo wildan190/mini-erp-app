@@ -2,32 +2,22 @@
 
 namespace App\Domain\Purchasing\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class PurchaseInvoice extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'number', 'supplier_id', 'purchase_order_id', 'date', 'due_date',
         'notes', 'subtotal', 'tax_amount', 'total_amount', 'status'
     ];
 
-    protected static function newFactory()
+    public function uniqueIds(): array
     {
-        return \Database\Factories\Purchasing\PurchaseInvoiceFactory::new();
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            if (!$model->uuid) {
-                $model->uuid = (string) Str::uuid();
-            }
-        });
+        return ['uuid'];
     }
 
     public function supplier()

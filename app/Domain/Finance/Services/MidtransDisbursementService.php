@@ -4,7 +4,7 @@ namespace App\Domain\Finance\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use App\Domain\Finance\Models\ApVendor;
+use App\Domain\Purchasing\Models\Supplier;
 use App\Domain\Finance\Models\ApPayment;
 
 class MidtransDisbursementService
@@ -53,10 +53,10 @@ class MidtransDisbursementService
     }
 
     /**
-     * Register a vendor as a beneficiary in Iris.
+     * Register a vendor/supplier as a beneficiary in Iris.
      * Returns alias name if successful.
      */
-    public function createBeneficiary(ApVendor $vendor): array
+    public function createBeneficiary(Supplier $vendor): array
     {
         $alias = strtolower(preg_replace('/\s+/', '_', $vendor->name)) . '_' . $vendor->uuid;
         $alias = substr($alias, 0, 20); // Iris alias max 20 chars
@@ -90,7 +90,7 @@ class MidtransDisbursementService
     /**
      * Send disbursement for a specific payment.
      */
-    public function disburse(ApPayment $payment, ApVendor $vendor): array
+    public function disburse(ApPayment $payment, Supplier $vendor): array
     {
         $alias = $vendor->midtrans_beneficiary_alias;
 

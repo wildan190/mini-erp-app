@@ -3,7 +3,7 @@
 namespace App\Domain\Finance\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Domain\Finance\Models\ApVendor;
+use App\Domain\Purchasing\Models\Supplier;
 use App\Domain\Finance\Models\ApBill;
 use App\Domain\Finance\Models\ApPayment;
 use App\Domain\Finance\Services\AccountPayableService;
@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use OpenApi\Attributes as OA;
 
-#[OA\Tag(name: "Account Payable", description: "AP vendors, bills, and Midtrans Iris disbursement payments")]
+#[OA\Tag(name: "Account Payable", description: "AP vendors (= suppliers), bills, and Midtrans Iris disbursement payments")]
 class AccountPayableController extends Controller
 {
     public function __construct(
@@ -55,11 +55,11 @@ class AccountPayableController extends Controller
         ]);
     }
 
-    // ── VENDORS ───────────────────────────────────────────────────────────────
+    // ── VENDORS (= SUPPLIERS) ──────────────────────────────────────────────────
 
     public function indexVendors(Request $request): JsonResponse
     {
-        $query = ApVendor::query();
+        $query = Supplier::query();
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -67,7 +67,15 @@ class AccountPayableController extends Controller
                   ->orWhere('bank_account_number', 'like', "%{$search}%");
             });
         }
-        return response()->json(['success' => true, 'data' => $query->orderBy('name')->get()]);
+        if ($request->boolean('ap_ready')) {
+            $query->whereNotNull('bank_code')
+                  ->whereNotNull('bank_account_number')
+                  ->whereNotNull('bank_account_name');
+        }
+        return response()->json([
+            'success' => true,
+            'data' => $query->orderBy('name')->get()->append('is_ap_ready'),
+        ]);
     }
 
     public function storeVendor(Request $request): JsonResponse
@@ -75,7 +83,7 @@ class AccountPayableController extends Controller
         $data = $request->validate([
             'name'                => 'required|string|max:255',
             'email'               => 'nullable|email',
-            'phone'               => 'nullable|string',
+            'contact'             => 'nullable|string',
             'npwp'                => 'nullable|string',
             'bank_code'           => 'required|string',
             'bank_account_number' => 'required|string',
@@ -83,12 +91,30 @@ class AccountPayableController extends Controller
             'notes'               => 'nullable|string',
         ]);
 
-        $vendor = ApVendor::create($data);
+        $supplier = Supplier::create($data);
 
         // Auto-register as Iris beneficiary
-        $this->midtrans->createBeneficiary($vendor);
+        $this->midtrans->createBeneficiary($supplier);
 
-        return response()->json(['success' => true, 'data' => $vendor->fresh()], 201);
+        return response()->json(['success' => true, 'data' => $supplier->fresh()->append('is_ap_ready')], 201);
+    }
+
+    public function updateVendorBankInfo(Request $request, string $uuid): JsonResponse
+    {
+        $supplier = Supplier::where('uuid', $uuid)->firstOrFail();
+
+        $data = $request->validate([
+            'bank_code'           => 'required|string',
+            'bank_account_number' => 'required|string',
+            'bank_account_name'   => 'required|string',
+        ]);
+
+        $supplier->update($data);
+
+        // Register / update Iris beneficiary
+        $this->midtrans->createBeneficiary($supplier);
+
+        return response()->json(['success' => true, 'data' => $supplier->fresh()->append('is_ap_ready')]);
     }
 
     // ── BILLS ─────────────────────────────────────────────────────────────────
@@ -108,7 +134,7 @@ class AccountPayableController extends Controller
     public function storeBill(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'vendor_uuid'  => 'required|exists:ap_vendors,uuid',
+            'vendor_uuid'  => 'required|exists:suppliers,uuid',
             'reference'    => 'nullable|string',
             'bill_date'    => 'required|date',
             'due_date'     => 'required|date|after_or_equal:bill_date',
@@ -121,7 +147,7 @@ class AccountPayableController extends Controller
             'items.*.account_uuid'=> 'nullable|exists:accounts,uuid',
         ]);
 
-        $vendor = ApVendor::where('uuid', $data['vendor_uuid'])->firstOrFail();
+        $supplier = Supplier::where('uuid', $data['vendor_uuid'])->firstOrFail();
 
         $subtotal = collect($data['items'])->sum(fn($i) => $i['quantity'] * $i['unit_price']);
         $taxRate  = $data['tax_rate'] ?? 0;
@@ -129,7 +155,7 @@ class AccountPayableController extends Controller
         $total = round($subtotal + $taxAmount, 2);
 
         $bill = ApBill::create([
-            'vendor_id'    => $vendor->id,
+            'vendor_id'    => $supplier->id,
             'bill_number'  => 'BILL-' . strtoupper(Str::random(8)),
             'reference'    => $data['reference'] ?? null,
             'bill_date'    => $data['bill_date'],

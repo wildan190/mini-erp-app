@@ -2,13 +2,13 @@
 
 namespace App\Domain\Inventory\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class InventoryTransferOrder extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $table = 'inventory_transfer_orders';
     protected $primaryKey = 'uuid';
@@ -25,17 +25,9 @@ class InventoryTransferOrder extends Model
         'created_by_uuid',
     ];
 
-    protected static function boot()
+    public function uniqueIds(): array
     {
-        parent::boot();
-        static::creating(function ($model) {
-            if (!$model->uuid) {
-                $model->uuid = (string) Str::uuid();
-            }
-            if (empty($model->transfer_number)) {
-                $model->transfer_number = 'TRF-' . date('Ymd') . '-' . strtoupper(Str::random(4));
-            }
-        });
+        return ['uuid'];
     }
 
     public function sourceWarehouse()

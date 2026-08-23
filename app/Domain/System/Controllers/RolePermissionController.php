@@ -57,6 +57,12 @@ class RolePermissionController extends Controller
         ]);
 
         $user = User::where('uuid', $userUuid)->firstOrFail();
+
+        // Safety prevention: If user is super-admin, ensure 'super-admin' role is maintained
+        if ($user->hasRole('super-admin') && !in_array('super-admin', $validated['roles'])) {
+            $validated['roles'][] = 'super-admin';
+        }
+
         $roleIds = Role::whereIn('slug', $validated['roles'])->pluck('id');
         
         $user->roles()->sync($roleIds);

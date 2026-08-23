@@ -48,7 +48,7 @@ class ApBill extends Model
 
     public function vendor()
     {
-        return $this->belongsTo(ApVendor::class, 'vendor_id');
+        return $this->belongsTo(\App\Domain\Purchasing\Models\Supplier::class, 'vendor_id');
     }
 
     public function items()

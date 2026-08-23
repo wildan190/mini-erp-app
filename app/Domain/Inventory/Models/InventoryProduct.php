@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class InventoryProduct extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasUuids;
 
     protected $table = 'inventory_products';
     protected $primaryKey = 'uuid';
@@ -31,13 +31,15 @@ class InventoryProduct extends Model
         'is_active',
     ];
 
+    public function uniqueIds(): array
+    {
+        return ['uuid'];
+    }
+
     protected static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
-            if (!$model->uuid) {
-                $model->uuid = (string) Str::uuid();
-            }
             if (empty($model->sku)) {
                 $model->sku = 'SKU-' . strtoupper(Str::random(7));
             }
