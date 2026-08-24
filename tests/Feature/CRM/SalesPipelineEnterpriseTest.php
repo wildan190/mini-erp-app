@@ -18,7 +18,7 @@ class SalesPipelineEnterpriseTest extends TestCase
     {
         parent::setUp();
         $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        $this->actingAs($user, 'platform');
     }
 
     public function test_can_log_pipeline_transition_with_enterprise_fields()
@@ -52,6 +52,7 @@ class SalesPipelineEnterpriseTest extends TestCase
         ]);
 
         $response->assertJsonPath('data.stage', 'qualified');
+        $this->assertEquals('qualified', $prospect->fresh()->status);
     }
 
     public function test_can_get_pipeline_detail_by_uuid()
