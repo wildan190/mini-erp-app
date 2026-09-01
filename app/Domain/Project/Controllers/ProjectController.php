@@ -5,6 +5,9 @@ namespace App\Domain\Project\Controllers;
 use App\Http\Controllers\Controller;
 use App\Domain\Project\Models\Project;
 use App\Domain\Project\Models\ProjectTask;
+use App\Domain\Project\Models\ProjectTimesheet;
+use App\Domain\Project\Models\ProjectMember;
+use App\Domain\Project\Models\ProjectCost;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
@@ -91,6 +94,28 @@ class ProjectController extends Controller
 
         $project = Project::create($validated);
         return response()->json(['message' => 'Project created successfully', 'data' => $project], 201);
+    }
+
+    /**
+     * Return CRM Prospects with status = 'won' to be used when onboarding a new project
+     */
+    public function wonProspects(): JsonResponse
+    {
+        $prospects = \App\Domain\CRM\Models\Prospect::with('customer:id,uuid,name,company_name')
+            ->where('status', 'won')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn($p) => [
+                'uuid'           => $p->uuid,
+                'title'          => $p->title,
+                'client_name'    => $p->customer?->company_name ?? $p->customer?->name ?? 'Unknown Client',
+                'expected_value' => $p->expected_value,
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $prospects,
+        ]);
     }
 
     #[OA\Get(
@@ -186,7 +211,7 @@ class ProjectController extends Controller
     public function tasks(Request $request, string $uuid): JsonResponse
     {
         $project = Project::where('uuid', $uuid)->firstOrFail();
-        $query = $project->tasks()->with('subtasks')->whereNull('parent_task_uuid');
+        $query = $project->tasks()->with(['subtasks', 'assigned_employee', 'project'])->whereNull('parent_task_uuid');
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }

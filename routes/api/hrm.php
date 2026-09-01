@@ -101,4 +101,29 @@ Route::middleware('auth:platform')->prefix('platform/hrm')->group(function () {
     // HRM Reports API
     Route::get('/reports/turnover', [ReportController::class, 'turnover']);
     Route::get('/reports/labor-cost', [ReportController::class, 'laborCost']);
+    Route::get('/reports/kpi', [ReportController::class, 'employeeKpi']);
+
+    // Talent Acquisition & ATS API
+    Route::get('/recruitment/jobs', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'indexJobPosts']);
+    Route::post('/recruitment/jobs', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'storeJobPost']);
+    Route::put('/recruitment/jobs/{uuid}', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'updateJobPost']);
+    Route::delete('/recruitment/jobs/{uuid}', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'destroyJobPost']);
+
+    Route::get('/recruitment/applicants', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'indexApplicants']);
+    Route::post('/recruitment/applicants', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'storeApplicant']);
+    Route::put('/recruitment/applicants/{uuid}/stage', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'updateApplicantStage']);
+    Route::delete('/recruitment/applicants/{uuid}', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'destroyApplicant']);
+
+    Route::get('/recruitment/interviewers', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'indexInterviewers']);
+    Route::get('/recruitment/interviews', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'indexInterviews']);
+    Route::post('/recruitment/interviews', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'storeInterview']);
+    Route::put('/recruitment/interviews/{uuid}', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'updateInterview']);
+    Route::delete('/recruitment/interviews/{uuid}', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'destroyInterview']);
+    Route::post('/recruitment/interviews/{uuid}/evaluations', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'storeEvaluation']);
+
+    Route::get('/recruitment/offerings', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'indexOfferingLetters']);
+    Route::post('/recruitment/offerings', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'storeOfferingLetter']);
+    Route::put('/recruitment/offerings/{uuid}/status', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'updateOfferingLetterStatus']);
+
+    Route::post('/recruitment/applicants/{uuid}/convert-employee', [\App\Domain\HRM\Controllers\RecruitmentController::class, 'convertToEmployee']);
 });

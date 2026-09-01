@@ -28,4 +28,13 @@ Route::middleware('auth:platform')->prefix('platform/system')->group(function ()
     Route::get('/approvals/pending', [ApprovalController::class, 'indexPendingRequests']);
     Route::post('/approvals/{uuid}/approve', [ApprovalController::class, 'approve']);
     Route::post('/approvals/{uuid}/reject', [ApprovalController::class, 'reject']);
+
+    // Calendar Module: Events & Tasks
+    Route::get('/calendar', [\App\Domain\System\Controllers\CalendarController::class, 'index']);
+    Route::post('/calendar/events', [\App\Domain\System\Controllers\CalendarController::class, 'storeEvent']);
+    Route::put('/calendar/events/{uuid}', [\App\Domain\System\Controllers\CalendarController::class, 'updateEvent']);
+    Route::delete('/calendar/events/{uuid}', [\App\Domain\System\Controllers\CalendarController::class, 'destroyEvent']);
+    Route::post('/calendar/tasks', [\App\Domain\System\Controllers\CalendarController::class, 'storeTask']);
+    Route::put('/calendar/tasks/{uuid}', [\App\Domain\System\Controllers\CalendarController::class, 'updateTask']);
+    Route::delete('/calendar/tasks/{uuid}', [\App\Domain\System\Controllers\CalendarController::class, 'destroyTask']);
 });

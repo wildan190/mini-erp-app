@@ -26,4 +26,9 @@ class ProjectMember extends Model
     {
         return $this->belongsTo(Project::class, 'project_uuid', 'uuid');
     }
+
+    public function employee()
+    {
+        return $this->belongsTo(\App\Domain\HRM\Models\Employee::class, 'employee_uuid', 'uuid');
+    }
 }

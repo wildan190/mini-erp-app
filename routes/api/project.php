@@ -26,6 +26,7 @@ Route::middleware('auth:platform')
         Route::post('/',                 [ProjectController::class, 'store']);
         Route::get('/projects',          [ProjectController::class, 'index']);
         Route::post('/projects',         [ProjectController::class, 'store']);
+        Route::get('/won-prospects',     [ProjectController::class, 'wonProspects']);
         Route::get('/projects/{uuid}',          [ProjectController::class, 'show']);
         Route::put('/projects/{uuid}',          [ProjectController::class, 'update']);
         Route::patch('/projects/{uuid}/status', [ProjectController::class, 'updateStatus']);

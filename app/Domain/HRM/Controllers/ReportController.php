@@ -65,4 +65,26 @@ class ReportController extends Controller
             'data' => $stats
         ]);
     }
+
+    #[OA\Get(
+        path: "/api/platform/hrm/reports/kpi",
+        summary: "Get employee KPI and performance analytics",
+        security: [["sanctum" => []]],
+        tags: ["HRM Reports"],
+        parameters: [
+            new OA\Parameter(name: "year", in: "query", schema: new OA\Schema(type: "integer"))
+        ],
+        responses: [
+            new OA\Response(response: 200, description: "Successful operation")
+        ]
+    )]
+    public function employeeKpi(Request $request): JsonResponse
+    {
+        $stats = $this->reportService->getEmployeeKpiStats($request->input('year'));
+
+        return response()->json([
+            'message' => 'Employee KPI performance statistics',
+            'data' => $stats
+        ]);
+    }
 }
