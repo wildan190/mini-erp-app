@@ -82,6 +82,8 @@ Route::middleware('auth:platform')->prefix('platform/hrm')->group(function () {
     Route::post('/payroll-periods', [PayrollPeriodController::class, 'store']);
     Route::post('/payroll-periods/generate', [PayrollPeriodController::class, 'generate']);
     Route::get('/payrolls', [PayrollController::class, 'index']);
+    Route::post('/payrolls/{uuid}/approve', [PayrollController::class, 'approve']);
+    Route::post('/payrolls/batch-approve', [PayrollController::class, 'batchApprove']);
     Route::get('/payrolls/{payroll}/pdf', [PayrollController::class, 'payslip']);
     Route::post('/payrolls/batch-pay', [PayrollController::class, 'batchPay']);
 

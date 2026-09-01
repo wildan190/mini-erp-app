@@ -38,8 +38,26 @@ class ReimbursementController extends Controller
     )]
     public function index(): JsonResponse
     {
-        $filters = request()->only(['employee_uuid', 'status']);
+        $user = request()->user();
+        $filters = request()->only(['employee_uuid', 'status', 'view']);
         $perPage = request()->input('per_page', 15);
+
+        // Check if user has HR or admin access
+        $isHrOrAdmin = $user && (
+            $user->hasRole('super-admin') ||
+            $user->hasRole('hr-manager') ||
+            $user->hasRole('hr-admin') ||
+            $user->hasPermission('hrm.reimbursement.approve') ||
+            $user->hasPermission('hrm.employees.manage')
+        );
+
+        // Non-HR users OR HR users requesting their own view get scoped to their employee record
+        if (!$isHrOrAdmin || ($filters['view'] ?? '') === 'mine') {
+            $employee = $user ? Employee::where('user_id', $user->id)->first() : null;
+            $filters['employee_id'] = $employee?->id ?? 0;
+        }
+        unset($filters['view']);
+
         $reimbursements = $this->reimbursementService->getReimbursements($filters, $perPage);
         return response()->json([
             'message' => 'List of reimbursements',

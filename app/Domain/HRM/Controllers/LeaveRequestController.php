@@ -36,8 +36,19 @@ class LeaveRequestController extends Controller
     )]
     public function index(): JsonResponse
     {
-        $filters = request()->only(['employee_uuid', 'status']);
+        $user = request()->user();
+        $filters = request()->only(['employee_uuid', 'status', 'view']);
         $perPage = request()->input('per_page', 15);
+
+        // Check if user has HR or super-admin role
+        $isHrOrAdmin = $user && ($user->hasRole('super-admin') || $user->hasRole('hr-manager') || $user->hasRole('hr-admin') || $user->hasPermission('hrm.leave.approve') || $user->hasPermission('hrm.employees.manage'));
+
+        // If user is not HR/Admin, OR if HR explicitly requests "view=mine", filter by user's own employee record
+        if (!$isHrOrAdmin || ($filters['view'] ?? '') === 'mine') {
+            $employee = $user ? \App\Domain\HRM\Models\Employee::where('user_id', $user->id)->first() : null;
+            $filters['employee_id'] = $employee?->id ?? 0;
+        }
+
         $requests = $this->leaveService->getLeaveRequests($filters, $perPage);
         return response()->json([
             'message' => 'List of leave requests',

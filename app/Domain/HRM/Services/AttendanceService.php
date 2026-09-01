@@ -47,6 +47,9 @@ class AttendanceService implements HRMServiceInterface
                     $q->where('name', 'like', "%{$search}%");
                 });
             })
+            ->when(!empty($filters['employee_id']), function (Builder $query) use ($filters) {
+                $query->where('employee_id', $filters['employee_id']);
+            })
             ->when(!empty($filters['employee_uuid']), function (Builder $query) use ($filters) {
                 $employee = Employee::where('uuid', $filters['employee_uuid'])->first();
                 $query->where('employee_id', $employee?->id ?? 0);

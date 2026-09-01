@@ -17,6 +17,8 @@ Route::middleware('auth:platform')->prefix('platform/system')->group(function ()
     // Dynamic RBAC Management
     Route::get('/roles', [RolePermissionController::class, 'indexRoles']);
     Route::post('/roles', [RolePermissionController::class, 'storeRole']);
+    Route::put('/roles/{uuid}', [RolePermissionController::class, 'updateRole']);
+    Route::delete('/roles/{uuid}', [RolePermissionController::class, 'destroyRole']);
     Route::get('/permissions', [RolePermissionController::class, 'indexPermissions']);
     Route::post('/users/{uuid}/roles', [RolePermissionController::class, 'assignUserRole']);
 

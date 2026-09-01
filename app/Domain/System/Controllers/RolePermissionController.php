@@ -69,4 +69,44 @@ class RolePermissionController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Roles assigned successfully', 'data' => $user->load('roles')]);
     }
+
+    public function updateRole(Request $request, string $uuid): JsonResponse
+    {
+        $role = Role::where('uuid', $uuid)->firstOrFail();
+
+        $validated = $request->validate([
+            'name'          => 'required|string|max:255',
+            'slug'          => 'required|string|max:255|unique:roles,slug,' . $role->id,
+            'description'   => 'nullable|string',
+            'permissions'   => 'array',
+            'permissions.*' => 'exists:permissions,uuid',
+        ]);
+
+        $role->update([
+            'name'        => $validated['name'],
+            'slug'        => $validated['slug'],
+            'description' => $validated['description'] ?? null,
+        ]);
+
+        if (array_key_exists('permissions', $validated)) {
+            $permIds = Permission::whereIn('uuid', $validated['permissions'])->pluck('id');
+            $role->permissions()->sync($permIds);
+        }
+
+        return response()->json(['success' => true, 'data' => $role->load('permissions')]);
+    }
+
+    public function destroyRole(string $uuid): JsonResponse
+    {
+        $role = Role::where('uuid', $uuid)->firstOrFail();
+
+        if ($role->is_system) {
+            return response()->json(['success' => false, 'message' => 'System roles cannot be deleted.'], 403);
+        }
+
+        $role->permissions()->detach();
+        $role->delete();
+
+        return response()->json(['success' => true, 'message' => 'Role deleted successfully.']);
+    }
 }
