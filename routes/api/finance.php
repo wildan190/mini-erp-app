@@ -13,11 +13,16 @@ use App\Domain\Finance\Controllers\AccountPayableController;
 */
 
 Route::middleware('auth:platform')->prefix('platform/finance')->group(function () {
-    // Dashboard
+    // Dashboard & Approvals
     Route::get('/dashboard', [\App\Domain\Finance\Controllers\FinanceDashboardController::class, 'index']);
+    Route::post('/records/{uuid}/approve', [\App\Domain\Finance\Controllers\FinanceDashboardController::class, 'approveRecord']);
+    Route::post('/records/{uuid}/reject', [\App\Domain\Finance\Controllers\FinanceDashboardController::class, 'rejectRecord']);
 
     // Core Ledger
     Route::get('/ledger/accounts', [GeneralLedgerController::class, 'accounts']);
+    Route::post('/ledger/accounts', [GeneralLedgerController::class, 'store']);
+    Route::put('/ledger/accounts/{uuid}', [GeneralLedgerController::class, 'update']);
+    Route::delete('/ledger/accounts/{uuid}', [GeneralLedgerController::class, 'destroy']);
     Route::get('/ledger/items', [GeneralLedgerController::class, 'items']);
     
     // Financial Reporting

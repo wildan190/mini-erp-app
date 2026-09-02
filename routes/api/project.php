@@ -63,9 +63,9 @@ Route::middleware('auth:platform')
         });
 
         // ── Costs & Financials ────────────────────────────────────────────
-        Route::get('/financials',                  [ProjectController::class,     'dashboard']);
+        Route::get('/financials',                  [ProjectCostController::class, 'financials']);
         Route::get('/projects/{uuid}/costs',       [ProjectController::class,     'costs']);
-        Route::post('/projects/{uuid}/costs',      [ProjectController::class,     'storeCost']);
+        Route::post('/projects/{uuid}/costs',      [ProjectCostController::class, 'store']);
         Route::post('/costs',                      [ProjectCostController::class, 'store']);
         Route::delete('/costs/{uuid}',             [ProjectCostController::class, 'destroy']);
 
