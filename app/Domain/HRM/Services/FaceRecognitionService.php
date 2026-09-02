@@ -40,6 +40,7 @@ class FaceRecognitionService
                 $employee->update([
                     'face_image_path' => $path,
                     'face_encoding' => $faceEncoding,
+                    'requires_face_verification' => true,
                 ]);
 
                 return [
@@ -82,6 +83,7 @@ class FaceRecognitionService
         $employee->update([
             'face_image_path' => $path,
             'face_encoding' => $faceEncoding,
+            'requires_face_verification' => true,
         ]);
 
         return [

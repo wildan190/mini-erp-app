@@ -12,10 +12,29 @@ class CheckPermissionMiddleware
     {
         $user = $request->user();
 
-        if (!$user || !$user->hasPermission($permission)) {
+        if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => "Forbidden. Required permission: {$permission}"
+                'message' => 'Unauthorized. Please login.'
+            ], 401);
+        }
+
+        // Support multiple permissions separated by pipe '|' or comma ',' (OR condition)
+        $perms = preg_split('/[,|]/', $permission);
+        $hasAccess = false;
+
+        foreach ($perms as $p) {
+            $trimmed = trim($p);
+            if ($trimmed && $user->hasPermission($trimmed)) {
+                $hasAccess = true;
+                break;
+            }
+        }
+
+        if (!$hasAccess) {
+            return response()->json([
+                'success' => false,
+                'message' => "Forbidden. You do not have permission to perform this action ({$permission})."
             ], 403);
         }
 

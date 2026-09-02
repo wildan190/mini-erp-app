@@ -5,7 +5,6 @@ namespace App\Domain\HRM\Controllers;
 use App\Http\Controllers\Controller;
 use App\Domain\HRM\Requests\Attendance\ClockInRequest;
 use App\Domain\HRM\Requests\Attendance\ClockOutRequest;
-use App\Domain\HRM\Models\Employee;
 use App\Domain\HRM\Services\AttendanceService;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;

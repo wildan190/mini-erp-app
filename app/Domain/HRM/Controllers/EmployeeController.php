@@ -103,6 +103,95 @@ class EmployeeController extends Controller
     }
 
     #[OA\Get(
+        path: "/api/platform/hrm/employees/me",
+        summary: "Get current authenticated employee profile",
+        security: [["sanctum" => []]],
+        tags: ["HRM Employees"],
+        responses: [
+            new OA\Response(response: 200, description: "Current employee profile"),
+            new OA\Response(response: 404, description: "Employee profile not found")
+        ]
+    )]
+    public function me(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $employee = \App\Domain\HRM\Models\Employee::with(['user.roles', 'department', 'designation', 'shift'])
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$employee) {
+            return response()->json(['message' => 'No employee profile linked to this user account'], 404);
+        }
+
+        $employee->has_face_enrolled = !empty($employee->face_encoding);
+
+        return response()->json([
+            'message' => 'Employee profile',
+            'data' => $employee
+        ]);
+    }
+
+    #[OA\Post(
+        path: "/api/platform/hrm/employees/me/enroll-face",
+        summary: "Self-enroll face for current authenticated employee",
+        security: [["sanctum" => []]],
+        tags: ["HRM Face Recognition"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(
+                    required: ["face_image"],
+                    properties: [
+                        new OA\Property(property: "face_image", type: "string", format: "binary", description: "Clear face photo")
+                    ]
+                )
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: "Face enrolled successfully"),
+            new OA\Response(response: 422, description: "Validation error / No face detected")
+        ]
+    )]
+    public function enrollMyFace(Request $request): JsonResponse
+    {
+        $request->validate([
+            'face_image' => 'required|image|max:5120',
+        ]);
+
+        $user = $request->user();
+        $employee = \App\Domain\HRM\Models\Employee::where('user_id', $user->id)->first();
+
+        if (!$employee) {
+            return response()->json(['message' => 'Employee profile not found'], 404);
+        }
+
+        $result = $this->faceRecognitionService->enrollFace($employee, $request->file('face_image'));
+
+        if (!$result['success']) {
+            $message = $result['message'] ?? 'Failed to extract face encoding';
+            $noFaceErrors = ['no face', 'no faces', 'not detected', 'could not detect'];
+            $isNoFace = collect($noFaceErrors)->contains(fn($k) => str_contains(strtolower($message), $k));
+
+            return response()->json(['message' => $message], $isNoFace ? 422 : 400);
+        }
+
+        $employee->update(['requires_face_verification' => true]);
+        $employee->refresh();
+        $employee->load(['user.roles', 'department', 'designation', 'shift']);
+        $employee->has_face_enrolled = true;
+
+        return response()->json([
+            'message' => 'Face enrolled successfully',
+            'data' => $employee
+        ], 201);
+    }
+
+    #[OA\Get(
         path: "/api/platform/hrm/employees/{uuid}",
         summary: "Get employee details",
         security: [["sanctum" => []]],

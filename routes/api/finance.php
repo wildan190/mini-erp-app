@@ -61,6 +61,16 @@ Route::middleware('auth:platform')->prefix('platform/finance')->group(function (
     // Payments
     Route::post('/ap/payments/{paymentUuid}/reconcile', [AccountPayableController::class, 'reconcilePayment']);
 
+    // ── Account Receivable ───────────────────────────────────────────────────
+    Route::get('/ar/dashboard', [\App\Domain\Finance\Controllers\AccountReceivableController::class, 'dashboard']);
+    Route::get('/ar/customers', [\App\Domain\Finance\Controllers\AccountReceivableController::class, 'indexCustomers']);
+    Route::get('/ar/invoices', [\App\Domain\Finance\Controllers\AccountReceivableController::class, 'indexInvoices']);
+    Route::post('/ar/invoices', [\App\Domain\Finance\Controllers\AccountReceivableController::class, 'storeInvoice']);
+    Route::get('/ar/invoices/{uuid}', [\App\Domain\Finance\Controllers\AccountReceivableController::class, 'showInvoice']);
+    Route::post('/ar/invoices/{uuid}/send', [\App\Domain\Finance\Controllers\AccountReceivableController::class, 'sendInvoice']);
+    Route::post('/ar/invoices/{uuid}/cancel', [\App\Domain\Finance\Controllers\AccountReceivableController::class, 'cancelInvoice']);
+    Route::post('/ar/invoices/{uuid}/payments', [\App\Domain\Finance\Controllers\AccountReceivableController::class, 'recordPayment']);
+
     // ── Finance Settings ─────────────────────────────────────────────────────
     Route::get('/settings/midtrans', [\App\Domain\Finance\Controllers\FinanceSettingsController::class, 'getMidtransSettings']);
     Route::post('/settings/midtrans', [\App\Domain\Finance\Controllers\FinanceSettingsController::class, 'saveMidtransSettings']);

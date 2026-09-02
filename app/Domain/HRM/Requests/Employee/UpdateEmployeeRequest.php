@@ -11,7 +11,8 @@ class UpdateEmployeeRequest extends FormRequest
 
     public function rules(): array
     {
-        $uuid = $this->route('uuid');
+        $param = $this->route('employee') ?? $this->route('uuid');
+        $uuid  = is_object($param) ? ($param->uuid ?? $param->id) : $param;
 
         return [
             'user_uuid'                => 'nullable|exists:users,uuid',
@@ -19,6 +20,7 @@ class UpdateEmployeeRequest extends FormRequest
             'last_name'                => 'nullable|string|max:255',
             'department_uuid'          => 'nullable|exists:departments,uuid',
             'designation_uuid'         => 'nullable|exists:designations,uuid',
+            'shift_uuid'               => 'nullable|exists:shifts,uuid',
             'emp_code'                 => [
                 'nullable',
                 'string',

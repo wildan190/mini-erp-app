@@ -28,6 +28,7 @@ class StoreEmployeeRequest extends FormRequest
             'password'                 => 'required_without:user_uuid|nullable|string|min:8',
             'department_uuid'          => 'nullable|exists:departments,uuid',
             'designation_uuid'         => 'nullable|exists:designations,uuid',
+            'shift_uuid'               => 'nullable|exists:shifts,uuid',
             'emp_code'                 => 'nullable|string|max:50|unique:employees,emp_code',
             'joining_date'             => 'nullable|date',
             'status'                   => ['nullable', Rule::in(['active', 'inactive', 'terminated', 'resigned'])],

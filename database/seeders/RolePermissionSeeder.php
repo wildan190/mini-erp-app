@@ -14,12 +14,17 @@ class RolePermissionSeeder extends Seeder
         // These serve as a checklist for Super Admin when creating custom roles via the Role Management UI.
         $permissions = [
             // HRM
-            ['name' => 'View Employees',          'slug' => 'hrm.employees.view',         'module' => 'hrm'],
-            ['name' => 'Manage Employees',         'slug' => 'hrm.employees.manage',       'module' => 'hrm'],
-            ['name' => 'Approve Leave',            'slug' => 'hrm.leave.approve',          'module' => 'hrm'],
-            ['name' => 'Approve Reimbursement',    'slug' => 'hrm.reimbursement.approve',  'module' => 'hrm'],
-            ['name' => 'Manage Payroll',           'slug' => 'hrm.payroll.manage',         'module' => 'hrm'],
-            ['name' => 'Manage Shifts',            'slug' => 'hrm.shifts.manage',          'module' => 'hrm'],
+            ['name' => 'View Employees',             'slug' => 'hrm.employees.view',            'module' => 'hrm'],
+            ['name' => 'Manage Employees',           'slug' => 'hrm.employees.manage',          'module' => 'hrm'],
+            ['name' => 'Manage Departments',         'slug' => 'hrm.departments.manage',        'module' => 'hrm'],
+            ['name' => 'Manage Designations',        'slug' => 'hrm.designations.manage',       'module' => 'hrm'],
+            ['name' => 'Manage Office Locations',    'slug' => 'hrm.locations.manage',          'module' => 'hrm'],
+            ['name' => 'Manage Talent Acquisition',  'slug' => 'hrm.recruitment.manage',        'module' => 'hrm'],
+            ['name' => 'Approve Leave',              'slug' => 'hrm.leave.approve',             'module' => 'hrm'],
+            ['name' => 'Approve Reimbursement',      'slug' => 'hrm.reimbursement.approve',     'module' => 'hrm'],
+            ['name' => 'Approve Resignation',        'slug' => 'hrm.resignation.approve',       'module' => 'hrm'],
+            ['name' => 'Manage Payroll',             'slug' => 'hrm.payroll.manage',            'module' => 'hrm'],
+            ['name' => 'Manage Shifts',              'slug' => 'hrm.shifts.manage',             'module' => 'hrm'],
 
             // CRM
             ['name' => 'View Customers',           'slug' => 'crm.customers.view',         'module' => 'crm'],
