@@ -2,21 +2,25 @@
 
 namespace App\Domain\Purchasing\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class PurchaseRequestItem extends Model
 {
+    use HasUuids;
+
     protected $fillable = [
-        'purchase_request_id', 'item_name', 'qty', 'notes'
+        'purchase_request_id', 'item_name', 'qty', 'estimated_price', 'notes'
     ];
 
-    protected static function boot()
+    protected $casts = [
+        'qty'             => 'float',
+        'estimated_price' => 'float',
+    ];
+
+    public function uniqueIds(): array
     {
-        parent::boot();
-        static::creating(function ($model) {
-            $model->uuid = (string) Str::uuid();
-        });
+        return ['uuid'];
     }
 
     public function request()

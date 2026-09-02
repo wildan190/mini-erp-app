@@ -100,7 +100,7 @@ class PurchaseInvoiceController extends Controller
                 'subtotal'         => $subtotal,
                 'tax_amount'       => 0,
                 'total_amount'     => $subtotal,
-                'status'           => 'draft',
+                'status'           => 'open',
             ]);
 
             foreach ($validated['items'] as $item) {
@@ -110,6 +110,35 @@ class PurchaseInvoiceController extends Controller
                     'price'     => $item['price'],
                     'total'     => $item['qty'] * $item['price'],
                 ]);
+            }
+
+            // Enterprise ERP Integration: Create AP Bill in Finance
+            $existingBill = \App\Domain\Finance\Models\ApBill::where('reference', $invoice->number)->first();
+            if (!$existingBill) {
+                $bill = \App\Domain\Finance\Models\ApBill::create([
+                    'vendor_id'    => $supplier->id,
+                    'bill_number'  => 'BILL-' . strtoupper(Str::random(8)),
+                    'reference'    => $invoice->number,
+                    'bill_date'    => $validated['date'],
+                    'due_date'     => $validated['due_date'],
+                    'subtotal'     => $subtotal,
+                    'tax_amount'   => 0,
+                    'total_amount' => $subtotal,
+                    'paid_amount'  => 0,
+                    'status'       => 'approved',
+                    'notes'        => "From Purchasing Invoice {$invoice->number} " . ($po ? "(PO: {$po->number})" : ''),
+                    'approved_by'  => auth()->id(),
+                    'approved_at'  => now(),
+                ]);
+
+                foreach ($validated['items'] as $item) {
+                    $bill->items()->create([
+                        'description' => $item['item_name'],
+                        'quantity'    => $item['qty'],
+                        'unit_price'  => $item['price'],
+                        'amount'      => $item['qty'] * $item['price'],
+                    ]);
+                }
             }
 
             return response()->json(['message' => 'Invoice created successfully', 'data' => $invoice->load(['supplier', 'items'])], 201);

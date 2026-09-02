@@ -51,8 +51,11 @@ class ProcessAttendanceVerification implements ShouldQueue
             $locationMessage = '';
 
             // Face Verification
-            if ($this->faceImagePath && $employee->requires_face_verification) {
-                if (Storage::disk('public')->exists($this->faceImagePath)) {
+            if ($this->faceImagePath) {
+                if (empty($employee->face_encoding)) {
+                    $faceVerified = false;
+                    $faceMessage = 'Employee has not enrolled their face';
+                } elseif (Storage::disk('public')->exists($this->faceImagePath)) {
                     $fullPath = Storage::disk('public')->path($this->faceImagePath);
                     $mimeType = @mime_content_type($fullPath) ?: 'image/png';
                     $faceImage = new \Illuminate\Http\UploadedFile(

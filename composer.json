@@ -13,7 +13,6 @@
         "laravel/horizon": "^5.44",
         "laravel/octane": "^2.18",
         "laravel/passport": "^13.0",
-        "laravel/telescope": "^5.17",
         "laravel/tinker": "^2.10.1",
         "opcodesio/log-viewer": "^3.24",
         "predis/predis": "^3.3"
@@ -77,9 +76,7 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": [
-                "laravel/telescope"
-            ]
+            "dont-discover": []
         }
     },
     "config": {

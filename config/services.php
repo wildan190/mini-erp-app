@@ -39,4 +39,10 @@ return [
         'executable' => env('PYTHON_EXECUTABLE', 'python3'),
     ],
 
+    'midtrans_iris' => [
+        'api_key'      => env('MIDTRANS_IRIS_API_KEY', ''),
+        'merchant_key' => env('MIDTRANS_IRIS_MERCHANT_KEY', ''),
+        'base_url'     => env('MIDTRANS_IRIS_BASE_URL', 'https://app.sandbox.midtrans.com/iris/api/v1'),
+    ],
+
 ];

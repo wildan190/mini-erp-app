@@ -39,11 +39,18 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api/inventory.php'));
+
+            Route::middleware('api')
+                ->prefix('api')
+                ->group(base_path('routes/api/system.php'));
         },
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'permission' => \App\Http\Middleware\CheckPermissionMiddleware::class,
+        ]);
         $middleware->api(prepend: [
             \App\Http\Middleware\QueryTokenMiddleware::class,
         ]);

@@ -2,31 +2,41 @@
 
 namespace App\Domain\Purchasing\Models;
 
+use App\Domain\Finance\Models\ApBill;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Supplier extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids, SoftDeletes;
 
     protected $fillable = [
-        'name', 'pic', 'contact', 'address', 'npwp', 'category', 'currency_code', 'is_active'
+        'name',
+        'pic',
+        'contact',
+        'email',
+        'address',
+        'npwp',
+        'category',
+        'currency_code',
+        'is_active',
+        // Bank / AP Payment fields
+        'bank_code',
+        'bank_account_number',
+        'bank_account_name',
+        'midtrans_beneficiary_alias',
+        'notes',
     ];
 
-    protected static function newFactory()
-    {
-        return \Database\Factories\Purchasing\SupplierFactory::new();
-    }
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
-    protected static function boot()
+    public function uniqueIds(): array
     {
-        parent::boot();
-        static::creating(function ($model) {
-            if (!$model->uuid) {
-                $model->uuid = (string) Str::uuid();
-            }
-        });
+        return ['uuid'];
     }
 
     public function purchaseOrders()
@@ -37,5 +47,23 @@ class Supplier extends Model
     public function invoices()
     {
         return $this->hasMany(PurchaseInvoice::class);
+    }
+
+    /**
+     * Account Payable bills linked to this supplier.
+     */
+    public function bills()
+    {
+        return $this->hasMany(ApBill::class, 'vendor_id');
+    }
+
+    /**
+     * Whether the supplier is configured for AP payments.
+     */
+    public function getIsApReadyAttribute(): bool
+    {
+        return filled($this->bank_code)
+            && filled($this->bank_account_number)
+            && filled($this->bank_account_name);
     }
 }

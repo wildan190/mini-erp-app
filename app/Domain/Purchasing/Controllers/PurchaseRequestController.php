@@ -27,7 +27,7 @@ class PurchaseRequestController extends Controller
     )]
     public function index(Request $request): JsonResponse
     {
-        $query = PurchaseRequest::with(['requestor', 'items'])->orderBy('created_at', 'desc');
+        $query = PurchaseRequest::with(['requestor', 'department', 'items'])->orderBy('created_at', 'desc');
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -65,13 +65,14 @@ class PurchaseRequestController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'date'                => 'required|date',
-            'department_uuid'     => 'nullable|string',
-            'notes'               => 'nullable|string',
-            'items'               => 'required|array|min:1',
-            'items.*.item_name'   => 'required|string',
-            'items.*.qty'         => 'required|numeric|min:0.01',
-            'items.*.notes'       => 'nullable|string',
+            'date'                        => 'required|date',
+            'department_uuid'             => 'nullable|uuid|exists:departments,uuid',
+            'notes'                       => 'nullable|string',
+            'items'                       => 'required|array|min:1',
+            'items.*.item_name'           => 'required|string',
+            'items.*.qty'                 => 'required|numeric|min:0.01',
+            'items.*.estimated_price'     => 'nullable|numeric|min:0',
+            'items.*.notes'               => 'nullable|string',
         ]);
 
         return DB::transaction(function () use ($validated, $request) {
@@ -85,10 +86,15 @@ class PurchaseRequestController extends Controller
             ]);
 
             foreach ($validated['items'] as $item) {
-                $pr->items()->create($item);
+                $pr->items()->create([
+                    'item_name'       => $item['item_name'],
+                    'qty'             => $item['qty'],
+                    'estimated_price' => $item['estimated_price'] ?? 0,
+                    'notes'           => $item['notes'] ?? null,
+                ]);
             }
 
-            return response()->json(['message' => 'Purchase request created successfully', 'data' => $pr->load('items')], 201);
+            return response()->json(['message' => 'Purchase request created successfully', 'data' => $pr->load(['items', 'department'])], 201);
         });
     }
 

@@ -4,165 +4,119 @@ namespace App\Domain\HRM\Services;
 
 use App\Domain\HRM\Models\Employee;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class FaceRecognitionService
 {
+    private string $faceApiUrl;
+
+    public function __construct()
+    {
+        $this->faceApiUrl = rtrim(env('FACE_API_URL', 'http://face-api:5000'), '/');
+    }
+
     /**
-     * Enroll employee face by storing the image.
-     * In production, this would also generate face encoding using ML library.
-     *
-     * @param Employee $employee
-     * @param UploadedFile $faceImage
-     * @return array
-     */
-    /**
-     * Enroll employee face by storing the image.
+     * Enroll employee face — stores image and extracts encoding via face-api microservice.
      */
     public function enrollFace(Employee $employee, UploadedFile $faceImage): array
     {
-        $faceApiUrl = env('FACE_API_URL', 'http://face-api:5000');
+        $imageContent = file_get_contents($faceImage->getRealPath());
 
-        // Try HTTP API microservice first
         try {
-            $imageContent = @file_get_contents($faceImage->getRealPath()) ?: 'dummy_image_data';
-            $response = \Illuminate\Support\Facades\Http::timeout(10)
+            $response = Http::timeout(30)
                 ->attach('image', $imageContent, $faceImage->getClientOriginalName())
-                ->post("{$faceApiUrl}/encode");
-
-            if ($response->successful() && isset($response->json()['encoding'])) {
-                $output = $response->json();
-                $faceEncoding = json_encode($output['encoding']);
-
-                $path = $faceImage->store('faces/enrolled', 'public');
-                $employee->update([
-                    'face_image_path' => $path,
-                    'face_encoding' => $faceEncoding,
-                ]);
-
-                return [
-                    'success' => true,
-                    'message' => 'Face enrolled successfully',
-                    'path' => $path,
-                ];
-            }
+                ->post("{$this->faceApiUrl}/encode");
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::info("HTTP Face API unavailable, falling back to local Python CLI: " . $e->getMessage());
-        }
-
-        // Fallback to local python script execution
-        $tempPath = $faceImage->getRealPath();
-        $pythonCommand = config('services.python.executable');
-        $process = new Process([$pythonCommand, base_path('scripts/face_rec.py'), 'enroll', $tempPath]);
-        $process->run();
-
-        $output = json_decode($process->getOutput(), true);
-
-        if (!$process->isSuccessful() || !$output || !isset($output['success']) || !$output['success']) {
-            $errorMessage = $output['message'] ?? 'Failed to extract face encoding';
-            $errorOutput = $process->getErrorOutput();
-            
-            \Illuminate\Support\Facades\Log::error('Face Recognition Error', [
-                'message' => $errorMessage,
-                'error_output' => $errorOutput,
-                'command' => $process->getCommandLine()
-            ]);
-
+            Log::error('Face API unreachable during enroll', ['error' => $e->getMessage()]);
             return [
                 'success' => false,
-                'message' => $errorMessage . ($errorOutput ? ": " . $errorOutput : ""),
+                'message' => 'Face recognition service tidak dapat dihubungi. Pastikan face-api container sedang berjalan.',
             ];
+        }
+
+        if (!$response->successful()) {
+            $body = $response->json();
+            $message = $body['message'] ?? 'Gagal mengekstrak encoding wajah.';
+            Log::warning('Face API encode failed', ['status' => $response->status(), 'body' => $body]);
+            return ['success' => false, 'message' => $message];
+        }
+
+        $output = $response->json();
+
+        if (empty($output['encoding'])) {
+            return ['success' => false, 'message' => 'Tidak ada wajah yang terdeteksi pada gambar.'];
         }
 
         $faceEncoding = json_encode($output['encoding']);
         $path = $faceImage->store('faces/enrolled', 'public');
 
         $employee->update([
-            'face_image_path' => $path,
-            'face_encoding' => $faceEncoding,
+            'face_image_path'          => $path,
+            'face_encoding'            => $faceEncoding,
+            'requires_face_verification' => true,
         ]);
 
         return [
             'success' => true,
-            'message' => 'Face enrolled successfully',
-            'path' => $path,
+            'message' => 'Wajah berhasil di-enroll.',
+            'path'    => $path,
         ];
     }
 
     /**
-     * Verify if uploaded face matches employee's enrolled face.
+     * Verify if uploaded face matches employee's enrolled face via face-api microservice.
      */
     public function verifyFace(Employee $employee, UploadedFile $faceImage): array
     {
-        if (!$employee->face_encoding) {
+        if (empty($employee->face_encoding)) {
             return [
-                'verified' => false,
+                'verified'   => false,
                 'confidence' => 0,
-                'message' => 'No enrolled face found for employee',
+                'message'    => 'Karyawan belum pernah enroll wajah.',
             ];
         }
 
-        $faceApiUrl = env('FACE_API_URL', 'http://face-api:5000');
+        $imageContent = file_get_contents($faceImage->getRealPath());
 
-        // Try HTTP API microservice first
         try {
-            $imageContent = @file_get_contents($faceImage->getRealPath()) ?: 'dummy_image_data';
-            $response = \Illuminate\Support\Facades\Http::timeout(10)
+            $response = Http::timeout(30)
                 ->attach('image', $imageContent, $faceImage->getClientOriginalName())
-                ->post("{$faceApiUrl}/verify", [
+                ->post("{$this->faceApiUrl}/verify", [
                     'target_encoding' => $employee->face_encoding,
-                    'tolerance' => 0.5,
+                    'tolerance'       => 0.5,
                 ]);
-
-            if ($response->successful()) {
-                $output = $response->json();
-                return [
-                    'verified' => $output['verified'] ?? false,
-                    'confidence' => 1 - ($output['distance'] ?? 0),
-                    'message' => $output['message'] ?? 'Face verification completed',
-                ];
-            }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::info("HTTP Face API unavailable, falling back to local Python CLI: " . $e->getMessage());
-        }
-
-        // Fallback to local python script execution
-        $tempPath = $faceImage->getRealPath();
-        $pythonCommand = config('services.python.executable');
-        $process = new Process([$pythonCommand, base_path('scripts/face_rec.py'), 'verify', $tempPath, $employee->face_encoding]);
-        $process->run();
-
-        $output = json_decode($process->getOutput(), true);
-
-        if (!$process->isSuccessful() || !$output) {
-            $errorOutput = $process->getErrorOutput();
-            \Illuminate\Support\Facades\Log::error('Face Verification Error', [
-                'raw_output' => $process->getOutput(),
-                'error_output' => $errorOutput,
-                'command' => $process->getCommandLine()
-            ]);
-
+            Log::error('Face API unreachable during verify', ['error' => $e->getMessage()]);
             return [
-                'verified' => false,
+                'verified'   => false,
                 'confidence' => 0,
-                'message' => 'Verification process failed' . ($errorOutput ? ": " . $errorOutput : ""),
+                'message'    => 'Face recognition service tidak dapat dihubungi.',
             ];
         }
+
+        if (!$response->successful()) {
+            $body = $response->json();
+            Log::warning('Face API verify returned error', ['status' => $response->status(), 'body' => $body]);
+            return [
+                'verified'   => false,
+                'confidence' => 0,
+                'message'    => $body['message'] ?? 'Verifikasi wajah gagal.',
+            ];
+        }
+
+        $output = $response->json();
 
         return [
-            'verified' => $output['verified'] ?? false,
-            'confidence' => $output['confidence'] ?? 0,
-            'message' => $output['message'] ?? 'Face verification completed',
+            'verified'   => $output['verified'] ?? false,
+            'confidence' => isset($output['distance']) ? round(1 - $output['distance'], 4) : 0,
+            'message'    => $output['message'] ?? 'Verifikasi wajah selesai.',
         ];
     }
 
     /**
      * Remove employee's face data.
-     *
-     * @param Employee $employee
-     * @return bool
      */
     public function removeFaceData(Employee $employee): bool
     {
@@ -171,8 +125,8 @@ class FaceRecognitionService
         }
 
         $employee->update([
-            'face_image_path' => null,
-            'face_encoding' => null,
+            'face_image_path'          => null,
+            'face_encoding'            => null,
             'requires_face_verification' => false,
         ]);
 
@@ -181,13 +135,9 @@ class FaceRecognitionService
 
     /**
      * Store attendance face image for audit purposes.
-     *
-     * @param UploadedFile $faceImage
-     * @return string
      */
     public function storeAttendanceFaceImage(UploadedFile $faceImage): string
     {
         return $faceImage->store('faces/attendance', 'public');
     }
-
 }

@@ -106,4 +106,9 @@ class Employee extends Model
                     ->withPivot('custom_value')
                     ->withTimestamps();
     }
+
+    public function leaveRequests()
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
 }

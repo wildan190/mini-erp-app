@@ -5,6 +5,9 @@ namespace App\Domain\Project\Controllers;
 use App\Http\Controllers\Controller;
 use App\Domain\Project\Models\Project;
 use App\Domain\Project\Models\ProjectTask;
+use App\Domain\Project\Models\ProjectTimesheet;
+use App\Domain\Project\Models\ProjectMember;
+use App\Domain\Project\Models\ProjectCost;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
@@ -78,12 +81,12 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'status' => 'nullable|in:planning,active,on_hold,completed,cancelled',
-            'priority' => 'nullable|in:low,medium,high',
+            'status' => 'nullable|in:draft,pending_approval,planning,active,on_hold,completed,cancelled,rejected',
+            'priority' => 'nullable|in:low,medium,high,urgent',
             'value' => 'nullable|numeric|min:0',
         ]);
 
-        $validated['status'] = $validated['status'] ?? 'planning';
+        $validated['status'] = $validated['status'] ?? 'pending_approval';
         $validated['priority'] = $validated['priority'] ?? 'medium';
         if (empty($validated['code'])) {
             $validated['code'] = 'PRJ-' . strtoupper(\Illuminate\Support\Str::random(6));
@@ -91,6 +94,28 @@ class ProjectController extends Controller
 
         $project = Project::create($validated);
         return response()->json(['message' => 'Project created successfully', 'data' => $project], 201);
+    }
+
+    /**
+     * Return CRM Prospects with status = 'won' to be used when onboarding a new project
+     */
+    public function wonProspects(): JsonResponse
+    {
+        $prospects = \App\Domain\CRM\Models\Prospect::with('customer:id,uuid,name,company_name')
+            ->where('status', 'won')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn($p) => [
+                'uuid'           => $p->uuid,
+                'title'          => $p->title,
+                'client_name'    => $p->customer?->company_name ?? $p->customer?->name ?? 'Unknown Client',
+                'expected_value' => $p->expected_value,
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $prospects,
+        ]);
     }
 
     #[OA\Get(
@@ -137,12 +162,37 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
-            'status' => 'nullable|in:planning,active,on_hold,completed,cancelled',
-            'priority' => 'nullable|in:low,medium,high',
+            'status' => 'nullable|in:draft,pending_approval,planning,active,on_hold,completed,cancelled,rejected',
+            'priority' => 'nullable|in:low,medium,high,urgent',
             'value' => 'nullable|numeric|min:0',
         ]);
         $project->update($validated);
         return response()->json(['message' => 'Project updated successfully', 'data' => $project]);
+    }
+
+    #[OA\Patch(
+        path: "/api/platform/project/projects/{uuid}/status",
+        summary: "Update project status / Approve project",
+        security: [["sanctum" => []]],
+        tags: ["Project Management"],
+        parameters: [new OA\Parameter(name: "uuid", in: "path", required: true, schema: new OA\Schema(type: "string", format: "uuid"))],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["status"],
+                properties: [new OA\Property(property: "status", type: "string", enum: ["draft", "pending_approval", "active", "planning", "rejected", "completed", "on_hold", "cancelled"])]
+            )
+        ),
+        responses: [new OA\Response(response: 200, description: "Project status updated")]
+    )]
+    public function updateStatus(Request $request, string $uuid): JsonResponse
+    {
+        $project = Project::where('uuid', $uuid)->firstOrFail();
+        $validated = $request->validate([
+            'status' => 'required|in:draft,pending_approval,active,planning,rejected,completed,on_hold,cancelled',
+        ]);
+        $project->update(['status' => $validated['status']]);
+        return response()->json(['message' => "Project marked as {$validated['status']}", 'data' => $project]);
     }
 
     // ─── TASKS ────────────────────────────────────────────────────────────────
@@ -161,7 +211,7 @@ class ProjectController extends Controller
     public function tasks(Request $request, string $uuid): JsonResponse
     {
         $project = Project::where('uuid', $uuid)->firstOrFail();
-        $query = $project->tasks()->with('subtasks')->whereNull('parent_task_uuid');
+        $query = $project->tasks()->with(['subtasks', 'assigned_employee', 'project'])->whereNull('parent_task_uuid');
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -283,6 +333,36 @@ class ProjectController extends Controller
 
     // ─── TIMESHEETS ───────────────────────────────────────────────────────────
 
+    #[OA\Get(
+        path: "/api/platform/project/timesheets",
+        summary: "List all timesheets",
+        security: [["sanctum" => []]],
+        tags: ["Project Management"],
+        parameters: [
+            new OA\Parameter(name: "project_uuid", in: "query", schema: new OA\Schema(type: "string", format: "uuid")),
+            new OA\Parameter(name: "date_from", in: "query", schema: new OA\Schema(type: "string", format: "date")),
+            new OA\Parameter(name: "date_to", in: "query", schema: new OA\Schema(type: "string", format: "date")),
+        ],
+        responses: [new OA\Response(response: 200, description: "List of timesheets")]
+    )]
+    public function timesheets(Request $request): JsonResponse
+    {
+        $query = ProjectTimesheet::with(['project', 'task'])->latest('date');
+
+        if ($request->filled('project_uuid')) {
+            $query->where('project_uuid', $request->project_uuid);
+        }
+        if ($request->filled('date_from')) {
+            $query->where('date', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->where('date', '<=', $request->date_to);
+        }
+
+        $timesheets = $query->paginate($request->input('per_page', 50));
+        return response()->json(['message' => 'List of timesheets', 'data' => $timesheets]);
+    }
+
     #[OA\Post(
         path: "/api/platform/project/projects/{uuid}/timesheets",
         summary: "Log timesheet for a project",
@@ -292,7 +372,7 @@ class ProjectController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ["employee_uuid", "date", "hours"],
+                required: ["date", "hours"],
                 properties: [
                     new OA\Property(property: "employee_uuid", type: "string", format: "uuid"),
                     new OA\Property(property: "task_uuid", type: "string", format: "uuid"),
@@ -308,12 +388,18 @@ class ProjectController extends Controller
     {
         $project = Project::where('uuid', $uuid)->firstOrFail();
         $validated = $request->validate([
-            'employee_uuid' => 'required|string',
+            'employee_uuid' => 'nullable|string',
             'task_uuid' => 'nullable|string|exists:project_tasks,uuid',
             'date' => 'required|date',
             'hours' => 'required|numeric|min:0.25|max:24',
             'notes' => 'nullable|string',
         ]);
+
+        if (empty($validated['employee_uuid'])) {
+            $user = $request->user();
+            $employee = $user ? \App\Domain\HRM\Models\Employee::where('user_id', $user->id)->first() : null;
+            $validated['employee_uuid'] = $employee?->uuid ?? ($user?->uuid ?? (string) \Illuminate\Support\Str::uuid());
+        }
 
         $timesheet = $project->timesheets()->create(array_merge($validated, ['status' => 'pending']));
         return response()->json(['message' => 'Timesheet logged successfully', 'data' => $timesheet], 201);

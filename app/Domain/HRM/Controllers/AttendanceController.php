@@ -5,7 +5,6 @@ namespace App\Domain\HRM\Controllers;
 use App\Http\Controllers\Controller;
 use App\Domain\HRM\Requests\Attendance\ClockInRequest;
 use App\Domain\HRM\Requests\Attendance\ClockOutRequest;
-use App\Domain\HRM\Models\Employee;
 use App\Domain\HRM\Services\AttendanceService;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
@@ -37,8 +36,19 @@ class AttendanceController extends Controller
     )]
     public function index(): JsonResponse
     {
-        $filters = request()->only(['search', 'employee_uuid', 'date', 'department_uuid']);
+        $user = request()->user();
+        $filters = request()->only(['search', 'employee_uuid', 'date', 'department_uuid', 'view']);
         $perPage = request()->input('per_page', 15);
+
+        // Check if user has HR or super-admin role
+        $isHrOrAdmin = $user && ($user->hasRole('super-admin') || $user->hasRole('hr-manager') || $user->hasRole('hr-admin') || $user->hasPermission('hrm.attendances.view') || $user->hasPermission('hrm.employees.manage'));
+
+        // If user is not HR/Admin, OR if HR explicitly toggles "view=mine", filter by user's own employee record
+        if (!$isHrOrAdmin || ($filters['view'] ?? '') === 'mine') {
+            $employee = $user ? \App\Domain\HRM\Models\Employee::where('user_id', $user->id)->first() : null;
+            $filters['employee_id'] = $employee?->id ?? 0;
+        }
+
         $attendances = $this->attendanceService->getAttendances($filters, $perPage);
         return response()->json([
             'message' => 'List of attendances',

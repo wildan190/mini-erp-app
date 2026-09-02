@@ -24,6 +24,9 @@ class LeaveService
     public function getLeaveRequests(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         return LeaveRequest::with(['employee.user', 'leaveType', 'approver'])
+            ->when(!empty($filters['employee_id']), function (Builder $query) use ($filters) {
+                $query->where('employee_id', $filters['employee_id']);
+            })
             ->when(isset($filters['employee_uuid']), function (Builder $query) use ($filters) {
                 $employee = Employee::where('uuid', $filters['employee_uuid'])->first();
                 $query->where('employee_id', $employee?->id ?? 0);

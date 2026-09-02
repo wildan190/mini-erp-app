@@ -162,9 +162,47 @@ class PurchaseOrderController extends Controller
     )]
     public function updateStatus(Request $request, string $uuid): JsonResponse
     {
-        $order = PurchaseOrder::where('uuid', $uuid)->firstOrFail();
+        $order = PurchaseOrder::with(['supplier', 'items'])->where('uuid', $uuid)->firstOrFail();
         $validated = $request->validate(['status' => 'required|in:draft,approved,partial,completed,cancelled']);
-        $order->update(['status' => $validated['status']]);
-        return response()->json(['message' => 'Purchase order status updated', 'data' => $order]);
+        
+        DB::transaction(function () use ($order, $validated, $request) {
+            $order->update(['status' => $validated['status']]);
+
+            // Enterprise ERP Standard: When PO is approved, auto-create/sync an AP Bill in Finance
+            if ($validated['status'] === 'approved' && $order->supplier_id) {
+                $existingBill = \App\Domain\Finance\Models\ApBill::where('reference', $order->number)->first();
+                if (!$existingBill) {
+                    $billDate = $order->date ?? today()->toDateString();
+                    $dueDate = $order->eta ?? now()->addDays(30)->toDateString();
+                    
+                    $bill = \App\Domain\Finance\Models\ApBill::create([
+                        'vendor_id'    => $order->supplier_id,
+                        'bill_number'  => 'BILL-' . strtoupper(Str::random(8)),
+                        'reference'    => $order->number,
+                        'bill_date'    => $billDate,
+                        'due_date'     => $dueDate,
+                        'subtotal'     => $order->subtotal ?? $order->total_amount,
+                        'tax_amount'   => $order->tax_amount ?? 0,
+                        'total_amount' => $order->total_amount,
+                        'paid_amount'  => 0,
+                        'status'       => 'approved',
+                        'notes'        => "Auto-generated from PO {$order->number} - " . ($order->notes ?? ''),
+                        'approved_by'  => $request->user()?->id,
+                        'approved_at'  => now(),
+                    ]);
+
+                    foreach ($order->items as $item) {
+                        $bill->items()->create([
+                            'description' => $item->item_name,
+                            'quantity'    => $item->qty ?? 1,
+                            'unit_price'  => $item->price ?? 0,
+                            'amount'      => ($item->qty ?? 1) * ($item->price ?? 0),
+                        ]);
+                    }
+                }
+            }
+        });
+
+        return response()->json(['message' => 'Purchase order status updated', 'data' => $order->fresh()]);
     }
 }

@@ -67,7 +67,8 @@ class GoodsReceiptController extends Controller
             'date'                                  => 'required|date',
             'notes'                                 => 'nullable|string',
             'items'                                 => 'required|array|min:1',
-            'items.*.purchase_order_item_id'        => 'required|integer|exists:purchase_order_items,id',
+            'items.*.purchase_order_item_uuid'      => 'nullable|string|exists:purchase_order_items,uuid',
+            'items.*.purchase_order_item_id'        => 'nullable|integer|exists:purchase_order_items,id',
             'items.*.qty_received'                  => 'required|numeric|min:0',
             'items.*.qty_rejected'                  => 'nullable|numeric|min:0',
             'items.*.notes'                         => 'nullable|string',
@@ -85,17 +86,24 @@ class GoodsReceiptController extends Controller
             ]);
 
             foreach ($validated['items'] as $item) {
-                $receipt->items()->create([
-                    'purchase_order_item_id' => $item['purchase_order_item_id'],
-                    'qty_received'           => $item['qty_received'],
-                    'qty_rejected'           => $item['qty_rejected'] ?? 0,
-                    'notes'                  => $item['notes'] ?? null,
-                ]);
+                $orderItemId = $item['purchase_order_item_id'] ?? null;
+                if (!$orderItemId && !empty($item['purchase_order_item_uuid'])) {
+                    $orderItemId = PurchaseOrderItem::where('uuid', $item['purchase_order_item_uuid'])->value('id');
+                }
+
+                if ($orderItemId) {
+                    $receipt->items()->create([
+                        'purchase_order_item_id' => $orderItemId,
+                        'qty_received'           => $item['qty_received'],
+                        'qty_rejected'           => $item['qty_rejected'] ?? 0,
+                        'notes'                  => $item['notes'] ?? null,
+                    ]);
+                }
             }
 
             $po->update(['status' => 'partial']);
 
-            return response()->json(['message' => 'Goods receipt created successfully', 'data' => $receipt->load('items')], 201);
+            return response()->json(['message' => 'Goods receipt created successfully', 'data' => $receipt->load(['order.supplier', 'items.orderItem', 'receiver'])], 201);
         });
     }
 

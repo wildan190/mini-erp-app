@@ -13,9 +13,20 @@ class StoreResignationRequest extends FormRequest
         return [
             'employee_uuid'     => 'nullable|exists:employees,uuid',
             'notice_date'       => 'required|date',
-            'resignation_date'  => 'required|date|after_or_equal:notice_date',
+            'resignation_date'  => [
+                'required',
+                'date',
+                'after_or_equal:' . \Carbon\Carbon::parse($this->input('notice_date', now()))->addDays(30)->toDateString(),
+            ],
             'reason'            => 'required|string',
             'handover_to_uuid'  => 'nullable|exists:employees,uuid',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'resignation_date.after_or_equal' => 'Pengajuan resign harus disubmit minimal 30 hari sebelum tanggal efektif pengunduran diri (30 Days Notice Period).',
         ];
     }
 }

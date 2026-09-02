@@ -51,8 +51,12 @@ php artisan migrate --force
 # are loaded directly from the environment and no files are needed.
 # If those vars are empty we generate the key files once into storage/app/.
 if [ -z "$PASSPORT_PRIVATE_KEY" ] || [ -z "$PASSPORT_PUBLIC_KEY" ]; then
-    echo "Passport env keys not set — generating key files..."
-    php artisan passport:keys --force
+    if [ ! -f storage/oauth-private.key ] || [ ! -f storage/oauth-public.key ]; then
+        echo "Passport key files not found — generating key files..."
+        php artisan passport:keys
+    else
+        echo "Passport key files already exist — keeping existing keys."
+    fi
 else
     echo "Passport keys loaded from environment variables."
 fi

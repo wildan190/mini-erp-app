@@ -2,36 +2,32 @@
 
 namespace App\Domain\Purchasing\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use App\Domain\HRM\Models\Department;
 
 class PurchaseRequest extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
-        'number', 'date', 'requestor_id', 'department_uuid', 'notes', 'status'
+        'name', 'number', 'date', 'requestor_id', 'department_uuid', 'notes', 'status'
     ];
 
-    protected static function newFactory()
+    public function uniqueIds(): array
     {
-        return \Database\Factories\Purchasing\PurchaseRequestFactory::new();
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            if (!$model->uuid) {
-                $model->uuid = (string) Str::uuid();
-            }
-        });
+        return ['uuid'];
     }
 
     public function requestor()
     {
         return $this->belongsTo(\App\Models\User::class, 'requestor_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_uuid', 'uuid');
     }
 
     public function items()

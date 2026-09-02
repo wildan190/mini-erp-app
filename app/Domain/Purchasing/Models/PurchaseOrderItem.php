@@ -2,21 +2,20 @@
 
 namespace App\Domain\Purchasing\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class PurchaseOrderItem extends Model
 {
+    use HasUuids;
+
     protected $fillable = [
         'purchase_order_id', 'item_name', 'qty', 'price', 'tax_rate', 'discount', 'total'
     ];
 
-    protected static function boot()
+    public function uniqueIds(): array
     {
-        parent::boot();
-        static::creating(function ($model) {
-            $model->uuid = (string) Str::uuid();
-        });
+        return ['uuid'];
     }
 
     public function order()

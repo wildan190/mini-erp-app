@@ -13,6 +13,7 @@ name: mini-erp
 #   purchasing-service: 256MB — /api/platform/purchasing/*
 #   project-service  : 256MB  — /api/platform/project/*
 #   inventory-service: 256MB  — /api/platform/inventory/*
+#   system-service   : 256MB  — /api/platform/system/*
 #   horizon          : 192MB  — queue worker (standalone)
 #   face-api         : 256MB  — Python face-recognition service
 #   postgres         : 128MB  — shared database
@@ -66,12 +67,12 @@ services:
       - purchasing-service
       - project-service
       - inventory-service
+      - system-service
 
   # ── Core Service ──────────────────────────────────────────────────────────
   # The central Laravel base. Owns:
   #   • Landing page & welcome view  (GET /)
   #   • Swagger / OpenAPI docs       (GET /api/documentation)
-  #   • Telescope UI                 (GET /telescope)
   #   • Horizon UI                   (GET /horizon)
   #   • Platform dashboard           (GET /api/platform/dashboard)
   #   • Health check                 (GET /up)
@@ -115,6 +116,10 @@ services:
         limits:
           memory: 256M
           cpus: "0.75"
+    depends_on:
+      face-api:
+        condition: service_healthy
+
 
   crm-service:
     <<: *app-base
@@ -171,6 +176,17 @@ services:
           memory: 256M
           cpus: "0.75"
 
+  system-service:
+    <<: *app-base
+    container_name: mini-erp-system-service
+    ports:
+      - "8009:8000"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.75"
+
   # ── Horizon (standalone queue worker) ─────────────────────────────────────
   # Runs php artisan horizon only — no HTTP server.
   # All domain services dispatch jobs to Redis; Horizon processes them here.
@@ -204,10 +220,12 @@ services:
           memory: 256M
           cpus: "0.50"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 10s
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 15s
       timeout: 5s
       retries: 3
+      start_period: 10s
+
 
   postgres:
     image: postgres:16-alpine

@@ -24,10 +24,22 @@ class PlatformLoginController extends Controller
 
         $tokenResult = $user->createToken('platform-token');
 
+        // Eager-load roles with their permissions so FE can apply RBAC immediately
+        $user->load('roles.permissions');
+
         return response()->json([
             'message' => 'Login berhasil',
             'token'   => $tokenResult->accessToken,
             'user'    => $user,
+            'roles'   => $user->roles->map(fn ($r) => [
+                'id'          => $r->id,
+                'name'        => $r->name,
+                'slug'        => $r->slug,
+                'permissions' => $r->permissions->map(fn ($p) => [
+                    'slug'   => $p->slug,
+                    'module' => $p->module,
+                ]),
+            ]),
         ]);
     }
 }

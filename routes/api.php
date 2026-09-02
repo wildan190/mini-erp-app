@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Domain\Auth\Controllers\PlatformLoginController;
 use App\Domain\Auth\Controllers\PlatformRegisterController;
 use App\Domain\Auth\Controllers\PlatformLogoutController;
+use App\Domain\Auth\Controllers\PlatformMeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,5 +21,8 @@ Route::prefix('platform')->group(function () {
 
     Route::middleware('auth:platform')->group(function () {
         Route::post('/logout', [PlatformLogoutController::class, 'logout']);
+
+        // Returns current user profile with roles + permissions (used for session hydration)
+        Route::get('/me', [PlatformMeController::class, 'me']);
     });
 });

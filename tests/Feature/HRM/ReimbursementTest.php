@@ -19,7 +19,7 @@ class ReimbursementTest extends TestCase
         Storage::fake('public');
 
         $user = User::factory()->create();
-        $this->actingAs($user, 'sanctum');
+        $this->actingAs($user, 'platform');
 
         $employee = Employee::create([
             'user_id' => $user->id,
@@ -58,7 +58,7 @@ class ReimbursementTest extends TestCase
     public function test_can_list_my_claims()
     {
         $user = User::factory()->create();
-        $this->actingAs($user, 'sanctum');
+        $this->actingAs($user, 'platform');
 
         $employee = Employee::create([
             'user_id' => $user->id,
@@ -84,7 +84,7 @@ class ReimbursementTest extends TestCase
     public function test_can_update_reimbursement_status()
     {
         $manager = User::factory()->create();
-        $this->actingAs($manager, 'sanctum');
+        $this->actingAs($manager, 'platform');
 
         $employeeUser = User::factory()->create();
         $employee = Employee::create([

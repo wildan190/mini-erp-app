@@ -26,8 +26,10 @@ Route::middleware('auth:platform')
         Route::post('/',                 [ProjectController::class, 'store']);
         Route::get('/projects',          [ProjectController::class, 'index']);
         Route::post('/projects',         [ProjectController::class, 'store']);
-        Route::get('/projects/{uuid}',   [ProjectController::class, 'show']);
-        Route::put('/projects/{uuid}',   [ProjectController::class, 'update']);
+        Route::get('/won-prospects',     [ProjectController::class, 'wonProspects']);
+        Route::get('/projects/{uuid}',          [ProjectController::class, 'show']);
+        Route::put('/projects/{uuid}',          [ProjectController::class, 'update']);
+        Route::patch('/projects/{uuid}/status', [ProjectController::class, 'updateStatus']);
 
         // ── Tasks (nested under project) ──────────────────────────────────
         Route::get('/projects/{uuid}/tasks',       [ProjectController::class,     'tasks']);
@@ -50,12 +52,20 @@ Route::middleware('auth:platform')
         Route::delete('/members/{uuid}',           [ProjectMemberController::class, 'destroy']);
 
         // ── Timesheets ────────────────────────────────────────────────────
+        Route::get('/timesheets',                  [ProjectController::class, 'timesheets']);
         Route::post('/projects/{uuid}/timesheets', [ProjectController::class, 'storeTimesheet']);
+        Route::post('/timesheets',                 function (\Illuminate\Http\Request $request) {
+            $projectUuid = $request->input('project_uuid');
+            if (!$projectUuid) {
+                return response()->json(['message' => 'The project_uuid field is required.'], 422);
+            }
+            return app(ProjectController::class)->storeTimesheet($request, $projectUuid);
+        });
 
         // ── Costs & Financials ────────────────────────────────────────────
-        Route::get('/financials',                  [ProjectController::class,     'dashboard']);
+        Route::get('/financials',                  [ProjectCostController::class, 'financials']);
         Route::get('/projects/{uuid}/costs',       [ProjectController::class,     'costs']);
-        Route::post('/projects/{uuid}/costs',      [ProjectController::class,     'storeCost']);
+        Route::post('/projects/{uuid}/costs',      [ProjectCostController::class, 'store']);
         Route::post('/costs',                      [ProjectCostController::class, 'store']);
         Route::delete('/costs/{uuid}',             [ProjectCostController::class, 'destroy']);
 

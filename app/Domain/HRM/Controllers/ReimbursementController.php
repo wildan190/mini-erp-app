@@ -38,8 +38,26 @@ class ReimbursementController extends Controller
     )]
     public function index(): JsonResponse
     {
-        $filters = request()->only(['employee_uuid', 'status']);
+        $user = request()->user();
+        $filters = request()->only(['employee_uuid', 'status', 'view']);
         $perPage = request()->input('per_page', 15);
+
+        // Check if user has HR or admin access
+        $isHrOrAdmin = $user && (
+            $user->hasRole('super-admin') ||
+            $user->hasRole('hr-manager') ||
+            $user->hasRole('hr-admin') ||
+            $user->hasPermission('hrm.reimbursement.approve') ||
+            $user->hasPermission('hrm.employees.manage')
+        );
+
+        // Non-HR users OR HR users requesting their own view get scoped to their employee record
+        if (!$isHrOrAdmin || ($filters['view'] ?? '') === 'mine') {
+            $employee = $user ? Employee::where('user_id', $user->id)->first() : null;
+            $filters['employee_id'] = $employee?->id ?? 0;
+        }
+        unset($filters['view']);
+
         $reimbursements = $this->reimbursementService->getReimbursements($filters, $perPage);
         return response()->json([
             'message' => 'List of reimbursements',
@@ -177,10 +195,17 @@ class ReimbursementController extends Controller
     {
         $employee = Employee::where('user_id', Auth::id())->first();
         if (!$employee) {
-            return response()->json(['message' => 'Employee record not found.'], 404);
+            // Return empty pagination data so frontend table doesn't crash with 404 for admins / non-employee accounts
+            $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15, 1);
+            return response()->json([
+                'message' => 'User does not have an employee profile yet.',
+                'data' => $emptyPaginator
+            ]);
         }
 
-        $claims = $this->reimbursementService->getReimbursements(['employee_id' => $employee->id]);
+        $perPage = request()->input('per_page', 15);
+        $filters = array_merge(request()->only(['status']), ['employee_id' => $employee->id]);
+        $claims = $this->reimbursementService->getReimbursements($filters, $perPage);
 
         return response()->json([
             'message' => 'My reimbursement claims',

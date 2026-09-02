@@ -23,6 +23,9 @@ class ReimbursementService
                 $employee = \App\Domain\HRM\Models\Employee::where('uuid', $filters['employee_uuid'])->first();
                 $query->where('employee_id', $employee?->id ?? 0);
             })
+            ->when(isset($filters['employee_id']), function ($query) use ($filters) {
+                $query->where('employee_id', $filters['employee_id']);
+            })
             ->when(isset($filters['status']), function ($query) use ($filters) {
                 $query->where('status', $filters['status']);
             })

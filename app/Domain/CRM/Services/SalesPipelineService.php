@@ -27,7 +27,16 @@ class SalesPipelineService
     {
         if (isset($data['prospect_id'])) {
             if (Str::isUuid($data['prospect_id'])) {
-                $data['prospect_id'] = \App\Domain\CRM\Models\Prospect::where('uuid', $data['prospect_id'])->value('id');
+                $prospect = \App\Domain\CRM\Models\Prospect::where('uuid', $data['prospect_id'])->first();
+            } else {
+                $prospect = \App\Domain\CRM\Models\Prospect::find($data['prospect_id']);
+            }
+
+            if ($prospect) {
+                $data['prospect_id'] = $prospect->id;
+                if (!empty($data['stage'])) {
+                    $prospect->update(['status' => $data['stage']]);
+                }
             }
         }
 

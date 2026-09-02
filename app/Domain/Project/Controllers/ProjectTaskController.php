@@ -25,7 +25,7 @@ class ProjectTaskController extends Controller
             $query->where('status', $request->status);
         }
 
-        $tasks = $query->with(['project'])->orderBy('order')->paginate($request->input('per_page', 20));
+        $tasks = $query->with(['project', 'assigned_employee'])->orderBy('order')->paginate($request->input('per_page', 50));
 
         return response()->json(['message' => 'List of tasks', 'data' => $tasks]);
     }
@@ -51,6 +51,7 @@ class ProjectTaskController extends Controller
         $task    = $project->tasks()->create(array_merge($validated, [
             'status' => $validated['status'] ?? 'todo',
         ]));
+        $task->load(['project', 'assigned_employee']);
 
         return response()->json(['message' => 'Task created successfully', 'data' => $task], 201);
     }
@@ -62,15 +63,17 @@ class ProjectTaskController extends Controller
     {
         $task      = ProjectTask::where('uuid', $uuid)->firstOrFail();
         $validated = $request->validate([
-            'name'                => 'sometimes|required|string|max:255',
-            'description'         => 'nullable|string',
-            'status'              => 'nullable|in:todo,in_progress,review,done',
-            'progress_percentage' => 'nullable|integer|min:0|max:100',
-            'due_date'            => 'nullable|date',
-            'order'               => 'nullable|integer',
+            'name'                   => 'sometimes|required|string|max:255',
+            'description'            => 'nullable|string',
+            'assigned_employee_uuid' => 'nullable|string',
+            'status'                 => 'nullable|in:todo,in_progress,review,done',
+            'progress_percentage'    => 'nullable|integer|min:0|max:100',
+            'due_date'               => 'nullable|date',
+            'order'                  => 'nullable|integer',
         ]);
 
         $task->update($validated);
+        $task->load(['project', 'assigned_employee']);
 
         return response()->json(['message' => 'Task updated successfully', 'data' => $task]);
     }

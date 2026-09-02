@@ -2,13 +2,13 @@
 
 namespace App\Domain\Inventory\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class InventoryTransferOrderItem extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $table = 'inventory_transfer_order_items';
     protected $primaryKey = 'uuid';
@@ -23,14 +23,9 @@ class InventoryTransferOrderItem extends Model
         'quantity_received',
     ];
 
-    protected static function boot()
+    public function uniqueIds(): array
     {
-        parent::boot();
-        static::creating(function ($model) {
-            if (!$model->uuid) {
-                $model->uuid = (string) Str::uuid();
-            }
-        });
+        return ['uuid'];
     }
 
     public function transferOrder()

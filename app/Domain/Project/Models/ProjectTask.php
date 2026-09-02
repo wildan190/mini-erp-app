@@ -2,14 +2,14 @@
 
 namespace App\Domain\Project\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
 class ProjectTask extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasUuids, SoftDeletes;
 
     protected $primaryKey = 'uuid';
     public $incrementing = false;
@@ -21,19 +21,9 @@ class ProjectTask extends Model
         'progress_percentage', 'status', 'is_milestone', 'order'
     ];
 
-    protected static function newFactory()
+    public function uniqueIds(): array
     {
-        return \Database\Factories\Project\ProjectTaskFactory::new();
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            if (!$model->uuid) {
-                $model->uuid = (string) Str::uuid();
-            }
-        });
+        return ['uuid'];
     }
 
     public function project()

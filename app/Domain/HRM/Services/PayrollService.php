@@ -35,6 +35,9 @@ class PayrollService
                 $employee = Employee::where('uuid', $filters['employee_uuid'])->first();
                 $query->where('employee_id', $employee?->id ?? 0);
             })
+            ->when(isset($filters['employee_id']), function (Builder $query) use ($filters) {
+                $query->where('employee_id', $filters['employee_id']);
+            })
             ->when(isset($filters['status']), function (Builder $query) use ($filters) {
                 $query->where('status', $filters['status']);
             })

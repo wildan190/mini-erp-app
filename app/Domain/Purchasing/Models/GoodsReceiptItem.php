@@ -2,21 +2,20 @@
 
 namespace App\Domain\Purchasing\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class GoodsReceiptItem extends Model
 {
+    use HasUuids;
+
     protected $fillable = [
         'goods_receipt_id', 'purchase_order_item_id', 'qty_received', 'qty_rejected', 'notes'
     ];
 
-    protected static function boot()
+    public function uniqueIds(): array
     {
-        parent::boot();
-        static::creating(function ($model) {
-            $model->uuid = (string) Str::uuid();
-        });
+        return ['uuid'];
     }
 
     public function receipt()

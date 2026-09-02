@@ -15,10 +15,28 @@ class ProjectMemberController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $members = ProjectMember::with(['project'])
-            ->paginate($request->input('per_page', 15));
+        $membersQuery = ProjectMember::with(['project', 'employee.designation'])->orderBy('created_at', 'desc');
 
-        return response()->json(['message' => 'List of project members', 'data' => $members]);
+        if ($request->filled('project_uuid')) {
+            $membersQuery->where('project_uuid', $request->project_uuid);
+        }
+
+        $allMembers = $membersQuery->get();
+        $totalResources = $allMembers->pluck('employee_uuid')->unique()->count();
+        $avgAllocation = $allMembers->count() > 0 ? $allMembers->avg('allocation_percentage') : 0;
+        $overAllocated = $allMembers->where('allocation_percentage', '>', 100)->count();
+
+        return response()->json([
+            'message' => 'List of project members',
+            'data' => [
+                'members' => $allMembers,
+                'stats' => [
+                    'total_resources' => $totalResources,
+                    'avg_allocation' => $avgAllocation,
+                    'over_allocated' => $overAllocated,
+                ]
+            ]
+        ]);
     }
 
     /**

@@ -17,7 +17,7 @@ class EmployeeService
      */
     public function getAllEmployees(int $perPage = 15, array $filters = []): LengthAwarePaginator
     {
-        $query = Employee::with(['user', 'department', 'designation']);
+        $query = Employee::with(['user.roles', 'department', 'designation', 'shift']);
 
         if (isset($filters['department_uuid'])) {
             $departmentId = \App\Domain\HRM\Models\Department::where('uuid', $filters['department_uuid'])->value('id');
@@ -50,6 +50,14 @@ class EmployeeService
             });
         }
 
+        $today = now()->toDateString();
+        $query->with(['leaveRequests' => function ($lq) use ($today) {
+            $lq->where('status', 'approved')
+               ->whereDate('start_date', '<=', $today)
+               ->whereDate('end_date', '>=', $today)
+               ->with('leaveType');
+        }]);
+
         return $query->latest()->paginate($perPage);
     }
 
@@ -71,6 +79,9 @@ class EmployeeService
             }
             if (isset($data['designation_uuid'])) {
                 $data['designation_id'] = \App\Domain\HRM\Models\Designation::where('uuid', $data['designation_uuid'])->value('id');
+            }
+            if (isset($data['shift_uuid'])) {
+                $data['shift_id'] = \App\Domain\HRM\Models\Shift::where('uuid', $data['shift_uuid'])->value('id');
             }
 
             if (empty($data['user_id'])) {
@@ -105,6 +116,9 @@ class EmployeeService
         if (isset($data['designation_uuid'])) {
             $data['designation_id'] = \App\Domain\HRM\Models\Designation::where('uuid', $data['designation_uuid'])->value('id');
         }
+        if (isset($data['shift_uuid'])) {
+            $data['shift_id'] = \App\Domain\HRM\Models\Shift::where('uuid', $data['shift_uuid'])->value('id');
+        }
 
         $employee->update($data);
         return $employee;
@@ -129,7 +143,7 @@ class EmployeeService
      */
     public function findEmployee(string|int $id): ?Employee
     {
-        $query = Employee::with(['user', 'department', 'designation']);
+        $query = Employee::with(['user.roles', 'department', 'designation', 'shift']);
         if (is_numeric($id)) {
             return $query->find($id);
         }
