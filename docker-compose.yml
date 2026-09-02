@@ -116,6 +116,10 @@ services:
         limits:
           memory: 256M
           cpus: "0.75"
+    depends_on:
+      face-api:
+        condition: service_healthy
+
 
   crm-service:
     <<: *app-base
@@ -216,10 +220,12 @@ services:
           memory: 256M
           cpus: "0.50"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 10s
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 15s
       timeout: 5s
       retries: 3
+      start_period: 10s
+
 
   postgres:
     image: postgres:16-alpine
