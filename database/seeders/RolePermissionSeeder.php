@@ -33,15 +33,18 @@ class RolePermissionSeeder extends Seeder
             ['name' => 'Manage Quotations',        'slug' => 'crm.quotations.manage',      'module' => 'crm'],
 
             // Finance
-            ['name' => 'View Ledger',              'slug' => 'finance.ledger.view',        'module' => 'finance'],
-            ['name' => 'Manage Accounts',          'slug' => 'finance.accounts.manage',    'module' => 'finance'],
-            ['name' => 'Approve Financial Records', 'slug' => 'finance.records.approve',   'module' => 'finance'],
+            ['name' => 'View Ledger',                   'slug' => 'finance.ledger.view',             'module' => 'finance'],
+            ['name' => 'Manage Accounts',               'slug' => 'finance.accounts.manage',         'module' => 'finance'],
+            ['name' => 'Approve Financial Records',      'slug' => 'finance.records.approve',        'module' => 'finance'],
+            ['name' => 'Approve Purchase Request (PR)', 'slug' => 'finance.purchasing.pr.approve',   'module' => 'finance'],
+            ['name' => 'Approve Purchase Order (PO)',   'slug' => 'finance.purchasing.po.approve',   'module' => 'finance'],
 
             // Purchasing
-            ['name' => 'Create Purchase Request',  'slug' => 'purchasing.pr.create',       'module' => 'purchasing'],
-            ['name' => 'Approve Purchase Request', 'slug' => 'purchasing.pr.approve',      'module' => 'purchasing'],
-            ['name' => 'Manage Purchase Orders',   'slug' => 'purchasing.po.manage',       'module' => 'purchasing'],
-            ['name' => 'Manage Suppliers',         'slug' => 'purchasing.suppliers.manage','module' => 'purchasing'],
+            ['name' => 'Create Purchase Request',       'slug' => 'purchasing.pr.create',            'module' => 'purchasing'],
+            ['name' => 'Approve Purchase Request',      'slug' => 'purchasing.pr.approve',           'module' => 'purchasing'],
+            ['name' => 'Manage Purchase Orders',        'slug' => 'purchasing.po.manage',            'module' => 'purchasing'],
+            ['name' => 'Approve Purchase Order',        'slug' => 'purchasing.po.approve',           'module' => 'purchasing'],
+            ['name' => 'Manage Suppliers',              'slug' => 'purchasing.suppliers.manage',     'module' => 'purchasing'],
 
             // Project
             ['name' => 'View Projects',            'slug' => 'project.projects.view',      'module' => 'project'],

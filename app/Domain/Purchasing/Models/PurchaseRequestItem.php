@@ -10,7 +10,12 @@ class PurchaseRequestItem extends Model
     use HasUuids;
 
     protected $fillable = [
-        'purchase_request_id', 'item_name', 'qty', 'notes'
+        'purchase_request_id', 'item_name', 'qty', 'estimated_price', 'notes'
+    ];
+
+    protected $casts = [
+        'qty'             => 'float',
+        'estimated_price' => 'float',
     ];
 
     public function uniqueIds(): array

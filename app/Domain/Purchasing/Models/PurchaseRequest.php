@@ -5,6 +5,7 @@ namespace App\Domain\Purchasing\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\HRM\Models\Department;
 
 class PurchaseRequest extends Model
 {
@@ -22,6 +23,11 @@ class PurchaseRequest extends Model
     public function requestor()
     {
         return $this->belongsTo(\App\Models\User::class, 'requestor_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_uuid', 'uuid');
     }
 
     public function items()
